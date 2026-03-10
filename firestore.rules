@@ -1,0 +1,147 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasOnly([
+          'title',
+          'summary',
+          'tried',
+          'results',
+          'state',
+          'context',
+          'tags',
+          'images',
+          'saveCount',
+          'triedCount',
+          'regularCount',
+          'isAnonymous',
+          'authorUid',
+          'displayName',
+          'createdAt'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.summary is string
+        && request.resource.data.isAnonymous is bool
+        && request.resource.data.displayName is string
+        && request.resource.data.saveCount is int
+        && request.resource.data.triedCount is int
+        && request.resource.data.regularCount is int
+        && request.resource.data.saveCount >= 0
+        && request.resource.data.triedCount >= 0
+        && request.resource.data.regularCount >= 0
+        && (!('images' in request.resource.data) || request.resource.data.images is list)
+        && request.resource.data.createdAt is timestamp
+        && (
+          (request.resource.data.isAnonymous == true && !(request.resource.data.keys().hasAny(['authorUid'])))
+          || (request.resource.data.isAnonymous == false && request.resource.data.authorUid == request.auth.uid)
+        );
+
+      allow update, delete: if request.auth != null
+        && (
+          isAdmin()
+          || isReactionUpdate()
+          || (
+            resource.data.isAnonymous == false
+            && resource.data.authorUid == request.auth.uid
+            && request.resource.data.isAnonymous == false
+            && request.resource.data.authorUid == request.auth.uid
+          )
+        )
+        && request.resource.data.keys().hasOnly([
+          'title',
+          'summary',
+          'tried',
+          'results',
+          'state',
+          'context',
+          'tags',
+          'images',
+          'saveCount',
+          'triedCount',
+          'regularCount',
+          'isAnonymous',
+          'authorUid',
+          'displayName',
+          'createdAt'
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.summary is string
+        && request.resource.data.isAnonymous is bool
+        && request.resource.data.displayName is string
+        && (!('images' in request.resource.data) || request.resource.data.images is list)
+        && (
+          (request.resource.data.isAnonymous == true && !(request.resource.data.keys().hasAny(['authorUid'])))
+          || (request.resource.data.isAnonymous == false && request.resource.data.authorUid is string)
+        );
+    }
+
+    match /postReactions/{reactionId} {
+      allow read: if request.auth != null
+        && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create, update: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'postId',
+          'uid',
+          'saved',
+          'tried',
+          'regular',
+          'updatedAt'
+        ])
+        && request.resource.data.saved is bool
+        && request.resource.data.tried is bool
+        && request.resource.data.regular is bool;
+      allow delete: if request.auth != null
+        && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['displayName', 'updatedAt'])
+        && request.resource.data.displayName is string;
+    }
+
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'postId',
+          'uid',
+          'text',
+          'createdAt'
+        ])
+        && request.resource.data.text is string
+        && request.resource.data.createdAt is timestamp;
+      allow delete: if request.auth != null
+        && (resource.data.uid == request.auth.uid || isAdmin());
+    }
+
+    function isAdmin() {
+      return request.auth.token.email == "mathigatti@gmail.com";
+    }
+
+    function isReactionUpdate() {
+      return request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          'saveCount',
+          'triedCount',
+          'regularCount'
+        ])
+        && request.resource.data.saveCount is int
+        && request.resource.data.triedCount is int
+        && request.resource.data.regularCount is int
+        && request.resource.data.saveCount >= 0
+        && request.resource.data.triedCount >= 0
+        && request.resource.data.regularCount >= 0;
+    }
+
+    // Default deny.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
