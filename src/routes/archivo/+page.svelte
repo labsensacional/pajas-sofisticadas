@@ -6,6 +6,7 @@
     collection,
     deleteDoc,
     doc,
+    getDoc,
     getDocs,
     limit,
     orderBy,
@@ -163,15 +164,24 @@
     return Array.isArray(tags) ? tags.join(', ') : '';
   }
 
-  function startEdit(post) {
+  async function startEdit(post) {
     editId = post.id;
+    let body = { tried: '', results: '', state: '', context: '' };
+    try {
+      const bodySnap = await getDoc(doc(db, 'postBodies', post.id));
+      if (bodySnap.exists()) {
+        body = bodySnap.data();
+      }
+    } catch (err) {
+      body = { tried: '', results: '', state: '', context: '' };
+    }
     editData = {
       title: post.title ?? '',
       summary: post.summary ?? '',
-      tried: post.tried ?? '',
-      results: post.results ?? '',
-      state: post.state ?? '',
-      context: post.context ?? '',
+      tried: body.tried ?? '',
+      results: body.results ?? '',
+      state: body.state ?? '',
+      context: body.context ?? '',
       tagsInput: formatTags(post.tags)
     };
   }
@@ -191,11 +201,14 @@
       await updateDoc(doc(db, 'posts', post.id), {
         title: editData.title.trim(),
         summary: editData.summary.trim(),
+        tags
+      });
+      await updateDoc(doc(db, 'postBodies', post.id), {
+        postId: post.id,
         tried: editData.tried.trim(),
         results: editData.results.trim(),
         state: editData.state.trim(),
-        context: editData.context.trim(),
-        tags
+        context: editData.context.trim()
       });
       editId = '';
       await loadPosts();
@@ -215,6 +228,7 @@
         }
       }
       await deleteDoc(doc(db, 'posts', post.id));
+      await deleteDoc(doc(db, 'postBodies', post.id));
       await loadPosts();
     } catch (err) {
       error = err?.message ?? 'No se pudo borrar.';
@@ -314,10 +328,6 @@
     const haystack = [
       post.title,
       post.summary,
-      post.tried,
-      post.results,
-      post.state,
-      post.context,
       Array.isArray(post.tags) ? post.tags.join(' ') : ''
     ]
       .filter(Boolean)

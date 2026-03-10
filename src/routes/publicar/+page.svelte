@@ -5,7 +5,17 @@
 <script>
   import { onMount } from 'svelte';
   import { auth, db, hasFirebaseConfig, storage } from '$lib/firebase/client.js';
-  import { collection, doc, getDoc, getDocs, limit, orderBy, query, serverTimestamp, setDoc } from 'firebase/firestore';
+  import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    limit,
+    orderBy,
+    query,
+    serverTimestamp,
+    setDoc
+  } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
   import { onAuthStateChanged } from 'firebase/auth';
 
@@ -92,10 +102,6 @@
       const payload = {
         title: title.trim(),
         summary: summary.trim(),
-        tried: tried.trim(),
-        results: results.trim(),
-        state: state.trim(),
-        context: context.trim(),
         tags: tagsPayload,
         images: uploadedImages,
         saveCount: 0,
@@ -113,6 +119,15 @@
       }
 
       await setDoc(postRef, payload);
+
+      const bodyRef = doc(db, 'postBodies', postId);
+      await setDoc(bodyRef, {
+        postId,
+        tried: tried.trim(),
+        results: results.trim(),
+        state: state.trim(),
+        context: context.trim()
+      });
 
       if (isAnonymous) {
         const mapRef = doc(db, 'userPrivatePosts', user.uid, 'posts', postId);

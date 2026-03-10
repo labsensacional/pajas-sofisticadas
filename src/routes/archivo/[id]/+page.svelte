@@ -58,6 +58,10 @@
         error = 'Post no encontrado.';
       } else {
         post = { id: snapshot.id, ...snapshot.data() };
+        const bodySnap = await getDoc(doc(db, 'postBodies', postId));
+        if (bodySnap.exists()) {
+          post = { ...post, ...bodySnap.data() };
+        }
       }
     } catch (err) {
       error = err?.message ?? 'No se pudo cargar el post.';
@@ -174,6 +178,7 @@
     error = '';
     try {
       await deleteDoc(doc(db, 'posts', post.id));
+      await deleteDoc(doc(db, 'postBodies', post.id));
       notice = 'Post eliminado.';
       post = null;
     } catch (err) {
