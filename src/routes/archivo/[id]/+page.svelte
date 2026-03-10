@@ -6,6 +6,7 @@
   import {
     addDoc,
     collection,
+    deleteDoc,
     doc,
     getDoc,
     getDocs,
@@ -20,6 +21,7 @@
   let post = null;
   let loading = true;
   let error = '';
+  let notice = '';
   let reaction = { saved: false, tried: false, regular: false };
   let commentText = '';
   let comments = [];
@@ -165,6 +167,19 @@
   function toggleReveal(index) {
     revealed = { ...revealed, [index]: !revealed[index] };
   }
+
+  async function deletePost() {
+    if (!user || !post) return;
+    notice = '';
+    error = '';
+    try {
+      await deleteDoc(doc(db, 'posts', post.id));
+      notice = 'Post eliminado.';
+      post = null;
+    } catch (err) {
+      error = err?.message ?? 'No se pudo eliminar.';
+    }
+  }
 </script>
 
 <svelte:head>
@@ -180,6 +195,8 @@
     <p>Cargando...</p>
   {:else if error}
     <p class="error">{error}</p>
+  {:else if notice}
+    <p class="notice">{notice}</p>
   {:else if post}
     <article>
       <h1>{post.title}</h1>
@@ -220,6 +237,13 @@
           Lo hago regularmente ({post.regularCount ?? 0})
         </button>
       </div>
+
+      {#if user && (user.email === 'mathigatti@gmail.com' || post.authorUid === user.uid)}
+        <div class="owner-actions">
+          <button class="ghost" on:click={deletePost}>Eliminar</button>
+          <a class="ghost" href={`/archivo?edit=${post.id}`}>Editar</a>
+        </div>
+      {/if}
 
       {#if post.tried}
         <section>
@@ -433,6 +457,28 @@
   .comment span {
     font-size: 0.75rem;
     color: #6b7280;
+  }
+
+  .owner-actions {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 18px;
+  }
+
+  .owner-actions .ghost {
+    border: 1px solid rgba(12, 12, 21, 0.2);
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: 999px;
+    text-decoration: none;
+    color: #0c0c15;
+  }
+
+  .notice {
+    background: #ecfdf3;
+    color: #0b6b3a;
+    padding: 12px;
+    border-radius: 12px;
   }
 
   .warning {

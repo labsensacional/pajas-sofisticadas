@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+  import { collection, documentId, getDocs, orderBy, query, where } from 'firebase/firestore';
 
   let user = null;
   let posts = [];
@@ -33,13 +33,38 @@
     error = '';
 
     try {
-      const q = query(
+      const ownQuery = query(
         collection(db, 'posts'),
         where('authorUid', '==', user.uid),
         orderBy('createdAt', 'desc')
       );
-      const snapshot = await getDocs(q);
-      posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const ownSnap = await getDocs(ownQuery);
+      const ownPosts = ownSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+      const anonRef = collection(db, 'userPrivatePosts', user.uid, 'posts');
+      const anonSnap = await getDocs(anonRef);
+      const anonIds = anonSnap.docs.map((doc) => doc.id);
+
+      let anonPosts = [];
+      if (anonIds.length) {
+        const batches = [];
+        for (let i = 0; i < anonIds.length; i += 10) {
+          batches.push(anonIds.slice(i, i + 10));
+        }
+        for (const batch of batches) {
+          const q = query(collection(db, 'posts'), where(documentId(), 'in', batch));
+          const snap = await getDocs(q);
+          anonPosts = anonPosts.concat(snap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        }
+      }
+
+      const all = [...ownPosts, ...anonPosts];
+      const seen = new Set();
+      posts = all.filter((post) => {
+        if (seen.has(post.id)) return false;
+        seen.add(post.id);
+        return true;
+      }).sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
     } catch (err) {
       error = err?.message ?? 'No se pudo cargar.';
     } finally {

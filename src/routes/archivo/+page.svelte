@@ -304,7 +304,10 @@
     return acc;
   }, {});
 
-  $: availableTags = Object.keys(tagCounts).sort();
+  $: availableTags = Object.entries(tagCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([tag]) => tag);
 
   $: filteredPosts = posts.filter((post) => {
     const matchesTag = selectedTag ? (post.tags ?? []).includes(selectedTag) : true;
@@ -382,7 +385,10 @@
       <div class="filters">
         <button class:selected={!selectedTag} on:click={() => (selectedTag = '')}>Todos</button>
         {#each availableTags as tag}
-          <button class:selected={selectedTag === tag} on:click={() => (selectedTag = tag)}>
+          <button
+            class:selected={selectedTag === tag}
+            on:click={() => (selectedTag = selectedTag === tag ? '' : tag)}
+          >
             #{tag} ({tagCounts[tag]})
           </button>
         {/each}

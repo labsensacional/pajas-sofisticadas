@@ -111,6 +111,10 @@ service cloud.firestore {
         && request.resource.data.displayName is string;
     }
 
+    match /userPrivatePosts/{userId}/posts/{postId} {
+      allow read, create, delete: if request.auth != null && request.auth.uid == userId;
+    }
+
     match /comments/{commentId} {
       allow read: if true;
       allow create: if request.auth != null

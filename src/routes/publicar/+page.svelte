@@ -114,6 +114,14 @@
 
       await setDoc(postRef, payload);
 
+      if (isAnonymous) {
+        const mapRef = doc(db, 'userPrivatePosts', user.uid, 'posts', postId);
+        await setDoc(mapRef, {
+          postId,
+          createdAt: serverTimestamp()
+        });
+      }
+
       message = 'Post guardado. Gracias por sumar.';
       submitted = true;
       title = '';
