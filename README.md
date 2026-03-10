@@ -1,5 +1,6 @@
 # Pajas Sofisticadas
 
+
 MVP web (SvelteKit + Firebase).
 
 ## Dev
