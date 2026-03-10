@@ -12,7 +12,7 @@ npm run dev
 
 ## Deploy
 
-- Frontend: Vercel
+- Frontend: Netlify
 - Firebase: `firebase deploy --only firestore:rules,storage`
 
 ## Env
