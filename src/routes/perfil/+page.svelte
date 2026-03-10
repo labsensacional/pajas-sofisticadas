@@ -1,7 +1,13 @@
 <script>
   import { onMount } from 'svelte';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
-  import { onAuthStateChanged } from 'firebase/auth';
+  import {
+    EmailAuthProvider,
+    onAuthStateChanged,
+    reauthenticateWithCredential,
+    sendPasswordResetEmail,
+    updatePassword
+  } from 'firebase/auth';
   import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 
   let user = null;
@@ -9,6 +15,10 @@
   let displayName = '';
   let message = '';
   let error = '';
+  let passwordMessage = '';
+  let passwordError = '';
+  let currentPassword = '';
+  let newPassword = '';
 
   onMount(() => {
     if (!hasFirebaseConfig) {
@@ -62,6 +72,59 @@
       error = err?.message ?? 'No se pudo guardar.';
     }
   }
+
+  async function savePassword() {
+    if (!user || !auth) return;
+    passwordMessage = '';
+    passwordError = '';
+
+    if (!user.email) {
+      passwordError = 'No encontramos un email asociado.';
+      return;
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      passwordError = 'La nueva contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+
+    try {
+      const hasPasswordProvider = user.providerData?.some((p) => p.providerId === 'password');
+      if (hasPasswordProvider) {
+        if (!currentPassword) {
+          passwordError = 'Ingresa tu contraseña actual.';
+          return;
+        }
+        const credential = EmailAuthProvider.credential(user.email, currentPassword);
+        await reauthenticateWithCredential(user, credential);
+      }
+
+      await updatePassword(user, newPassword);
+      currentPassword = '';
+      newPassword = '';
+      passwordMessage = 'Contraseña actualizada.';
+    } catch (err) {
+      passwordError = err?.message ?? 'No se pudo actualizar la contraseña.';
+    }
+  }
+
+  async function sendResetLink() {
+    if (!user || !auth) return;
+    passwordMessage = '';
+    passwordError = '';
+
+    if (!user.email) {
+      passwordError = 'No encontramos un email asociado.';
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(auth, user.email);
+      passwordMessage = 'Te enviamos un email para crear o cambiar la contraseña.';
+    } catch (err) {
+      passwordError = err?.message ?? 'No se pudo enviar el email.';
+    }
+  }
 </script>
 
 <svelte:head>
@@ -94,6 +157,30 @@
         <p class="error">{error}</p>
       {/if}
     </div>
+    <div class="card">
+      <h2>Seguridad</h2>
+      <p class="hint">Puedes cambiar tu contraseña o crear una si entraste con Google.</p>
+      {#if user.providerData?.some((p) => p.providerId === 'password')}
+        <label>
+          Contraseña actual
+          <input type="password" bind:value={currentPassword} />
+        </label>
+      {/if}
+      <label>
+        Nueva contraseña
+        <input type="password" bind:value={newPassword} />
+      </label>
+      <div class="actions">
+        <button on:click={savePassword}>Guardar contraseña</button>
+        <button class="ghost" on:click={sendResetLink}>Enviar link por email</button>
+      </div>
+      {#if passwordMessage}
+        <p class="message">{passwordMessage}</p>
+      {/if}
+      {#if passwordError}
+        <p class="error">{passwordError}</p>
+      {/if}
+    </div>
     <div class="links">
       <a href="/mis-posts">Ver mis posts</a>
       <a href="/listas">Ver mis listas</a>
@@ -119,6 +206,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    margin-bottom: 16px;
   }
 
   label {
@@ -142,6 +230,29 @@
     color: #fff;
     padding: 8px 16px;
     border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .ghost {
+    background: transparent;
+    color: #0c0c15;
+    border: 1px solid #0c0c15;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  .hint {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.92rem;
   }
 
   .links {

@@ -151,4 +151,27 @@
     border-radius: 999px;
     cursor: pointer;
   }
+
+  @media (max-width: 720px) {
+    .topbar {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px;
+    }
+
+    nav {
+      width: 100%;
+      flex-wrap: wrap;
+      gap: 10px 12px;
+    }
+
+    .brand {
+      font-size: 1.05rem;
+    }
+
+    nav a,
+    nav button {
+      font-size: 0.95rem;
+    }
+  }
 </style>

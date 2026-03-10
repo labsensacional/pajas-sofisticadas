@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
   import {
@@ -239,6 +240,11 @@
     }
   }
 
+  function openPost(postId) {
+    if (editId === postId) return;
+    goto(`/archivo/${postId}`);
+  }
+
   function toggleReveal(postId, index) {
     const key = `${postId}-${index}`;
     revealed = { ...revealed, [key]: !revealed[key] };
@@ -412,9 +418,15 @@
     {/if}
     <section class="list">
       {#each filteredPosts as post}
-        <article>
+        <article
+          class="card"
+          role="button"
+          tabindex="0"
+          on:click={() => openPost(post.id)}
+          on:keydown={(e) => e.key === 'Enter' && openPost(post.id)}
+        >
           {#if editId === post.id}
-            <div class="edit">
+            <div class="edit" on:click|stopPropagation>
               <label>
                 Titulo
                 <input type="text" bind:value={editData.title} />
@@ -454,7 +466,10 @@
               <span class="date">{post.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
             </div>
             {#if post.images?.length && user}
-              <div class="thumb {post.images[0].nsfw ? 'nsfw' : ''}" on:click={() => toggleReveal(post.id, 0)}>
+              <div
+                class="thumb {post.images[0].nsfw ? 'nsfw' : ''}"
+                on:click|stopPropagation={() => toggleReveal(post.id, 0)}
+              >
                 <img
                   src={post.images[0].url}
                   alt={post.title}
@@ -476,21 +491,21 @@
             <div class="reactions">
               <button
                 class:active={userReactions[post.id]?.saved}
-                on:click={() => toggleReaction(post, 'saved')}
+                on:click|stopPropagation|preventDefault={() => toggleReaction(post, 'saved')}
                 disabled={!user}
               >
                 Guardar ({post.saveCount ?? 0})
               </button>
               <button
                 class:active={userReactions[post.id]?.tried}
-                on:click={() => toggleReaction(post, 'tried')}
+                on:click|stopPropagation|preventDefault={() => toggleReaction(post, 'tried')}
                 disabled={!user}
               >
                 Lo probe ({post.triedCount ?? 0})
               </button>
               <button
                 class:active={userReactions[post.id]?.regular}
-                on:click={() => toggleReaction(post, 'regular')}
+                on:click|stopPropagation|preventDefault={() => toggleReaction(post, 'regular')}
                 disabled={!user}
               >
                 Lo hago regularmente ({post.regularCount ?? 0})
@@ -578,6 +593,16 @@
     background: rgba(255, 255, 255, 0.8);
     padding: 20px;
     border-radius: 16px;
+  }
+
+  .card {
+    cursor: pointer;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px rgba(12, 12, 21, 0.12);
   }
 
   .card-header {
