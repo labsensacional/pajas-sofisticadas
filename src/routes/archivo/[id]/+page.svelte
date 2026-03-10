@@ -14,6 +14,7 @@
     query,
     runTransaction,
     serverTimestamp,
+    updateDoc,
     where
   } from 'firebase/firestore';
 
@@ -22,6 +23,16 @@
   let loading = true;
   let error = '';
   let notice = '';
+  let showDeleteConfirm = false;
+  let showEditModal = false;
+  let editData = {
+    title: '',
+    summary: '',
+    tried: '',
+    results: '',
+    state: '',
+    context: ''
+  };
   let reaction = { saved: false, tried: false, regular: false };
   let commentText = '';
   let comments = [];
@@ -62,6 +73,14 @@
         if (bodySnap.exists()) {
           post = { ...post, ...bodySnap.data() };
         }
+        editData = {
+          title: post.title ?? '',
+          summary: post.summary ?? '',
+          tried: post.tried ?? '',
+          results: post.results ?? '',
+          state: post.state ?? '',
+          context: post.context ?? ''
+        };
       }
     } catch (err) {
       error = err?.message ?? 'No se pudo cargar el post.';
@@ -181,8 +200,48 @@
       await deleteDoc(doc(db, 'postBodies', post.id));
       notice = 'Post eliminado.';
       post = null;
+      showDeleteConfirm = false;
+      setTimeout(() => {
+        window.location.href = '/archivo';
+      }, 1200);
     } catch (err) {
       error = err?.message ?? 'No se pudo eliminar.';
+    }
+  }
+
+  function openEdit(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    showEditModal = true;
+  }
+
+  function openDelete(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    showDeleteConfirm = true;
+  }
+
+  async function saveEdit() {
+    if (!user || !post) return;
+    notice = '';
+    error = '';
+    try {
+      await updateDoc(doc(db, 'posts', post.id), {
+        title: editData.title.trim(),
+        summary: editData.summary.trim()
+      });
+      await updateDoc(doc(db, 'postBodies', post.id), {
+        postId: post.id,
+        tried: editData.tried.trim(),
+        results: editData.results.trim(),
+        state: editData.state.trim(),
+        context: editData.context.trim()
+      });
+      showEditModal = false;
+      notice = 'Post actualizado.';
+      await loadPost();
+    } catch (err) {
+      error = err?.message ?? 'No se pudo guardar.';
     }
   }
 </script>
@@ -245,8 +304,8 @@
 
       {#if user && (user.email === 'mathigatti@gmail.com' || post.authorUid === user.uid)}
         <div class="owner-actions">
-          <button class="ghost" on:click={deletePost}>Eliminar</button>
-          <a class="ghost" href={`/archivo?edit=${post.id}`}>Editar</a>
+          <button type="button" class="ghost" on:click={openEdit}>Editar</button>
+          <button type="button" class="danger" on:click={openDelete}>Eliminar</button>
         </div>
       {/if}
 
@@ -306,6 +365,53 @@
     </article>
   {/if}
 </main>
+
+{#if showDeleteConfirm}
+  <div class="modal-backdrop" on:click={() => (showDeleteConfirm = false)}></div>
+  <div class="modal">
+    <h3>Eliminar post</h3>
+    <p>Esto no se puede deshacer. ¿Querés eliminar este post?</p>
+    <div class="modal-actions">
+      <button class="danger" on:click={deletePost}>Eliminar</button>
+      <button class="ghost" on:click={() => (showDeleteConfirm = false)}>Cancelar</button>
+    </div>
+  </div>
+{/if}
+
+{#if showEditModal}
+  <div class="modal-backdrop" on:click={() => (showEditModal = false)}></div>
+  <div class="modal">
+    <h3>Editar post</h3>
+    <label>
+      Titulo
+      <input type="text" bind:value={editData.title} />
+    </label>
+    <label>
+      Resumen
+      <textarea rows="3" bind:value={editData.summary}></textarea>
+    </label>
+    <label>
+      Que probaste
+      <textarea rows="3" bind:value={editData.tried}></textarea>
+    </label>
+    <label>
+      Resultados
+      <textarea rows="3" bind:value={editData.results}></textarea>
+    </label>
+    <label>
+      Estado mental/emocional
+      <textarea rows="3" bind:value={editData.state}></textarea>
+    </label>
+    <label>
+      Contexto / setup
+      <textarea rows="3" bind:value={editData.context}></textarea>
+    </label>
+    <div class="modal-actions">
+      <button class="primary" on:click={saveEdit}>Guardar</button>
+      <button class="ghost" on:click={() => (showEditModal = false)}>Cancelar</button>
+    </div>
+  </div>
+{/if}
 
 <style>
   .page {
@@ -470,13 +576,32 @@
     margin: 12px 0 18px;
   }
 
-  .owner-actions .ghost {
+  .owner-actions .ghost,
+  .owner-actions .danger {
     border: 1px solid rgba(12, 12, 21, 0.2);
     background: transparent;
     padding: 6px 12px;
     border-radius: 999px;
     text-decoration: none;
     color: #0c0c15;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  }
+
+  .owner-actions .danger {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #7f1d1d;
+  }
+
+  .owner-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(12, 12, 21, 0.12);
+  }
+
+  .owner-actions button:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 
   .notice {
@@ -484,6 +609,82 @@
     color: #0b6b3a;
     padding: 12px;
     border-radius: 12px;
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(12, 12, 21, 0.5);
+    z-index: 20;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    width: min(560px, 92vw);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: 600;
+  }
+
+  .modal input,
+  .modal textarea {
+    border: 1px solid rgba(12, 12, 21, 0.2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font: inherit;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 6px;
+  }
+
+  .modal-actions button {
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+
+  .modal-actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(12, 12, 21, 0.12);
+  }
+
+  .modal .primary,
+  .modal .ghost,
+  .modal .danger {
+    border-radius: 999px;
+    padding: 8px 14px;
+    border: 1px solid rgba(12, 12, 21, 0.2);
+    background: transparent;
+  }
+
+  .modal .primary {
+    background: #0c0c15;
+    color: #fff;
+    border-color: #0c0c15;
+  }
+
+  .modal .danger {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #7f1d1d;
   }
 
   .warning {

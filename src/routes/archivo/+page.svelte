@@ -35,6 +35,7 @@
   let revealed = {};
   let usingCache = false;
   let editId = '';
+  let notice = '';
   let editData = {
     title: '',
     summary: '',
@@ -219,6 +220,7 @@
 
   async function removePost(post) {
     error = '';
+    notice = '';
     try {
       if (post.images?.length && storage) {
         for (const image of post.images) {
@@ -229,6 +231,8 @@
       }
       await deleteDoc(doc(db, 'posts', post.id));
       await deleteDoc(doc(db, 'postBodies', post.id));
+      posts = posts.filter((item) => item.id !== post.id);
+      notice = 'Post eliminado.';
       await loadPosts();
     } catch (err) {
       error = err?.message ?? 'No se pudo borrar.';
@@ -365,6 +369,8 @@
     </div>
   {:else if error}
     <p class="error">{error}</p>
+  {:else if notice}
+    <p class="notice">{notice}</p>
   {:else if posts.length === 0}
     <section class="empty">
       <p>No hay posts aun. Se viene el primer upload.</p>
@@ -495,8 +501,20 @@
             </p>
             {#if user && (user.email === 'mathigatti@gmail.com' || (post.authorUid && post.authorUid === user.uid))}
               <div class="actions">
-                <button class="ghost" on:click={() => startEdit(post)}>Editar</button>
-                <button class="danger" on:click={() => removePost(post)}>Eliminar</button>
+                <button
+                  type="button"
+                  class="ghost"
+                  on:click|stopPropagation|preventDefault={() => startEdit(post)}
+                >
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  class="danger"
+                  on:click|stopPropagation|preventDefault={() => removePost(post)}
+                >
+                  Eliminar
+                </button>
               </div>
             {/if}
           {/if}
@@ -727,6 +745,8 @@
     color: #0c0c15;
     padding: 6px 12px;
     border-radius: 999px;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
   }
 
   .danger {
@@ -735,6 +755,25 @@
     border: none;
     padding: 6px 12px;
     border-radius: 999px;
+    cursor: pointer;
+    transition: transform 120ms ease, box-shadow 120ms ease;
+  }
+
+  .actions button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(12, 12, 21, 0.12);
+  }
+
+  .actions button:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  .notice {
+    background: #ecfdf3;
+    color: #0b6b3a;
+    padding: 12px;
+    border-radius: 12px;
   }
 
   .edit {
