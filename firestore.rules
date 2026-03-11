@@ -41,8 +41,14 @@ service cloud.firestore {
           || (
             resource.data.isAnonymous == false
             && resource.data.authorUid == request.auth.uid
-            && request.resource.data.isAnonymous == false
-            && request.resource.data.authorUid == request.auth.uid
+            && (
+              !('isAnonymous' in request.resource.data)
+              || request.resource.data.isAnonymous == false
+            )
+            && (
+              !('authorUid' in request.resource.data)
+              || request.resource.data.authorUid == request.auth.uid
+            )
           )
         )
         && request.resource.data.keys().hasOnly([
@@ -60,12 +66,20 @@ service cloud.firestore {
         ])
         && request.resource.data.title is string
         && request.resource.data.summary is string
-        && request.resource.data.isAnonymous is bool
-        && request.resource.data.displayName is string
+        && (!('tags' in request.resource.data) || request.resource.data.tags is list)
+        && (!('isAnonymous' in request.resource.data) || request.resource.data.isAnonymous is bool)
+        && (!('displayName' in request.resource.data) || request.resource.data.displayName is string)
         && (!('images' in request.resource.data) || request.resource.data.images is list)
         && (
-          (request.resource.data.isAnonymous == true && !(request.resource.data.keys().hasAny(['authorUid'])))
-          || (request.resource.data.isAnonymous == false && request.resource.data.authorUid is string)
+          !('isAnonymous' in request.resource.data)
+          || (
+            request.resource.data.isAnonymous == true
+            && !(request.resource.data.keys().hasAny(['authorUid']))
+          )
+          || (
+            request.resource.data.isAnonymous == false
+            && request.resource.data.authorUid is string
+          )
         );
 
       allow delete: if request.auth != null
@@ -129,9 +143,17 @@ service cloud.firestore {
           'postId',
           'uid',
           'text',
+          'isAnonymous',
+          'displayName',
           'createdAt'
         ])
         && request.resource.data.text is string
+        && request.resource.data.isAnonymous is bool
+        && request.resource.data.displayName is string
+        && (
+          (request.resource.data.isAnonymous == true && request.resource.data.displayName == '')
+          || request.resource.data.isAnonymous == false
+        )
         && request.resource.data.createdAt is timestamp;
       allow delete: if request.auth != null
         && (resource.data.uid == request.auth.uid || isAdmin());

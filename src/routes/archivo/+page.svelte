@@ -22,7 +22,9 @@
   import { storage } from '$lib/firebase/client.js';
   import { getCachedPosts, setCachedPosts } from '$lib/feedCache.js';
 
+  /** @type {any} */
   let user = null;
+  /** @type {any[]} */
   let posts = [];
   let loading = true;
   let error = '';
@@ -32,6 +34,7 @@
   let lastDoc = null;
   let hasMore = true;
   let loadingMore = false;
+  /** @type {Record<string, any>} */
   let userReactions = {};
   let revealed = {};
   let usingCache = false;
@@ -172,7 +175,7 @@
     try {
       const bodySnap = await getDoc(doc(db, 'postBodies', post.id));
       if (bodySnap.exists()) {
-        body = bodySnap.data();
+        body = { ...body, ...bodySnap.data() };
       }
     } catch (err) {
       body = { tried: '', results: '', state: '', context: '' };
@@ -418,7 +421,7 @@
     {/if}
     <section class="list">
       {#each filteredPosts as post}
-        <article
+        <div
           class="card"
           role="button"
           tabindex="0"
@@ -426,7 +429,7 @@
           on:keydown={(e) => e.key === 'Enter' && openPost(post.id)}
         >
           {#if editId === post.id}
-            <div class="edit" on:click|stopPropagation>
+            <div class="edit">
               <label>
                 Titulo
                 <input type="text" bind:value={editData.title} />
@@ -468,7 +471,10 @@
             {#if post.images?.length && user}
               <div
                 class="thumb {post.images[0].nsfw ? 'nsfw' : ''}"
+                role="button"
+                tabindex="0"
                 on:click|stopPropagation={() => toggleReveal(post.id, 0)}
+                on:keydown|stopPropagation={(e) => (e.key === 'Enter' || e.key === ' ') && toggleReveal(post.id, 0)}
               >
                 <img
                   src={post.images[0].url}
@@ -533,7 +539,7 @@
               </div>
             {/if}
           {/if}
-        </article>
+        </div>
       {/each}
     </section>
     {#if hasMore}
@@ -589,7 +595,7 @@
     gap: 16px;
   }
 
-  article {
+  .card {
     background: rgba(255, 255, 255, 0.8);
     padding: 20px;
     border-radius: 16px;

@@ -282,7 +282,13 @@
       </label>
       <label>
         Tags (opcional)
-        <div class="tag-input" on:click={() => tagField?.focus()}>
+        <div
+          class="tag-input"
+          role="button"
+          tabindex="0"
+          on:click={() => tagField?.focus()}
+          on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && tagField?.focus()}
+        >
           {#each tags as tag}
             <span class="tag-chip">
               {tag}
@@ -385,10 +391,6 @@
     border: none;
     background: #0c0c15;
     color: #fff;
-  }
-
-  .message {
-    color: #0b6b3a;
   }
 
   .error {

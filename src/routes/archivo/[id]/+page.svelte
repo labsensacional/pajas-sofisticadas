@@ -18,7 +18,9 @@
     where
   } from 'firebase/firestore';
 
+  /** @type {any} */
   let user = null;
+  /** @type {any} */
   let post = null;
   let loading = true;
   let error = '';
@@ -33,8 +35,11 @@
     state: '',
     context: ''
   };
+  /** @type {{ saved: boolean; tried: boolean; regular: boolean }} */
   let reaction = { saved: false, tried: false, regular: false };
   let commentText = '';
+  let commentAnonymous = false;
+  /** @type {any[]} */
   let comments = [];
   let loadingComments = false;
   let revealed = {};
@@ -94,7 +99,7 @@
     const reactionId = `${postId}_${user.uid}`;
     const snap = await getDoc(doc(db, 'postReactions', reactionId));
     if (snap.exists()) {
-      reaction = snap.data();
+      reaction = { ...reaction, ...snap.data() };
     }
   }
 
@@ -174,13 +179,26 @@
   async function addComment() {
     if (!user || !commentText.trim()) return;
     try {
+      let displayName = user.email?.split('@')[0] ?? '';
+      try {
+        const profileSnap = await getDoc(doc(db, 'users', user.uid));
+        if (profileSnap.exists()) {
+          displayName = profileSnap.data().displayName ?? displayName;
+        }
+      } catch (err) {
+        displayName = user.email?.split('@')[0] ?? '';
+      }
+
       await addDoc(collection(db, 'comments'), {
         postId,
         uid: user.uid,
         text: commentText.trim(),
+        isAnonymous: commentAnonymous,
+        displayName: commentAnonymous ? '' : displayName,
         createdAt: serverTimestamp()
       });
       commentText = '';
+      commentAnonymous = false;
       await loadComments();
     } catch (err) {
       error = err?.message ?? 'No se pudo comentar.';
@@ -272,7 +290,13 @@
       {#if user && post.images?.length}
         <div class="gallery">
           {#each post.images as image, index}
-            <div class="image" on:click={() => toggleReveal(index)}>
+            <div
+              class="image"
+              role="button"
+              tabindex="0"
+              on:click={() => toggleReveal(index)}
+              on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && toggleReveal(index)}
+            >
               <img
                 src={image.url}
                 alt={post.title}
@@ -342,6 +366,10 @@
         {#if user}
           <div class="comment-form">
             <textarea rows="3" placeholder="Escribe un comentario" bind:value={commentText}></textarea>
+            <label class="comment-anonymous">
+              <input type="checkbox" bind:checked={commentAnonymous} />
+              Publicar como anonimo
+            </label>
             <button on:click={addComment}>Comentar</button>
           </div>
         {:else}
@@ -355,6 +383,7 @@
           <div class="comment-list">
             {#each comments as comment}
               <div class="comment">
+                <strong>{comment.isAnonymous ? 'Anonimo' : (comment.displayName || 'Usuario')}</strong>
                 <p>{comment.text}</p>
                 <span>{comment.createdAt?.toDate?.().toLocaleString?.() ?? ''}</span>
               </div>
@@ -367,7 +396,13 @@
 </main>
 
 {#if showDeleteConfirm}
-  <div class="modal-backdrop" on:click={() => (showDeleteConfirm = false)}></div>
+  <div
+    class="modal-backdrop"
+    role="button"
+    tabindex="0"
+    on:click={() => (showDeleteConfirm = false)}
+    on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (showDeleteConfirm = false)}
+  ></div>
   <div class="modal">
     <h3>Eliminar post</h3>
     <p>Esto no se puede deshacer. ¿Querés eliminar este post?</p>
@@ -379,7 +414,13 @@
 {/if}
 
 {#if showEditModal}
-  <div class="modal-backdrop" on:click={() => (showEditModal = false)}></div>
+  <div
+    class="modal-backdrop"
+    role="button"
+    tabindex="0"
+    on:click={() => (showEditModal = false)}
+    on:keydown={(e) => (e.key === 'Enter' || e.key === ' ') && (showEditModal = false)}
+  ></div>
   <div class="modal">
     <h3>Editar post</h3>
     <label>
@@ -537,6 +578,19 @@
     margin-bottom: 16px;
   }
 
+  .comment-anonymous {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4b5563;
+    font-size: 0.95rem;
+  }
+
+  .comment-anonymous input {
+    width: auto;
+    margin: 0;
+  }
+
   .comment-form textarea {
     border: 1px solid rgba(12, 12, 21, 0.2);
     border-radius: 12px;
@@ -563,6 +617,11 @@
     background: rgba(255, 255, 255, 0.9);
     border-radius: 12px;
     padding: 12px;
+  }
+
+  .comment strong {
+    display: block;
+    margin-bottom: 4px;
   }
 
   .comment span {
