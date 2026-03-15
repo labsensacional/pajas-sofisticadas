@@ -4,7 +4,7 @@ import { getCachedPosts, markPrefetched, setCachedPosts } from './feedCache.js';
 export async function prefetchRecent(db) {
   if (getCachedPosts('recent')) return;
 
-  const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(20));
+  const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'), limit(10));
   const snapshot = await getDocs(q);
   const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   setCachedPosts('recent', posts);
@@ -28,7 +28,7 @@ async function prefetchOtherSorts(db) {
         collection(db, 'posts'),
         orderBy(field, 'desc'),
         orderBy('createdAt', 'desc'),
-        limit(20)
+        limit(10)
       );
       const snapshot = await getDocs(q);
       const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

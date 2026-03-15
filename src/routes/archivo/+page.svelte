@@ -103,16 +103,17 @@
               ? 'regularCount'
               : 'createdAt';
 
+      const pageSize = 10;
       let q =
         sort === 'recent'
-          ? query(base, orderBy(sortField, 'desc'), limit(20))
-          : query(base, orderBy(sortField, 'desc'), orderBy('createdAt', 'desc'), limit(20));
+          ? query(base, orderBy(sortField, 'desc'), limit(pageSize))
+          : query(base, orderBy(sortField, 'desc'), orderBy('createdAt', 'desc'), limit(pageSize));
 
       if (lastDoc) {
         q =
           sort === 'recent'
-            ? query(base, orderBy(sortField, 'desc'), startAfter(lastDoc), limit(20))
-            : query(base, orderBy(sortField, 'desc'), orderBy('createdAt', 'desc'), startAfter(lastDoc), limit(20));
+            ? query(base, orderBy(sortField, 'desc'), startAfter(lastDoc), limit(pageSize))
+            : query(base, orderBy(sortField, 'desc'), orderBy('createdAt', 'desc'), startAfter(lastDoc), limit(pageSize));
       }
 
       const snapshot = await getDocs(q);
@@ -123,7 +124,7 @@
         posts = [...posts, ...newPosts];
       }
       lastDoc = snapshot.docs[snapshot.docs.length - 1] ?? lastDoc;
-      hasMore = snapshot.size === 20;
+      hasMore = snapshot.size === pageSize;
 
       if (reset) {
         setCachedPosts(sort, posts);
