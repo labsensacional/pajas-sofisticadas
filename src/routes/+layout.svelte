@@ -116,11 +116,11 @@
 <style>
   :global(:root) {
     color-scheme: light;
-    --bg: #f7efe6;
-    --bg-strong: #fff8f2;
-    --surface: rgba(255, 255, 255, 0.88);
-    --surface-solid: #ffffff;
-    --surface-soft: #f2e7db;
+    --bg: #efe5da;
+    --bg-strong: #f6eee7;
+    --surface: rgba(250, 243, 236, 0.88);
+    --surface-solid: #fbf6f0;
+    --surface-soft: #f2e9e0;
     --text: #17141f;
     --muted: #5b6070;
     --muted-soft: #8d92a2;
@@ -129,15 +129,20 @@
     --accent: #17141f;
     --accent-contrast: #fffaf5;
     --shadow: 0 20px 60px rgba(44, 23, 6, 0.12);
+    --pill-bg: #f0e7de;
+    --pill-bg-hover: #e7ddd4;
+    --pill-text: #2d3443;
+    --pill-active-bg: #17141f;
+    --pill-active-text: #fffaf5;
   }
 
   :global(html[data-theme='dark']) {
     color-scheme: dark;
-    --bg: #0a0f18;
-    --bg-strong: #121928;
-    --surface: rgba(14, 22, 34, 0.86);
-    --surface-solid: #111a28;
-    --surface-soft: #172233;
+    --bg: #10151d;
+    --bg-strong: #161c25;
+    --surface: rgba(22, 29, 39, 0.88);
+    --surface-solid: #1a2230;
+    --surface-soft: #222d3c;
     --text: #f3efe9;
     --muted: #b2b8c7;
     --muted-soft: #8790a4;
@@ -146,6 +151,11 @@
     --accent: #f1c27d;
     --accent-contrast: #10151e;
     --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    --pill-bg: #243040;
+    --pill-bg-hover: #2c394b;
+    --pill-text: #edf1f7;
+    --pill-active-bg: #f1c27d;
+    --pill-active-text: #10151e;
   }
 
   :global(html) {
@@ -242,9 +252,28 @@
   :global(.google),
   :global(.logout),
   :global(.btn.ghost) {
-    background: transparent;
-    color: var(--text) !important;
+    color: var(--pill-text) !important;
     border-color: var(--line-strong) !important;
+  }
+
+  :global(.tag),
+  :global(.chip),
+  :global(.google),
+  :global(.btn.ghost) {
+    background: var(--pill-bg);
+  }
+
+  :global(.chip:hover),
+  :global(.google:hover),
+  :global(.btn.ghost:hover) {
+    background: var(--pill-bg-hover);
+  }
+
+  :global(.chip.active),
+  :global(.btn.primary) {
+    background: var(--pill-active-bg);
+    color: var(--pill-active-text) !important;
+    border-color: var(--pill-active-bg) !important;
   }
 
   :global(.photo-frame),
