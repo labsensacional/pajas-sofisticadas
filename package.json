@@ -10,7 +10,6 @@
     "check": "svelte-check --tsconfig ./jsconfig.json"
   },
   "dependencies": {
-    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "firebase": "^10.12.4",
     "marked": "^12.0.0"
   },

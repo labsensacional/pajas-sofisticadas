@@ -6,12 +6,23 @@
   import { confirmAgeGate, isAgeGateConfirmed } from '$lib/ageGate.js';
   import { ensureUserProfile } from '$lib/auth.js';
   import { isMod } from '$lib/moderator.js';
+  import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
 
   let showGate = true;
   let user = null;
+  let theme = 'light';
 
   onMount(() => {
+    theme = resolveTheme();
+    applyTheme(theme);
     showGate = !isAgeGateConfirmed();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js').catch((error) => {
+        console.error('Service worker registration failed', error);
+      });
+    }
+
     if (auth) {
       return onAuthStateChanged(auth, async (v) => {
         if (v && hasFirebaseConfig) {
@@ -26,7 +37,20 @@
 
   function handleConfirm() { confirmAgeGate(); showGate = false; }
   async function handleLogout() { if (auth) await signOut(auth); }
+  function toggleTheme() {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    persistTheme(theme);
+    applyTheme(theme);
+  }
 </script>
+
+<svelte:head>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Laboratorio Sensacional" />
+</svelte:head>
 
 {#if showGate}
   <div class="gate">
@@ -48,6 +72,9 @@
     <a href="/teoria">Teoría</a>
     <a href="/acciones">Acciones</a>
     <a href="/sesiones">Sesiones</a>
+    <button class="theme-toggle" type="button" on:click={toggleTheme} aria-label="Cambiar tema">
+      {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+    </button>
     {#if user}
       <a href="/perfil">Perfil</a>
       {#if isMod(user)}
@@ -63,6 +90,148 @@
 <slot />
 
 <style>
+  :global(:root) {
+    color-scheme: light;
+    --bg: #f7efe6;
+    --bg-strong: #fff8f2;
+    --surface: rgba(255, 255, 255, 0.88);
+    --surface-solid: #ffffff;
+    --surface-soft: #f2e7db;
+    --text: #17141f;
+    --muted: #5b6070;
+    --muted-soft: #8d92a2;
+    --line: rgba(23, 20, 31, 0.1);
+    --line-strong: rgba(23, 20, 31, 0.18);
+    --accent: #17141f;
+    --accent-contrast: #fffaf5;
+    --shadow: 0 20px 60px rgba(44, 23, 6, 0.12);
+  }
+
+  :global(html[data-theme='dark']) {
+    color-scheme: dark;
+    --bg: #0a0f18;
+    --bg-strong: #121928;
+    --surface: rgba(14, 22, 34, 0.86);
+    --surface-solid: #111a28;
+    --surface-soft: #172233;
+    --text: #f3efe9;
+    --muted: #b2b8c7;
+    --muted-soft: #8790a4;
+    --line: rgba(243, 239, 233, 0.1);
+    --line-strong: rgba(243, 239, 233, 0.18);
+    --accent: #f1c27d;
+    --accent-contrast: #10151e;
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  }
+
+  :global(html) {
+    background:
+      radial-gradient(circle at top, rgba(241, 194, 125, 0.18), transparent 30%),
+      linear-gradient(180deg, var(--bg-strong), var(--bg));
+    min-height: 100%;
+  }
+
+  :global(body) {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    background: transparent;
+    font-family: "Segoe UI", sans-serif;
+    transition: background-color 160ms ease, color 160ms ease;
+  }
+
+  :global(a) {
+    color: inherit;
+  }
+
+  :global(main) {
+    color: var(--text);
+  }
+
+  :global(input),
+  :global(textarea),
+  :global(select) {
+    background: var(--surface-solid);
+    color: var(--text);
+    border-color: var(--line-strong);
+  }
+
+  :global(input::placeholder),
+  :global(textarea::placeholder) {
+    color: var(--muted-soft);
+  }
+
+  :global(.card),
+  :global(.section-card),
+  :global(.item),
+  :global(.comments-section),
+  :global(.more-dropdown) {
+    background: var(--surface-solid);
+    border-color: var(--line);
+    box-shadow: var(--shadow);
+  }
+
+  :global(.warn) {
+    color: #8f5a00;
+  }
+
+  :global(html[data-theme='dark'] .warn) {
+    background: #3a2b12 !important;
+    color: #ffd99a !important;
+  }
+
+  :global(.error) {
+    color: #b91c1c;
+  }
+
+  :global(html[data-theme='dark'] .error) {
+    color: #ff9898 !important;
+  }
+
+  :global(.success),
+  :global(.notice) {
+    color: #0b6b3a;
+  }
+
+  :global(html[data-theme='dark'] .success),
+  :global(html[data-theme='dark'] .notice) {
+    color: #87e2b0 !important;
+  }
+
+  :global(.back),
+  :global(.hint),
+  :global(.desc),
+  :global(.meta-info),
+  :global(.comment-date),
+  :global(.empty),
+  :global(.loading),
+  :global(.loading-hint),
+  :global(.auth-hint),
+  :global(.header p),
+  :global(.card p),
+  :global(.section-card p) {
+    color: var(--muted) !important;
+  }
+
+  :global(.tag),
+  :global(.chip),
+  :global(.google),
+  :global(.logout),
+  :global(.btn.ghost) {
+    background: transparent;
+    color: var(--text) !important;
+    border-color: var(--line-strong) !important;
+  }
+
+  :global(.photo-frame),
+  :global(.axis-bar-track),
+  :global(.bar-track),
+  :global(.score-card),
+  :global(.tooltip-copy),
+  :global(.warn-box) {
+    background: var(--surface-soft) !important;
+  }
+
   .gate {
     position: fixed;
     inset: 0;
@@ -74,32 +243,30 @@
   }
 
   .card {
-    background: #fff;
     padding: 36px;
     border-radius: 20px;
     max-width: 440px;
     margin: 16px;
     text-align: center;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
   }
 
   .eyebrow {
     text-transform: uppercase;
     letter-spacing: 0.16em;
     font-size: 0.7rem;
-    color: #6b7280;
+    color: var(--muted);
     margin: 0 0 10px;
   }
 
   .card h2 { margin: 0 0 10px; }
 
-  .card p { color: #4b5563; font-size: 0.95rem; margin: 0 0 20px; }
+  .card p { color: var(--muted); font-size: 0.95rem; margin: 0 0 20px; }
 
   .gate-actions { display: flex; flex-direction: column; gap: 12px; }
 
   .primary {
-    background: #0c0c15;
-    color: #fff;
+    background: var(--accent);
+    color: var(--accent-contrast);
     border: none;
     padding: 13px 20px;
     border-radius: 999px;
@@ -108,7 +275,7 @@
     font-weight: 600;
   }
 
-  .exit { color: #6b7280; text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+  .exit { color: var(--muted); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
 
   .topbar {
     display: flex;
@@ -117,17 +284,17 @@
     padding: 18px 28px;
     position: sticky;
     top: 0;
-    background: rgba(255, 255, 255, 0.82);
+    background: var(--surface);
     backdrop-filter: blur(10px);
     z-index: 10;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid var(--line);
   }
 
   .brand {
     font-weight: 800;
     font-size: 1.05rem;
     text-decoration: none;
-    color: #0c0c15;
+    color: var(--text);
     letter-spacing: -0.01em;
   }
 
@@ -135,24 +302,33 @@
 
   nav a {
     text-decoration: none;
-    color: #374151;
+    color: var(--text);
     font-weight: 600;
     font-size: 0.95rem;
   }
 
-  nav a:hover { color: #0c0c15; }
+  nav a:hover { color: var(--accent); }
 
   .mod-link { color: #7c3aed !important; }
 
+  .theme-toggle,
   .logout {
-    border: 1px solid rgba(12, 12, 21, 0.2);
+    border: 1px solid var(--line-strong);
     background: transparent;
     padding: 6px 14px;
     border-radius: 999px;
     cursor: pointer;
     font-weight: 600;
     font-size: 0.9rem;
-    color: #374151;
+    color: var(--text);
+    transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  }
+
+  .theme-toggle:hover,
+  .logout:hover {
+    background: var(--surface-soft);
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   @media (max-width: 640px) {

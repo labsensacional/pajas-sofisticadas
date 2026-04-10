@@ -1,0 +1,25 @@
+{
+  "name": "Laboratorio Sensacional",
+  "short_name": "Laboratorio",
+  "description": "Red social de psiconáutica recreativa y sexual con teoría, acciones y sesiones.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0f18",
+  "theme_color": "#0a0f18",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/app-icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
