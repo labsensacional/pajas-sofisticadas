@@ -30,6 +30,7 @@
   $: allWarnings = accion
     ? (accion.warnings ?? [...(accion.common_errors ?? []), ...(accion.warning ? [accion.warning] : [])])
     : [];
+  $: energyValue = accion?.energy ?? 0;
 
   $: id = $page.params.id;
 
@@ -201,12 +202,16 @@
         {/each}
       </div>
 
-      <div class="secondary-bars">
+      <section class="subscores">
+        <div class="subscores-header">
+          <h3>Detalle del placer</h3>
+          <p>Dopamina, endorfinas y oxitocina refinan cómo se siente y qué deja la acción.</p>
+        </div>
+        <div class="secondary-bars">
         {#each [
           { key:'dopamine',   label:'Dopamina',   color:'#FFD166', bipolar: true },
           { key:'endorphins', label:'Endorfinas',  color:'#06D6A0', bipolar: true },
           { key:'oxytocin',   label:'Oxitocina',   color:'#74B0FF', bipolar: true },
-          { key:'energy',     label:'Energía',     color:'#aaa',    bipolar: false },
         ] as ax}
           {@const v = accion[ax.key] ?? 0}
           <div class="sec-row">
@@ -218,7 +223,22 @@
             <span class="sec-val">{v}</span>
           </div>
         {/each}
-      </div>
+        </div>
+      </section>
+
+      <section class="energy-block">
+        <div class="energy-header">
+          <h3>Energía requerida</h3>
+          <p>Se lee de 0 a 10 porque no describe dirección, sino cuánto esfuerzo físico o mental demanda.</p>
+        </div>
+        <div class="sec-row energy-row">
+          <span class="sec-label">Energía</span>
+          <div class="bar-track energy-track">
+            <div class="bar-fill" style={`left:0; width:${energyValue * 10}%; background:#aaa`}></div>
+          </div>
+          <span class="sec-val">{energyValue}</span>
+        </div>
+      </section>
 
       {#if accion.hello_world}
         <section class="section">
@@ -351,6 +371,37 @@
   .axis-val { font-size: 1.2rem; font-weight: 800; font-family: monospace; color: var(--text); }
   .axis-why { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
 
+  .subscores,
+  .energy-block {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface-soft);
+  }
+  .subscores-header,
+  .energy-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .subscores-header h3,
+  .energy-header h3 {
+    margin: 0;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted-soft);
+  }
+  .subscores-header p,
+  .energy-header p {
+    margin: 0;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
   .secondary-bars { display: flex; flex-direction: column; gap: 6px; }
   .sec-row { display: flex; align-items: center; gap: 8px; }
   .sec-label { font-size: 0.8rem; color: var(--muted); width: 80px; }
@@ -358,6 +409,8 @@
   .bar-center { position: absolute; left: 50%; width: 1px; height: 100%; background: var(--line-strong); }
   .bar-fill { position: absolute; height: 100%; border-radius: 4px; }
   .sec-val { font-size: 0.75rem; font-family: monospace; color: var(--muted-soft); width: 20px; }
+  .energy-row { margin-top: 2px; }
+  .energy-track { background: var(--surface-solid); }
 
   .section h3 { margin: 0 0 8px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-soft); }
   .section p { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--text); }

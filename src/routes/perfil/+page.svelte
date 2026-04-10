@@ -22,6 +22,7 @@
   let savedActions = [];
   let savedSessions = [];
   let accountPanelOpen = false;
+  let appearancePanelOpen = false;
   let savedPanelOpen = false;
   let theme = 'light';
 
@@ -179,14 +180,6 @@
             </section>
 
             <section class="block">
-              <h3>Apariencia</h3>
-              <p class="subtle">Elegí si querés usar el sitio en modo claro u oscuro.</p>
-              <button class="secondary theme-toggle" on:click={toggleTheme}>
-                {theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-              </button>
-            </section>
-
-            <section class="block">
               <h3>{hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}</h3>
               <p class="subtle">
                 {#if hasPasswordProvider}
@@ -205,6 +198,28 @@
               </label>
               <button class="secondary" on:click={savePassword} disabled={savingPassword}>
                 {savingPassword ? 'Guardando…' : hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}
+              </button>
+            </section>
+          </div>
+        {/if}
+      </section>
+
+      <section class="panel">
+        <button class="panel-toggle" on:click={() => appearancePanelOpen = !appearancePanelOpen} aria-expanded={appearancePanelOpen}>
+          <div>
+            <h2>Apariencia</h2>
+            <p class="subtle">Modo claro u oscuro</p>
+          </div>
+          <span class="panel-icon">{appearancePanelOpen ? '−' : '+'}</span>
+        </button>
+
+        {#if appearancePanelOpen}
+          <div class="panel-content">
+            <section class="block">
+              <h3>Tema</h3>
+              <p class="subtle">Elegí si querés usar el sitio en modo claro u oscuro.</p>
+              <button class="secondary theme-toggle" on:click={toggleTheme}>
+                {theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
               </button>
             </section>
           </div>
