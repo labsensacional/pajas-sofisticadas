@@ -136,12 +136,12 @@
         <input type="text" bind:value={title} required placeholder="Un título descriptivo…" />
       </label>
 
-      <label>Descripción / relato <small>(opcional)</small>
+      <label>Descripción / relato (opcional)
         <textarea rows="8" bind:value={body} placeholder="Describí la sesión en detalle — qué probaste, qué pasó, el estado antes y después…"></textarea>
       </label>
 
       <div class="field-group">
-        <span class="field-label">Acciones usadas <small>(opcional)</small></span>
+        <span class="field-label">Acciones usadas (opcional)</span>
         {#if accionTags.length}
           <div class="accion-chips">
             {#each accionTags as a}
@@ -168,7 +168,7 @@
         {/if}
       </div>
 
-      <label>Tags <small>(opcional — Enter o coma para agregar)</small>
+      <label>Tags (opcional) <small>Enter o coma para agregar</small>
         <div class="tag-input-box">
           {#each tags as t}
             <span class="tag-chip">{t} <button type="button" on:click={() => tags = tags.filter(x => x !== t)}>×</button></span>
@@ -188,7 +188,7 @@
         <span>Publicar como anónimo</span>
       </label>
 
-      <label>Fotos <small>(opcional — máximo 5)</small>
+      <label>Fotos (opcional) <small>Máximo 5</small>
         <input class="file-input" type="file" multiple accept="image/*" id="sesion-fotos" on:change={handleFiles} />
         <label for="sesion-fotos" class="upload-box">
           <span class="upload-kicker">Imagenes</span>

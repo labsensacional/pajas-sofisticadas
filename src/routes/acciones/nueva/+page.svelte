@@ -117,7 +117,7 @@
       </label>
 
       <fieldset>
-        <legend>Puntuaciones <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">guía rápida →</a></legend>
+        <legend>Puntuaciones (opcional) <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">guía rápida →</a></legend>
         <div class="scores">
           {#each SCORE_FIELDS as field}
             {@const isSet = scores[field.key] !== null}
@@ -168,7 +168,7 @@
         <span>Publicar como anónimo</span>
       </label>
 
-      <label>Fotos <small>(opcional — hasta 5)</small>
+      <label>Fotos (opcional) <small>Hasta 5</small>
         <input class="file-input" type="file" multiple accept="image/*" id="accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
         <label for="accion-fotos" class="upload-box">
           <span class="upload-kicker">Imagenes</span>
