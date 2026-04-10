@@ -9,7 +9,7 @@
 <main class="page">
   <header class="header">
     <h1>Teoría</h1>
-    <p>Fundamentos del modelo de 3 ejes y principios de combinación de prácticas.</p>
+    <p>Una brújula simple para leer prácticas, diseñar sesiones y entender mejor qué empuja activación, placer y trance.</p>
   </header>
 
   {#if docs.length === 0}

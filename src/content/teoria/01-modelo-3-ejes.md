@@ -1,67 +1,71 @@
-# El modelo de 3 ejes
+# Por qué activación, placer y trance
 
-Toda experiencia puede leerse en tres ejes: **Activación** (arousal), **Trance** (absorción/disolución) y **Placer** (recompensa hedónica). Cada técnica mueve uno o más ejes. La clave no es solo qué hacés, sino en qué orden y con qué combinación.
+El laboratorio usa tres ejes principales porque alcanzan para orientarse sin fingir una precisión que en la práctica no existe: **Activación**, **Placer** y **Trance**.
 
-Además, hay cinco variables que refinan las recomendaciones: dopamina (deseo/anticipación), endorfinas (alivio/liberación), oxitocina (seguridad/conexión), actividad prefrontal (el inverso del trance) y energía disponible.
+Es más fácil encontrar el éxtasis cuando se tiene una brújula. Estos tres ejes funcionan como esa brújula.
 
-## ¿Por qué alta activación + alto trance + alto placer?
+## Por qué esos tres
 
-**Yerkes-Dodson invertida.** El rendimiento cognitivo cae con activación excesiva. Pero sentir placer no es una tarea cognitiva compleja. Si además el trance baja la actividad prefrontal, podés sostener activación muy alta sin que se convierta automáticamente en ansiedad.
+**Activación** responde a una pregunta simple: cuánto se encendió el sistema. No es lo mismo estar apenas estimulado que estar en un estado de carga alta, urgencia corporal, respiración rápida y foco estrecho.
 
-**Labilidad emocional.** Con los tres ejes altos, pasar de un estado a otro se vuelve más fácil. Dolor → placer. Miedo → excitación. La reatribución de activación deja de ser un efecto sutil y se vuelve un mecanismo fuerte y confiable.
+**Placer** responde a otra pregunta distinta: cuánto se siente bien. Se puede tener activación alta con poco placer, como en miedo, tensión o esfuerzo puro. También se puede tener placer con activación relativamente baja, como en masaje profundo, contención o ciertos estados de expansión lenta.
 
-**El placer como ancla.** Sin placer, activación + trance puede sentirse como terror o disociación vacía. El placer aporta recompensa, señal de seguridad y estabilidad.
+**Trance** captura algo que suele quedar afuera de los modelos sexuales demasiado simples: cuánta absorción, disolución, entrega o pérdida de control consciente está ocurriendo. Dos prácticas pueden tener el mismo placer y la misma activación, pero una sentirse técnica y otra sentirse como caer adentro de algo.
 
-**Sistema autosostenido.** Cuando los tres ejes suben juntos, se refuerzan entre sí. Diseñar la sesión es diseñar ese despegue.
+## Por qué no alcanza con hablar de orgasmo o excitación
 
-## Escala Shulgin adaptada
+El orgasmo es un evento útil de observar, pero demasiado estrecho para describir toda una sesión. Muchas experiencias valiosas no giran alrededor del orgasmo: subspace, absorción, euforia post-sesión, conexión, catarsis, regulación o simplemente una sensación de "estar muy adentro".
 
-| Nivel | Nombre | Descripción |
-|-------|--------|-------------|
-| ± | Umbral | Algo está pasando, podrías estar imaginándolo. |
-| + | Confirmado | Efecto real. Cronología rastreable, naturaleza no clara aún. |
-| ++ | Innegable | Naturaleza del efecto clara. Podés darle protagonismo o no. |
-| +++ | Dominante | Ignorar la experiencia ya no es opción. Estás adentro. |
-| ++++ | Trascendente | Cualitativamente distinto. No reproducible a voluntad. |
+La excitación tampoco alcanza por sí sola. Activación alta sin placer puede sentirse como ansiedad. Activación alta sin trance puede sentirse como esfuerzo. Trance alto sin placer puede sentirse como disociación vacía. El modelo sirve justamente para distinguir esos casos.
 
-## Cómo leer tu estado
+## Qué pasa cuando suben juntos
 
-**Activación alta:** respiración rápida, pupilas dilatadas, tensión muscular, FC alta, HRV baja.
+Cuando **activación**, **placer** y **trance** suben al mismo tiempo, aparecen estados que suelen sentirse más intensos, más raros y más memorables.
 
-**Trance alto:** sin diálogo interno, pérdida de noción del tiempo, mirada desenfocada, mandíbula relajada.
+- La activación aporta energía, carga y urgencia.
+- El placer aporta recompensa, señal de "esto va bien" y ganas de seguir.
+- El trance baja el exceso de control, suspende parte del monitoreo y deja que la experiencia tome más volumen.
 
-**Placer alto:** vocalización involuntaria, movimientos rítmicos, expresiones faciales involuntarias.
+Esa combinación vuelve más probable que aparezcan **reatribuciones** e **inversiones**: dolor que se vuelve placentero, miedo que se vuelve excitación, vergüenza que se vuelve entrega, risa que se vuelve orgasmo, llanto que se vuelve alivio o apertura.
 
-Las expresiones faciales de placer intenso — ojos hacia atrás, boca abierta, pérdida de tono — son involuntarias y bastante universales (Darwin, 1872). Si aparecen, el placer probablemente es alto.
+## El placer como ancla
 
-Para medir: un smartwatch puede darte FC y HRV como proxies de activación. Las escalas Stanford/Harvard miden susceptibilidad hipnótica, o sea tu facilidad para entrar en trance.
+No todo estado extremo es deseable. Mucha activación y mucho trance sin una base placentera o segura puede derivar en susto, freeze, caos o desconexión.
 
-## Estados emergentes
+Por eso el placer cumple una función de ancla. No sólo hace que algo "se sienta bien": también ayuda a que el sistema interprete la intensidad como algo navegable.
 
-La **ansiedad** no es una variable aparte: es activación alta + prefrontal alta + contenido mental negativo. Puede bajar si reducís cualquiera de esas tres cosas.
+## Moduladores que refinan la lectura
 
-El **flow** es activación media + prefrontal baja + dopamina alta.
+Después de los tres ejes principales, conviene mirar algunas variables secundarias:
 
-El **subspace** es activación alta + prefrontal muy baja + endorfinas altas.
+- **Dopamina**: cuánto "da ganas de repetir".
+- **Endorfinas**: cuánto alivio, analgesia o euforia deja durante o después.
+- **Oxitocina**: cuánto vínculo, ternura o sensación de seguridad aparece.
+- **Energía requerida**: cuánto esfuerzo físico o mental pide la práctica.
 
-El **drop** post-sesión es endorfinas cayendo + dopamina baja.
+No reemplazan a los tres ejes. Los afinan.
 
-## Principios de combinación
+## Estados emergentes útiles
 
-**Stacking:** varias fuentes de distintas modalidades. El efecto suele multiplicarse.
+Pensarlo en ejes permite describir estados sin inventar una etiqueta nueva para cada cosa.
 
-**Contraste:** alternar opuestos, por ejemplo dolor/alivio, frío/calor o estimulación/pausa.
+- **Ansiedad**: activación alta + trance bajo + contenido mental negativo.
+- **Flow**: activación media + trance medio/alto + fricción cognitiva baja.
+- **Subspace**: activación alta + trance alto + endorfinas altas.
+- **Drop**: baja de dopamina o endorfinas después de un pico sostenido.
+- **Extasis**: no es una variable separada; suele parecerse a un acople raro y fértil entre activación, placer y trance.
 
-**Escalada:** subir por etapas con mesetas. Ayuda a evitar la habituación.
+## Cómo usar esta brújula
 
-**Reatribución:** activación generada por una fuente se interpreta como excitación.
+No sirve para "medir la verdad" de una experiencia. Sirve para pensar mejor una sesión, comparar prácticas y entender por qué dos cosas que desde afuera parecen similares producen estados internos completamente distintos.
 
-**Priming:** la atención dirigida amplifica la sensación.
+La pregunta no es sólo "qué hago", sino:
+
+- qué eje sube primero
+- cuál acompaña
+- cuál falta
+- qué moduladores están sosteniendo o rompiendo la experiencia
 
 ---
 
-> **Seguridad.** Esto es para adultos explorando por elección. "No quiero" siempre alcanza. Breath play tiene mortalidad documentada. Con sustancias: conocé, testeá y dosificá bajo. E-stim: nunca sobre el corazón. Empezá siempre por la versión más suave. Tené agua, manta y una luz accesible.
-
----
-
-*Referencias: Darwin (1872) Expression of Emotions · Shulgin (1991) PiHKAL · Weitzenhoffer & Hilgard (1959) Stanford Scale · Yerkes & Dodson (1908) · Masters & Johnson (1966) · Carrellas (2007) Urban Tantra · Grof · Erickson*
+*Ver también: [Cómo mido estas métricas](/teoria/02-ejes-de-puntuacion) · [Cómo puntuar acciones](/teoria/03-como-puntuar-acciones) · [Puentes somáticos y emocionales](/teoria/04-puentes-somaticos-y-emocionales)*

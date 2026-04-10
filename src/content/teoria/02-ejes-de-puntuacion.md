@@ -1,98 +1,131 @@
-# Ejes de puntuación
+# Cómo mido estas métricas
 
-Cada acción del laboratorio se puntúa en siete ejes para describir cómo mueve el cuerpo y la mente. Tres son principales (Activación, Trance, Placer) y cuatro son moduladores.
+No medimos estas variables de forma clínica. Las leemos con una mezcla de **proxies corporales**, **expresión observable**, **autorreporte** y, cuando existe, alguna referencia de literatura o escalas ya conocidas.
+
+La idea no es adivinar una esencia oculta. La idea es tener indicadores prácticos para orientarse.
+
+## Qué tipo de cosas miramos
+
+### Activación
+
+Marcadores útiles:
+
+- respiración acelerada o contenida
+- pulso alto
+- tensión muscular
+- inquietud motora
+- urgencia de moverse, tocar o empujar
+- lubricación, erección, calor, rubor
+
+En un contexto más instrumentado, frecuencia cardíaca y HRV pueden funcionar como proxies parciales.
+
+### Placer
+
+Marcadores útiles:
+
+- gemidos o vocalizaciones involuntarias
+- movimientos rítmicos que se repiten solos
+- búsqueda espontánea de más estímulo
+- relajación o derretimiento después de un pico
+- expresiones faciales involuntarias
+
+Acá entra toda una tradición de leer la cara y el cuerpo como salida de estados internos. Darwin y Duchenne son referencias históricas importantes para pensar expresiones observables. No porque den una fórmula exacta, sino porque ayudan a ver patrones relativamente estables en cejas, ojos, boca, cuello, respiración y postura.
+
+La expresión pornográfica extrema tipo *ahegao* puede pensarse como una caricatura cultural de varios de esos marcadores: ojos perdidos o cruzados, boca abierta, lengua afuera, babeo, enrojecimiento, pérdida parcial de compostura. No es una métrica en sí, pero sí muestra que mucha gente reconoce intuitivamente un conjunto de señales asociadas a sobrecarga, entrega y disfrute intenso.
+
+### Trance
+
+Marcadores útiles:
+
+- pérdida de noción del tiempo
+- mirada desenfocada o fija
+- respuestas lentas
+- menos diálogo interno
+- menos monitoreo consciente
+- movimientos automáticos o repetitivos
+- dificultad para hablar o para explicar qué está pasando mientras pasa
+
+En hipnosis hay escalas de susceptibilidad que sirven como referencia general sobre facilidad para entrar en absorción guiada. No miden exactamente lo mismo que el trance erótico o psicodélico, pero dan un marco útil.
+
+## Expresión y comportamiento como proxies
+
+La cara, la voz y la postura no dicen "la verdad", pero sí aportan información.
+
+### Expresión facial
+
+Ideas útiles tomadas de Darwin y Duchenne:
+
+- ojos muy abiertos o muy perdidos cambian la lectura del estado
+- cejas oblicuas, fruncidas o elevadas distinguen dolor, esfuerzo, sorpresa o abatimiento
+- comisuras, mandíbula y labio superior dan pistas sobre placer, asco, esfuerzo o tristeza
+- cuello, platysma, respiración y fosas nasales suman mucho cuando la intensidad sube
+
+### Vocalizaciones
+
+No importa sólo qué se dice, sino cómo sale:
+
+- gemido sostenido
+- risa involuntaria
+- jadeo
+- llanto
+- voz áspera, temblorosa o tomada
+
+Las vocalizaciones suelen ser buenos indicadores de cambio de estado, sobre todo cuando aparecen sin intención performática clara.
+
+### Movimiento y postura
+
+También importa:
+
+- si el cuerpo se expande o se contrae
+- si empuja o se abandona
+- si tiembla
+- si busca contacto o se repliega
+- si aparece repetición motora automática
+
+## Escalas prestadas que sirven como inspiración
+
+No hace falta adoptar una escala ajena completa para usar lo mejor de ella.
+
+- **Shulgin Rating Scale**: útil para pensar niveles de intensidad subjetiva, desde umbral hasta experiencia dominante o trascendente.
+- **Kinsey, Masters y Johnson**: útiles como tradición de observación de respuesta sexual, excitación, meseta, orgasmo y resolución.
+- **Hypnotic susceptibility**: útil como referencia de capacidad de absorción o entrega atencional.
+
+En investigación psicodélica también aparecen proxies conductuales más raros pero conceptualmente interesantes. El **head-twitch response** en roedores, por ejemplo, no "explica" la experiencia humana, pero muestra una forma de inferir estado interno a partir de un patrón observable recurrente.
+
+## Cosas más crudas pero muy útiles
+
+A veces las mejores métricas no son elegantes.
+
+- cuántas veces una práctica se quiso repetir
+- cuánto duró una sesión sin perder intensidad
+- cuántos orgasmos hubo o si directamente dejaron de ser el indicador central
+- cuánto cambió el humor después
+- si hubo aftercare espontáneo, necesidad de abrazo, sueño, llanto, risa o silencio
+
+Incluso anécdotas extremas, como relatos de sesiones con cantidades inusuales de orgasmos en maquinaria erótica, sirven menos como récord y más como recordatorio de que la intensidad sexual no se deja reducir a una sola variable.
+
+## El rol de moduladores hormonales y afectivos
+
+Hay preguntas útiles que no se resuelven mirando sólo orgasmo o placer inmediato:
+
+- qué diferencia hay entre placer con activación alta y placer con activación baja
+- qué cambia cuando sube prolactina después del orgasmo
+- cómo cambia el estado si hay mucha oxitocina, apego o entrega
+- cómo se relacionan oxitocina, prolactina, D/s, subspace y aftercare
+
+Estas capas no reemplazan la observación conductual. La vuelven más interesante.
+
+## Regla general
+
+Medir acá no significa producir un número exacto. Significa combinar:
+
+- lo que el cuerpo muestra
+- lo que la persona reporta
+- lo que la sesión deja
+- y lo que marcos previos ayudan a comparar
+
+Lo importante es tener una lectura lo bastante buena como para diseñar mejor la siguiente práctica.
 
 ---
 
-## Activación
-
-**¿Qué mide?** La activación del sistema nervioso simpático: cuánto se enciende el cuerpo.
-
-**Señales de activación alta (7–10):** erección/lubricación espontánea, respiración acelerada, pulso elevado, tensión muscular involuntaria, urgencia de moverse o actuar.
-
-**Señales de activación baja (1–3):** estado relajado, calma, sin respuesta genital notable, mente tranquila.
-
-**Valores negativos:** la acción *baja* la activación activamente, por ejemplo respiración lenta 4-7-8, cold down o pausas deliberadas.
-
----
-
-## Trance
-
-**¿Qué mide?** Absorción atencional, pérdida de control consciente y estados alterados de conciencia.
-
-**Señales de trance alto (7–10):** mirada perdida o semicerrada, respuestas lentas, no escucha bien, pérdida de noción del tiempo, sensación de flotar o de que el cuerpo no es propio.
-
-**Señales de trance bajo (1–3):** mente activa, consciente del entorno, pensamientos normales, presente y orientado.
-
-**Valores negativos:** la acción *aumenta* el estado de alerta, por ejemplo miedo súbito, ejercicio intenso o frío repentino.
-
----
-
-## Placer
-
-**¿Qué mide?** Cuánto "se siente bien" en el momento, independientemente de la activación o del trance.
-
-**Señales de placer alto (7–10):** gemidos involuntarios, búsqueda activa de más estímulo, contracción muscular placentera, querer que no pare.
-
-**Señales de placer bajo (1–3):** sensación neutra o apenas placentera; el valor está en otro lado, como la conexión, la técnica o el efecto diferido.
-
-**Valores negativos:** la acción produce incomodidad que *puede* reatribuirse como placer, por ejemplo dolor controlado o frío intenso.
-
----
-
-## Dopamina
-
-**¿Qué mide?** El sistema de anticipación y recompensa: el "querer" más que el "gustar". No es placer inmediato; es impulso de repetir.
-
-**Señales de dopamina alta (7–10):** querer hacer exactamente lo mismo otra vez de inmediato, pensar en ello horas después, planificar la próxima vez *durante* la práctica.
-
-**Señales de dopamina baja (1–3):** satisfactorio pero no genera "querer más", fácil de parar, no genera obsesión.
-
-**Valores negativos:** la acción *reduce* el impulso de repetición. Puede funcionar como regulador o reset dopaminérgico.
-
----
-
-## Endorfinas
-
-**¿Qué mide?** Euforia, analgesia y bienestar que aparecen durante o *después* de la práctica, no necesariamente en el pico.
-
-**Señales de endorfinas altas (7–10):** sensación de euforia o "high" al terminar, analgesia, sonrisa involuntaria, cuerpo liviano. El efecto puede durar 30–60 min.
-
-**Señales de endorfinas bajas (1–3):** sin efecto post-práctica notable, vuelta rápida al estado basal.
-
-**Valores negativos:** la acción genera fatiga, bajón o crash post-práctica (drop).
-
----
-
-## Oxitocina
-
-**¿Qué mide?** Apego y confianza: conexión relacional o con uno mismo. No requiere otra persona.
-
-**Señales de oxitocina alta (7–10):** ganas intensas de abrazar o ser abrazado, sensación de confianza profunda, querer quedarse cerca, ternura espontánea, apertura emocional.
-
-**Señales de oxitocina baja (1–3):** práctica más individual o técnica, sin componente relacional fuerte.
-
-**Valores negativos:** la acción puede generar distancia o desconexión relacional temporaria.
-
----
-
-## Energía requerida
-
-**¿Qué mide?** El esfuerzo físico necesario para hacerla. No mide la energía que *produce*, sino la que *consume*. Va de 0 a 10.
-
-**Alta (8–10):** agotamiento físico real al terminar, sudoración, necesita calentamiento, no se puede hacer cansado.
-
-**Baja (0–2):** se puede hacer tumbado sin moverse, cero esfuerzo físico, ideal para estados de baja energía.
-
----
-
-## Cómo asignar los puntajes
-
-- Puntuá desde experiencia directa o desde fuentes documentadas.
-- Los valores negativos son válidos: indican que la acción *baja* esa dimensión.
-- Si no sabés, dejá 0 (neutro) y explicá qué observaste.
-- Activación, Trance y Placer son los ejes centrales. Dopamina, Endorfinas y Oxitocina refinan la recomendación.
-
----
-
-*Ver también: [El modelo de 3 ejes](/teoria/01-modelo-3-ejes)*
+*Ver también: [Por qué activación, placer y trance](/teoria/01-modelo-3-ejes) · [Cómo puntuar acciones](/teoria/03-como-puntuar-acciones)*
