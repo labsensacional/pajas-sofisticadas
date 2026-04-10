@@ -419,7 +419,19 @@
   .sec-row { display: flex; align-items: center; gap: 8px; }
   .sec-label { font-size: 0.8rem; color: var(--muted); width: 80px; }
   .bar-track { flex: 1; height: 4px; background: var(--surface-soft); border-radius: 4px; position: relative; overflow: hidden; }
-  .bar-center { position: absolute; left: 50%; width: 1px; height: 100%; background: var(--line-strong); }
+  .bar-center {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    width: 2px;
+    height: calc(100% + 4px);
+    transform: translateX(-50%);
+    background: var(--text);
+    opacity: 0.5;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
+    z-index: 1;
+  }
   .bar-fill { position: absolute; height: 100%; border-radius: 4px; }
   .sec-val { font-size: 0.75rem; font-family: monospace; color: var(--muted-soft); width: 20px; }
   .energy-row { margin-top: 2px; }

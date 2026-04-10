@@ -298,8 +298,20 @@
   .bars { display: flex; flex-direction: column; gap: 4px; }
   .bar-row { display: flex; align-items: center; gap: 6px; }
   .bar-label { font-size: 0.68rem; color: #9ca3af; width: 62px; text-align: left; line-height: 1.1; }
-  .bar-track { flex: 1; height: 3px; background: var(--surface-soft); border-radius: 999px; position: relative; overflow: hidden; }
-  .bar-center { position: absolute; left: 50%; width: 1px; height: 100%; background: var(--line-strong); }
+  .bar-track { flex: 1; height: 4px; background: var(--surface-soft); border-radius: 999px; position: relative; overflow: hidden; }
+  .bar-center {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    width: 2px;
+    height: calc(100% + 4px);
+    transform: translateX(-50%);
+    background: var(--text);
+    opacity: 0.5;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
+    z-index: 1;
+  }
   .bar-fill { position: absolute; height: 100%; border-radius: 999px; transition: left 0.3s, width 0.3s; }
   .bar-val { font-size: 0.7rem; font-family: monospace; color: var(--muted-soft); width: 16px; }
 
