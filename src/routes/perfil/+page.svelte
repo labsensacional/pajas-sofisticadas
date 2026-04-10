@@ -7,6 +7,7 @@
   import { findStatic } from '$lib/actions.js';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { ensureUserProfile, updateCurrentUserPassword, updateDisplayName } from '$lib/auth.js';
+  import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
 
   let user = null;
   let loading = true;
@@ -22,10 +23,13 @@
   let savedSessions = [];
   let accountPanelOpen = false;
   let savedPanelOpen = false;
+  let theme = 'light';
 
   $: hasPasswordProvider = Boolean(user?.providerData?.some((provider) => provider.providerId === 'password'));
 
   onMount(() => {
+    theme = resolveTheme();
+
     if (!auth) {
       loading = false;
       return;
@@ -133,6 +137,12 @@
       savingPassword = false;
     }
   }
+
+  function toggleTheme() {
+    theme = theme === 'dark' ? 'light' : 'dark';
+    persistTheme(theme);
+    applyTheme(theme);
+  }
 </script>
 
 <svelte:head><title>Perfil · Laboratorio Sensacional</title></svelte:head>
@@ -165,6 +175,14 @@
               </label>
               <button class="primary" on:click={saveUsername} disabled={saving}>
                 {saving ? 'Guardando…' : 'Guardar nombre público'}
+              </button>
+            </section>
+
+            <section class="block">
+              <h3>Apariencia</h3>
+              <p class="subtle">Elegí si querés usar el sitio en modo claro u oscuro.</p>
+              <button class="secondary theme-toggle" on:click={toggleTheme}>
+                {theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
               </button>
             </section>
 
@@ -373,6 +391,7 @@
   button:disabled { opacity: 0.6; cursor: default; }
   .primary { background: var(--pill-active-bg); color: var(--pill-active-text); }
   .secondary { background: var(--pill-bg); color: var(--pill-text); border: 1px solid var(--line); }
+  .theme-toggle { align-self: flex-start; }
 
   .notice { margin: 0; color: #047857; background: #ecfdf5; padding: 10px 12px; border-radius: 10px; }
   .error { margin: 0; color: #b91c1c; background: #fee2e2; padding: 10px 12px; border-radius: 10px; }

@@ -6,17 +6,14 @@
   import { confirmAgeGate, isAgeGateConfirmed } from '$lib/ageGate.js';
   import { ensureUserProfile } from '$lib/auth.js';
   import { isMod } from '$lib/moderator.js';
-  import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
+  import { applyTheme, resolveTheme } from '$lib/theme.js';
 
   export let data;
 
   let showGate = true;
   let user = null;
-  let theme = 'light';
-
   onMount(() => {
-    theme = resolveTheme();
-    applyTheme(theme);
+    applyTheme(resolveTheme());
     showGate = !isAgeGateConfirmed();
 
     if ('serviceWorker' in navigator) {
@@ -39,11 +36,6 @@
 
   function handleConfirm() { confirmAgeGate(); showGate = false; }
   async function handleLogout() { if (auth) await signOut(auth); }
-  function toggleTheme() {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    persistTheme(theme);
-    applyTheme(theme);
-  }
 </script>
 
 <svelte:head>
@@ -96,9 +88,6 @@
     <a href="/teoria">Teoría</a>
     <a href="/acciones">Acciones</a>
     <a href="/sesiones">Sesiones</a>
-    <button class="theme-toggle" type="button" on:click={toggleTheme} aria-label="Cambiar tema">
-      {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
-    </button>
     {#if user}
       <a href="/perfil">Perfil</a>
       {#if isMod(user)}
@@ -373,7 +362,6 @@
 
   .mod-link { color: #7c3aed !important; }
 
-  .theme-toggle,
   .logout {
     border: 1px solid var(--line-strong);
     background: transparent;
@@ -386,7 +374,6 @@
     transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
   }
 
-  .theme-toggle:hover,
   .logout:hover {
     background: var(--surface-soft);
     border-color: var(--accent);
