@@ -190,6 +190,10 @@
     border-color: var(--line-strong);
   }
 
+  :global(select) {
+    box-shadow: inset 0 0 0 999px var(--surface-solid);
+  }
+
   :global(input::placeholder),
   :global(textarea::placeholder) {
     color: var(--muted-soft);

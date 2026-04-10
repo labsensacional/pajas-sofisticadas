@@ -30,19 +30,20 @@
   .page { max-width: 800px; margin: 0 auto; padding: 52px 24px; }
   .header { margin-bottom: 36px; }
   .header h1 { margin: 0 0 8px; }
-  .header p { color: #4b5563; margin: 0; }
+  .header p { color: var(--muted); margin: 0; }
   .grid { display: grid; gap: 14px; }
   .card {
-    background: #fff;
-    border: 1px solid rgba(12,12,21,0.08);
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
     border-radius: 14px;
     padding: 22px 24px;
     text-decoration: none;
     color: inherit;
     transition: transform 120ms, box-shadow 120ms;
   }
-  .card:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(0,0,0,0.07); }
+  .card:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
   .card h2 { margin: 0 0 6px; font-size: 1.1rem; }
-  .card p { margin: 0; color: #6b7280; font-size: 0.9rem; line-height: 1.5; }
-  .empty { color: #9ca3af; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+  .empty { color: var(--muted-soft); }
 </style>

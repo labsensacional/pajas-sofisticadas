@@ -260,24 +260,25 @@
 
 <style>
   .page { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-  .back { display: inline-block; margin-bottom: 16px; text-decoration: none; color: #6b7280; font-weight: 600; font-size: 0.9rem; }
+  .back { display: inline-block; margin-bottom: 16px; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.9rem; }
   h1 { margin: 0 0 24px; }
-  .hint { color: #9ca3af; }
+  .hint { color: var(--muted-soft); }
 
   .card {
-    background: #fff;
-    border: 1px solid rgba(12,12,21,0.08);
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
     border-radius: 18px;
     padding: 28px;
     display: flex;
     flex-direction: column;
     gap: 24px;
+    box-shadow: var(--shadow);
   }
 
   .panel {
-    border: 1px solid rgba(12,12,21,0.08);
+    border: 1px solid var(--line);
     border-radius: 16px;
-    background: #fafafa;
+    background: var(--surface-soft);
   }
 
   .panel-toggle {
@@ -296,7 +297,7 @@
   .panel-icon {
     font-size: 1.4rem;
     line-height: 1;
-    color: #6b7280;
+    color: var(--muted);
   }
 
   .panel-content {
@@ -308,7 +309,7 @@
 
   .block { display: flex; flex-direction: column; gap: 12px; }
   .block h3 { margin: 0; font-size: 0.95rem; }
-  .subtle { margin: 0; color: #6b7280; line-height: 1.5; }
+  .subtle { margin: 0; color: var(--muted); line-height: 1.5; }
 
   .saved-header {
     display: flex;
@@ -323,10 +324,11 @@
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 999px;
-    background: #f3f4f6;
-    color: #111827;
+    background: var(--pill-bg);
+    color: var(--pill-text);
     font-weight: 600;
     font-size: 0.85rem;
+    border: 1px solid var(--line);
   }
 
   .saved-grid {
@@ -343,13 +345,13 @@
     gap: 4px;
     text-decoration: none;
     color: inherit;
-    border: 1px solid rgba(12,12,21,0.08);
+    border: 1px solid var(--line);
     border-radius: 12px;
     padding: 12px 14px;
-    background: #fafafa;
+    background: var(--surface-solid);
   }
   .saved-item strong { font-size: 0.92rem; }
-  .saved-item span { color: #6b7280; font-size: 0.82rem; line-height: 1.4; }
+  .saved-item span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
 
   label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 0.9rem; }
   input {
@@ -369,8 +371,8 @@
     cursor: pointer;
   }
   button:disabled { opacity: 0.6; cursor: default; }
-  .primary { background: #0c0c15; color: #fff; }
-  .secondary { background: #eff6ff; color: #1d4ed8; }
+  .primary { background: var(--pill-active-bg); color: var(--pill-active-text); }
+  .secondary { background: var(--pill-bg); color: var(--pill-text); border: 1px solid var(--line); }
 
   .notice { margin: 0; color: #047857; background: #ecfdf5; padding: 10px 12px; border-radius: 10px; }
   .error { margin: 0; color: #b91c1c; background: #fee2e2; padding: 10px 12px; border-radius: 10px; }
