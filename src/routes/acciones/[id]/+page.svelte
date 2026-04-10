@@ -331,12 +331,17 @@
   .desc { margin: 0; line-height: 1.7; color: var(--text); }
 
   .warnings {
-    background: #fff7ed; border: 1px solid #fed7aa;
+    background: #fff7ed; border: 1px solid #fdba74;
     border-radius: 10px; padding: 12px 16px;
-    color: #9a3412; font-size: 0.9rem;
+    color: #7c2d12; font-size: 0.9rem;
     display: flex; flex-direction: column; gap: 4px;
   }
   .warnings p { margin: 0; }
+  :global(html[data-theme='dark']) .warnings {
+    background: #3b2614;
+    border-color: #fb923c;
+    color: #ffddb7;
+  }
 
   .axes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
   .axis-block { display: flex; flex-direction: column; gap: 6px; }
