@@ -177,12 +177,6 @@
 
       <p class="desc">{accion.description}</p>
 
-      {#if allWarnings.length}
-        <div class="warnings">
-          {#each allWarnings as w}<p>⚠ {w}</p>{/each}
-        </div>
-      {/if}
-
       <div class="axes">
         {#each [
           { key:'arousal', label:'Activación', color:'#FF8C42' },
@@ -244,6 +238,16 @@
         <section class="section">
           <h3>Hello world</h3>
           <p>{accion.hello_world}</p>
+        </section>
+      {/if}
+
+      {#if allWarnings.length}
+        <section class="section">
+          <h3>Advertencias</h3>
+          <p class="section-subtitle">Riesgos o errores comunes</p>
+          <div class="warnings">
+            {#each allWarnings as w}<p>⚠ {w}</p>{/each}
+          </div>
         </section>
       {/if}
 
@@ -413,6 +417,7 @@
   .energy-track { background: var(--surface-solid); }
 
   .section h3 { margin: 0 0 8px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-soft); }
+  .section-subtitle { margin: -4px 0 10px; font-size: 0.84rem; line-height: 1.5; color: var(--muted); }
   .section p { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--text); }
 
   .tags { display: flex; flex-wrap: wrap; gap: 6px; }
