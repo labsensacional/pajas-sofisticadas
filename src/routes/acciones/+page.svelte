@@ -9,6 +9,7 @@
   import { collection, getDocs, orderBy, query } from 'firebase/firestore';
   import { ACTIONS } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -80,14 +81,14 @@
     loadingFirestore = false;
   }
 
-  const AXES = [
-    { key: 'arousal', label: 'Activacion', color: '#FF8C42' },
-    { key: 'trance',  label: 'Trance', color: '#7B68EE' },
-    { key: 'pleasure',label: 'Placer', color: '#FF6B9D' },
-    { key: 'dopamine',label: 'DO', color: '#FFD166' },
-    { key: 'endorphins',label:'EN', color: '#06D6A0' },
-    { key: 'oxytocin',label: 'OX', color: '#74B0FF' },
-    { key: 'energy',  label: 'EG', color: '#aaa' },
+  $: AXES = [
+    { key: 'arousal', label: $t('axis.arousal.short'), color: '#FF8C42' },
+    { key: 'trance',  label: $t('axis.trance'), color: '#7B68EE' },
+    { key: 'pleasure',label: $t('axis.pleasure'), color: '#FF6B9D' },
+    { key: 'dopamine',label: $t('axis.dopamine.short'), color: '#FFD166' },
+    { key: 'endorphins',label: $t('axis.endorphins.short'), color: '#06D6A0' },
+    { key: 'oxytocin',label: $t('axis.oxytocin.short'), color: '#74B0FF' },
+    { key: 'energy',  label: $t('axis.energy.short'), color: '#aaa' },
   ];
 </script>
 
@@ -96,28 +97,28 @@
 <main class="page">
   <header class="header">
     <div>
-      <h1>Acciones</h1>
-      <p>{allAcciones.length} técnicas y prácticas</p>
+      <h1>{$t('acciones.title')}</h1>
+      <p>{$t('acciones.count', { count: allAcciones.length })}</p>
     </div>
     {#if user}
-      <a href="/acciones/nueva" class="btn-new">+ Nueva acción</a>
+      <a href="/acciones/nueva" class="btn-new">{$t('acciones.new')}</a>
     {/if}
   </header>
 
   <div class="controls">
-    <input class="search" type="text" placeholder="Buscar por nombre, descripción o tags…" bind:value={search} />
+    <input class="search" type="text" placeholder={$t('acciones.search.placeholder')} bind:value={search} />
     <select bind:value={sortBy}>
-      <option value="pleasure">↑ Placer</option>
-      <option value="arousal">↑ Activación</option>
-      <option value="trance">↑ Trance</option>
-      <option value="dopamine">↑ Dopamina</option>
-      <option value="endorphins">↑ Endorfinas</option>
-      <option value="oxytocin">↑ Oxitocina</option>
+      <option value="pleasure">{$t('acciones.sort.pleasure')}</option>
+      <option value="arousal">{$t('acciones.sort.arousal')}</option>
+      <option value="trance">{$t('acciones.sort.trance')}</option>
+      <option value="dopamine">{$t('acciones.sort.dopamine')}</option>
+      <option value="endorphins">{$t('acciones.sort.endorphins')}</option>
+      <option value="oxytocin">{$t('acciones.sort.oxytocin')}</option>
     </select>
   </div>
 
   <div class="cats">
-    <button class="chip {selectedTag === '' ? 'active' : ''}" on:click={() => { updateTag(''); showUnreviewed = false; }}>Todas</button>
+    <button class="chip {selectedTag === '' ? 'active' : ''}" on:click={() => { updateTag(''); showUnreviewed = false; }}>{$t('acciones.filter.all')}</button>
     {#each sortedTags.slice(0, TOP_TAGS) as { tag, count }}
       <button class="chip {selectedTag === tag ? 'active' : ''}" on:click={() => { updateTag(selectedTag === tag ? '' : tag); showUnreviewed = false; }}>
         {tag} <span class="chip-count">({count})</span>
@@ -141,25 +142,25 @@
     {/if}
     {#if isMod(user)}
       <button class="chip mod {showUnreviewed ? 'active' : ''}" on:click={() => { showUnreviewed = !showUnreviewed; selectedTag = ''; }}>
-        Sin revisar {#if showUnreviewed}({filtered.length}){/if}
+        {$t('acciones.filter.unreviewed')} {#if showUnreviewed}({filtered.length}){/if}
       </button>
     {/if}
   </div>
 
   {#if filtered.length === 0}
-    <p class="empty">No se encontraron acciones.</p>
+    <p class="empty">{$t('acciones.empty')}</p>
   {:else}
     {#if loadingFirestore}
-      <p class="loading-hint">Cargando acciones de la comunidad…</p>
+      <p class="loading-hint">{$t('acciones.loading_community')}</p>
     {/if}
     <div class="grid">
       {#each filtered as a (a.id)}
         <a href="/acciones/{a.id}" class="card">
           {#if !a._static}
             <div class="card-top">
-              <span class="badge-new">nuevo</span>
+              <span class="badge-new">{$t('acciones.badge.new')}</span>
               {#if isMod(user) && !a.reviewed}
-                <span class="badge-unreviewed">sin revisar</span>
+                <span class="badge-unreviewed">{$t('acciones.badge.unreviewed')}</span>
               {/if}
             </div>
           {/if}

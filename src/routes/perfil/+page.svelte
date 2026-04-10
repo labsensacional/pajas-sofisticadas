@@ -8,6 +8,7 @@
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { ensureUserProfile, updateCurrentUserPassword, updateDisplayName } from '$lib/auth.js';
   import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
+  import { t } from '$lib/i18n.js';
 
   let user = null;
   let loading = true;
@@ -80,7 +81,7 @@
         return sessionSnap.exists() ? { id: sessionSnap.id, ...sessionSnap.data() } : null;
       })).then((items) => items.filter(Boolean));
     } catch (e) {
-      error = e?.message ?? 'No se pudieron cargar tus guardados.';
+      error = e?.message ?? $t('perfil.saved.error');
     } finally {
       loadingSaved = false;
     }
@@ -89,7 +90,7 @@
   async function saveUsername() {
     const nextUsername = publicName.trim();
     if (!nextUsername) {
-      error = 'El nombre público no puede estar vacío.';
+      error = $t('perfil.username.required');
       return;
     }
 
@@ -100,9 +101,9 @@
     try {
       await updateDisplayName(nextUsername);
       user = auth.currentUser ?? user;
-      notice = 'Nombre público actualizado.';
+      notice = $t('perfil.username.saved');
     } catch (e) {
-      error = e?.message ?? 'No se pudo actualizar el nombre público.';
+      error = e?.message ?? $t('perfil.username.error');
     } finally {
       saving = false;
     }
@@ -110,12 +111,12 @@
 
   async function savePassword() {
     if (newPassword.length < 6) {
-      error = 'La contraseña debe tener al menos 6 caracteres.';
+      error = $t('perfil.password.min');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      error = 'Las contraseñas no coinciden.';
+      error = $t('perfil.password.mismatch');
       return;
     }
 
@@ -128,12 +129,12 @@
       newPassword = '';
       confirmPassword = '';
       notice = hasPasswordProvider
-        ? 'Contraseña actualizada.'
-        : 'Contraseña definida para esta cuenta.';
+        ? $t('perfil.password.changed')
+        : $t('perfil.password.defined');
     } catch (e) {
       error = e?.code === 'auth/requires-recent-login'
-        ? 'Por seguridad, cerrá sesión y volvé a entrar antes de cambiar la contraseña.'
-        : (e?.message ?? 'No se pudo actualizar la contraseña.');
+        ? $t('perfil.password.relogin')
+        : (e?.message ?? $t('perfil.password.error'));
     } finally {
       savingPassword = false;
     }
@@ -149,18 +150,18 @@
 <svelte:head><title>Perfil · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/" class="back">← Inicio</a>
-  <h1>Perfil</h1>
+  <a href="/" class="back">{$t('perfil.back')}</a>
+  <h1>{$t('perfil.title')}</h1>
 
   {#if loading}
-    <p class="hint">Cargando…</p>
+    <p class="hint">{$t('perfil.loading')}</p>
   {:else if user}
     <div class="card">
       <section class="panel">
         <button class="panel-toggle" on:click={() => accountPanelOpen = !accountPanelOpen} aria-expanded={accountPanelOpen}>
           <div>
-            <h2>Cuenta</h2>
-            <p class="subtle">Nombre Público y contraseña</p>
+            <h2>{$t('perfil.account.title')}</h2>
+            <p class="subtle">{$t('perfil.account.subtitle')}</p>
           </div>
           <span class="panel-icon">{accountPanelOpen ? '−' : '+'}</span>
         </button>
@@ -168,36 +169,36 @@
         {#if accountPanelOpen}
           <div class="panel-content">
             <section class="block">
-              <h3>Nombre Público</h3>
-              <p class="subtle">Si todavía no elegiste uno, la cuenta recibe uno aleatorio. Podés cambiarlo siempre.</p>
+              <h3>{$t('perfil.username.title')}</h3>
+              <p class="subtle">{$t('perfil.username.desc')}</p>
               <label>
-                <span>Nombre Público</span>
-                <input type="text" bind:value={publicName} placeholder="Cómo querés aparecer" />
+                <span>{$t('perfil.username.label')}</span>
+                <input type="text" bind:value={publicName} placeholder={$t('perfil.username.placeholder')} />
               </label>
               <button class="primary" on:click={saveUsername} disabled={saving}>
-                {saving ? 'Guardando…' : 'Guardar nombre público'}
+                {saving ? $t('perfil.username.saving') : $t('perfil.username.save')}
               </button>
             </section>
 
             <section class="block">
-              <h3>{hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}</h3>
+              <h3>{hasPasswordProvider ? $t('perfil.password.title.change') : $t('perfil.password.title.set')}</h3>
               <p class="subtle">
                 {#if hasPasswordProvider}
-                  Cambiala directamente desde esta página.
+                  {$t('perfil.password.desc.has')}
                 {:else}
-                  Si entraste con Google, podés definir una contraseña acá y después entrar también con email.
+                  {$t('perfil.password.desc.no')}
                 {/if}
               </p>
               <label>
-                <span>Nueva contraseña</span>
-                <input type="password" bind:value={newPassword} placeholder="Mínimo 6 caracteres" />
+                <span>{$t('perfil.password.new')}</span>
+                <input type="password" bind:value={newPassword} placeholder={$t('perfil.password.new.placeholder')} />
               </label>
               <label>
-                <span>Repetir contraseña</span>
-                <input type="password" bind:value={confirmPassword} placeholder="Repetí la contraseña" />
+                <span>{$t('perfil.password.confirm')}</span>
+                <input type="password" bind:value={confirmPassword} placeholder={$t('perfil.password.confirm.placeholder')} />
               </label>
               <button class="secondary" on:click={savePassword} disabled={savingPassword}>
-                {savingPassword ? 'Guardando…' : hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}
+                {savingPassword ? $t('perfil.password.saving') : hasPasswordProvider ? $t('perfil.password.save.change') : $t('perfil.password.save.set')}
               </button>
             </section>
           </div>
@@ -207,8 +208,8 @@
       <section class="panel">
         <button class="panel-toggle" on:click={() => appearancePanelOpen = !appearancePanelOpen} aria-expanded={appearancePanelOpen}>
           <div>
-            <h2>Apariencia</h2>
-            <p class="subtle">Modo claro u oscuro</p>
+            <h2>{$t('perfil.appearance.title')}</h2>
+            <p class="subtle">{$t('perfil.appearance.subtitle')}</p>
           </div>
           <span class="panel-icon">{appearancePanelOpen ? '−' : '+'}</span>
         </button>
@@ -216,10 +217,10 @@
         {#if appearancePanelOpen}
           <div class="panel-content">
             <section class="block">
-              <h3>Tema</h3>
-              <p class="subtle">Elegí si querés usar el sitio en modo claro u oscuro.</p>
+              <h3>{$t('perfil.theme.title')}</h3>
+              <p class="subtle">{$t('perfil.theme.desc')}</p>
               <button class="secondary theme-toggle" on:click={toggleTheme}>
-                {theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+                {theme === 'dark' ? $t('perfil.theme.to_light') : $t('perfil.theme.to_dark')}
               </button>
             </section>
           </div>
@@ -229,8 +230,8 @@
       <section class="panel">
         <button class="panel-toggle" on:click={() => savedPanelOpen = !savedPanelOpen} aria-expanded={savedPanelOpen}>
           <div>
-            <h2>Guardados</h2>
-            <p class="subtle">Acciones y sesiones guardadas</p>
+            <h2>{$t('perfil.saved.title')}</h2>
+            <p class="subtle">{$t('perfil.saved.subtitle')}</p>
           </div>
           <span class="panel-icon">{savedPanelOpen ? '−' : '+'}</span>
         </button>
@@ -239,19 +240,19 @@
           <div class="panel-content">
             <div class="saved-header">
               <div class="saved-links">
-                <a href="#acciones-guardadas" class="pill-link">Acciones ({savedActions.length})</a>
-                <a href="#sesiones-guardadas" class="pill-link">Sesiones ({savedSessions.length})</a>
+                <a href="#acciones-guardadas" class="pill-link">{$t('nav.acciones')} ({savedActions.length})</a>
+                <a href="#sesiones-guardadas" class="pill-link">{$t('nav.sesiones')} ({savedSessions.length})</a>
               </div>
             </div>
 
             {#if loadingSaved}
-              <p class="subtle">Cargando guardados…</p>
+              <p class="subtle">{$t('perfil.saved.loading')}</p>
             {:else}
               <div class="saved-grid">
                 <div class="saved-column" id="acciones-guardadas">
-                  <h3>Acciones guardadas</h3>
+                  <h3>{$t('perfil.saved.actions.title')}</h3>
                   {#if savedActions.length === 0}
-                    <p class="subtle">Todavía no guardaste acciones.</p>
+                    <p class="subtle">{$t('perfil.saved.actions.empty')}</p>
                   {:else}
                     <div class="saved-list">
                       {#each savedActions as action}
@@ -265,9 +266,9 @@
                 </div>
 
                 <div class="saved-column" id="sesiones-guardadas">
-                  <h3>Sesiones guardadas</h3>
+                  <h3>{$t('perfil.saved.sessions.title')}</h3>
                   {#if savedSessions.length === 0}
-                    <p class="subtle">Todavía no guardaste sesiones.</p>
+                    <p class="subtle">{$t('perfil.saved.sessions.empty')}</p>
                   {:else}
                     <div class="saved-list">
                       {#each savedSessions as session}

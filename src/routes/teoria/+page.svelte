@@ -1,5 +1,6 @@
 <script>
   // @ts-nocheck
+  import { t } from '$lib/i18n.js';
   export let data;
   const { docs } = data;
 </script>
@@ -8,12 +9,12 @@
 
 <main class="page">
   <header class="header">
-    <h1>Teoría</h1>
-    <p>Una brújula simple para leer prácticas, diseñar sesiones y entender mejor qué empuja activación, placer y trance.</p>
+    <h1>{$t('teoria.title')}</h1>
+    <p>{$t('teoria.subtitle')}</p>
   </header>
 
   {#if docs.length === 0}
-    <p class="empty">No hay documentos de teoría todavía.</p>
+    <p class="empty">{$t('teoria.empty')}</p>
   {:else}
     <div class="grid">
       {#each docs as doc}

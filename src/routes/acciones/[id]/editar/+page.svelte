@@ -10,7 +10,8 @@
   import { compressImage } from '$lib/compressImage.js';
   import { findStatic } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
-  import { SCORE_FIELDS } from '$lib/scoreFields.js';
+  import { getScoreFields } from '$lib/scoreFields.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -38,6 +39,8 @@
   /** @type {string|null} */
   let expandedTooltip = null;
 
+  $: SCORE_FIELDS = getScoreFields($t);
+
   $: id = $page.params.id;
 
   onMount(() => {
@@ -57,7 +60,7 @@
         accion = { id: snap.id, ...snap.data() };
       } else {
         const staticAccion = findStatic(id);
-        if (!staticAccion) { error = 'Acción no encontrada.'; loading = false; return; }
+        if (!staticAccion) { error = $t('accion_form.not_found'); loading = false; return; }
         accion = { ...staticAccion };
       }
 
@@ -95,7 +98,7 @@
 
   async function handleSubmit() {
     if (!user || !db) return;
-    if (!name.trim() || !description.trim()) { error = 'Nombre y descripción son obligatorios.'; return; }
+    if (!name.trim() || !description.trim()) { error = $t('accion_form.required'); return; }
     saving = true; error = '';
     try {
       const tags = tags_input.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
@@ -132,33 +135,33 @@
 <svelte:head><title>Editar acción · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/acciones/{id}" class="back">← Volver</a>
-  <h1>Editar acción</h1>
+  <a href="/acciones/{id}" class="back">{$t('accion.back')}</a>
+  <h1>{$t('accion_form.title.edit')}</h1>
 
   {#if loading}
-    <p class="hint">Cargando…</p>
+    <p class="hint">{$t('accion.loading')}</p>
   {:else if error && !accion}
     <p class="error">{error}</p>
   {:else if accion}
     <form on:submit|preventDefault={handleSubmit}>
-      <label>Nombre *
-        <input type="text" bind:value={name} required placeholder="Ej: Vibración externa" />
+      <label>{$t('accion_form.name')}
+        <input type="text" bind:value={name} required placeholder={$t('accion_form.name.placeholder')} />
       </label>
 
-      <label>Descripción * <small>(uso general, variantes, efectos comunes)</small>
-        <textarea rows="3" bind:value={description} required placeholder="Qué es, para qué sirve, efectos habituales…"></textarea>
+      <label>{$t('accion_form.description')} <small>{$t('accion_form.description.hint')}</small>
+        <textarea rows="3" bind:value={description} required placeholder={$t('accion_form.description.placeholder')}></textarea>
       </label>
 
-      <label>Hello world (opcional) <small>Cómo replicarlo fácil y rápido</small>
-        <textarea rows="2" bind:value={hello_world} placeholder="Paso a paso mínimo para probarlo…"></textarea>
+      <label>{$t('accion_form.how_to')} <small>{$t('accion_form.how_to.hint')}</small>
+        <textarea rows="2" bind:value={hello_world} placeholder={$t('accion_form.how_to.placeholder')}></textarea>
       </label>
 
-      <label>Advertencias (opcional) <small>Uno por línea</small>
-        <textarea rows="3" bind:value={warnings_text} placeholder={"Error o riesgo común\nOtro error frecuente\nEj: No combinar con X"}></textarea>
+      <label>{$t('accion_form.warnings')} <small>{$t('accion_form.warnings.hint')}</small>
+        <textarea rows="3" bind:value={warnings_text} placeholder={$t('accion_form.warnings.placeholder')}></textarea>
       </label>
 
       <fieldset>
-        <legend>Puntuaciones <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">más info →</a></legend>
+        <legend>{$t('accion_form.scores')} <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">{$t('accion_form.scores.guide')}</a></legend>
         <div class="scores">
           {#each SCORE_FIELDS as field}
             {@const isSet = scores[field.key] !== null}
@@ -171,12 +174,12 @@
                 <div class="score-right">
                   {#if isSet}
                     <span class="score-val" style="color:{field.color}">{scores[field.key]}</span>
-                    <button type="button" class="clear-btn" title="Quitar puntaje"
+                    <button type="button" class="clear-btn" title={$t('accion_form.scores.remove')}
                       on:click={() => scores[field.key] = null}>×</button>
                   {:else}
                     <span class="score-none">—</span>
                   {/if}
-                  <button type="button" class="tooltip-btn" title="Ver descripción"
+                  <button type="button" class="tooltip-btn" title={$t('accion_form.scores.info')}
                     on:click={() => expandedTooltip = expandedTooltip === field.key ? null : field.key}>?</button>
                 </div>
               </div>
@@ -185,7 +188,7 @@
                   style="--c: {field.color}" />
               {:else}
                 <button type="button" class="activate-btn"
-                  on:click={() => scores[field.key] = 0}>+ Puntuar</button>
+                  on:click={() => scores[field.key] = 0}>{$t('accion_form.scores.add')}</button>
               {/if}
               {#if expandedTooltip === field.key}
                 <p class="tooltip-text">{field.tooltip}</p>
@@ -193,20 +196,20 @@
               {#if isSet && field.key in whyValues}
                 <input type="text" class="why-input"
                   bind:value={whyValues[field.key]}
-                  placeholder="Justificación opcional…" />
+                  placeholder={$t('accion_form.scores.why.placeholder')} />
               {/if}
             </div>
           {/each}
         </div>
       </fieldset>
 
-      <label>Tags (opcional) <small>Separados por coma</small>
-        <input type="text" bind:value={tags_input} placeholder="genital, sostenido, accesible" />
+      <label>{$t('accion_form.tags')} <small>{$t('accion_form.tags.hint')}</small>
+        <input type="text" bind:value={tags_input} placeholder={$t('accion_form.tags.placeholder')} />
       </label>
 
       {#if existingPhotos.length}
         <div class="field-group">
-          <span class="field-label">Fotos actuales</span>
+          <span class="field-label">{$t('sesion_form.existing_photos')}</span>
           <div class="existing-photos">
             {#each existingPhotos as p}
               <div class="existing-photo">
@@ -218,12 +221,12 @@
         </div>
       {/if}
 
-      <label>Agregar fotos <small>(opcional — máximo 5 nuevas)</small>
+      <label>{$t('accion_form.photos')} <small>{$t('accion_form.photos.hint')}</small>
         <input class="file-input" type="file" multiple accept="image/*" id="editar-accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
         <label for="editar-accion-fotos" class="upload-box">
-          <span class="upload-kicker">Imagenes</span>
-          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) nuevos` : 'Agregar fotos nuevas'}</strong>
-          <span>{imageFiles.length ? 'Se subirán junto con las fotos que dejes activas.' : 'JPG, PNG o WEBP. Hasta 5 imagenes nuevas.'}</span>
+          <span class="upload-kicker">{$t('accion_form.photos.label')}</span>
+          <strong>{imageFiles.length ? $t('accion_form.photos.selected', { count: imageFiles.length }) : $t('accion_form.photos.choose')}</strong>
+          <span>{imageFiles.length ? $t('accion_form.photos.replace') : $t('accion_form.photos.info')}</span>
         </label>
       </label>
       {#if imageFiles.length}
@@ -237,7 +240,7 @@
       {#if error}<p class="error">{error}</p>{/if}
 
       <button type="submit" class="submit" disabled={saving}>
-        {uploading ? 'Subiendo fotos…' : saving ? 'Guardando…' : 'Guardar cambios'}
+        {uploading ? $t('accion_form.submit.uploading') : saving ? $t('accion_form.submit.loading') : $t('accion_form.submit.edit')}
       </button>
     </form>
   {/if}

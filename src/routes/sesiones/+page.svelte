@@ -8,6 +8,7 @@
   import { collection, getDocs, orderBy, query } from 'firebase/firestore';
   import { isMod } from '$lib/moderator.js';
   import { findStatic } from '$lib/actions.js';
+  import { t } from '$lib/i18n.js';
 
   function accionName(id) { return findStatic(id)?.name ?? id; }
 
@@ -71,27 +72,27 @@
 <main class="page">
   <header class="header">
     <div>
-      <h1>Sesiones</h1>
-      <p>Relatos de sesiones compartidos por la comunidad</p>
+      <h1>{$t('sesiones.title')}</h1>
+      <p>{$t('sesiones.subtitle')}</p>
     </div>
     {#if user}
-      <a href="/sesiones/nueva" class="btn-new">+ Nueva sesión</a>
+      <a href="/sesiones/nueva" class="btn-new">{$t('sesiones.new')}</a>
     {/if}
   </header>
 
   <div class="controls">
-    <input class="search" type="text" placeholder="Buscar en título y contenido…" bind:value={search} />
+    <input class="search" type="text" placeholder={$t('sesiones.search.placeholder')} bind:value={search} />
     <select bind:value={sortBy}>
-      <option value="newest">Más recientes</option>
-      <option value="saves">Más guardadas</option>
+      <option value="newest">{$t('sesiones.sort.newest')}</option>
+      <option value="saves">{$t('sesiones.sort.saves')}</option>
     </select>
   </div>
 
   {#if allTags.length}
     <div class="filter-group">
-      <span class="filter-label">Tags</span>
+      <span class="filter-label">{$t('sesiones.filter.tags')}</span>
       <div class="chips">
-        <button class="chip {selectedTag === '' ? 'active' : ''}" on:click={() => updateTag('')}>Todos</button>
+        <button class="chip {selectedTag === '' ? 'active' : ''}" on:click={() => updateTag('')}>{$t('sesiones.filter.all_tags')}</button>
         {#each allTags as tag}
           <button class="chip {selectedTag === tag ? 'active' : ''}" on:click={() => updateTag(selectedTag === tag ? '' : tag)}>
             {tag}
@@ -103,9 +104,9 @@
 
   {#if allAccionTags.length}
     <div class="filter-group">
-      <span class="filter-label">Acciones</span>
+      <span class="filter-label">{$t('sesiones.filter.acciones')}</span>
       <div class="chips">
-        <button class="chip {selectedAccion === '' ? 'active' : ''}" on:click={() => selectedAccion = ''}>Todas</button>
+        <button class="chip {selectedAccion === '' ? 'active' : ''}" on:click={() => selectedAccion = ''}>{$t('sesiones.filter.all_acciones')}</button>
         {#each allAccionTags as a}
           <button class="chip accion {selectedAccion === a ? 'active' : ''}" on:click={() => selectedAccion = selectedAccion === a ? '' : a}>
             {accionName(a)}
@@ -118,7 +119,7 @@
   {#if isMod(user)}
     <div class="mod-bar">
       <button class="chip mod {showUnreviewed ? 'active' : ''}" on:click={() => { showUnreviewed = !showUnreviewed; selectedTag = ''; selectedAccion = ''; }}>
-        Sin revisar {#if showUnreviewed}({filtered.length}){/if}
+        {$t('sesiones.filter.unreviewed')} {#if showUnreviewed}({filtered.length}){/if}
       </button>
     </div>
   {/if}
@@ -126,7 +127,7 @@
   {#if loading}
     <div class="skeletons">{#each Array(4) as _}<div class="skeleton"></div>{/each}</div>
   {:else if filtered.length === 0}
-    <p class="empty">{showUnreviewed ? 'Todo revisado.' : 'No hay sesiones todavía.'}</p>
+    <p class="empty">{showUnreviewed ? $t('sesiones.all_reviewed') : $t('sesiones.empty')}</p>
   {:else}
     <div class="grid">
       {#each filtered as s}
@@ -137,7 +138,7 @@
               <p class="snippet">{s.body.slice(0, 140)}{s.body.length > 140 ? '…' : ''}</p>
             {/if}
             <div class="meta-row">
-              <span class="meta-author">{s.authorName || 'Anónimo'}</span>
+              <span class="meta-author">{s.authorName || $t('sesiones.anonymous')}</span>
               <span class="meta-date">{s.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
               {#if (s.saves ?? 0) > 0}<span class="meta-saves">★ {s.saves}</span>{/if}
               {#if s.photos?.length}<span class="meta-photos">📷 {s.photos.length}</span>{/if}
@@ -157,7 +158,7 @@
               </div>
             {/if}
             {#if isMod(user) && !s.reviewed}
-              <span class="badge-unreviewed">sin revisar</span>
+              <span class="badge-unreviewed">{$t('sesiones.badge.unreviewed')}</span>
             {/if}
           </div>
         </a>

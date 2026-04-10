@@ -7,12 +7,14 @@
   import { ensureUserProfile } from '$lib/auth.js';
   import { isMod } from '$lib/moderator.js';
   import { applyTheme, resolveTheme } from '$lib/theme.js';
+  import { t, initLocale, setLocale, locale, SUPPORTED_LOCALES } from '$lib/i18n.js';
 
   export let data;
 
   let showGate = true;
   let user = null;
   onMount(() => {
+    initLocale();
     applyTheme(resolveTheme());
     showGate = !isAgeGateConfirmed();
 
@@ -71,12 +73,12 @@
 {#if showGate}
   <div class="gate">
     <div class="card">
-      <p class="eyebrow">Acceso +18</p>
-      <h2>Contenido para adultos</h2>
-      <p>Este sitio contiene material explícito sobre sexualidad y prácticas de alto arousal.</p>
+      <p class="eyebrow">{$t('gate.eyebrow')}</p>
+      <h2>{$t('gate.title')}</h2>
+      <p>{$t('gate.body')}</p>
       <div class="gate-actions">
-        <button class="primary" on:click={handleConfirm}>Tengo 18 años o más</button>
-        <a class="exit" href="https://www.google.com" rel="noreferrer">Salir</a>
+        <button class="primary" on:click={handleConfirm}>{$t('gate.confirm')}</button>
+        <a class="exit" href="https://www.google.com" rel="noreferrer">{$t('gate.exit')}</a>
       </div>
     </div>
   </div>
@@ -85,18 +87,23 @@
 <header class="topbar">
   <a class="brand" href="/">Laboratorio Sensacional</a>
   <nav>
-    <a href="/teoria">Teoría</a>
-    <a href="/acciones">Acciones</a>
-    <a href="/sesiones">Sesiones</a>
+    <a href="/teoria">{$t('nav.teoria')}</a>
+    <a href="/acciones">{$t('nav.acciones')}</a>
+    <a href="/sesiones">{$t('nav.sesiones')}</a>
     {#if user}
-      <a href="/perfil">Perfil</a>
+      <a href="/perfil">{$t('nav.perfil')}</a>
       {#if isMod(user)}
-        <a href="/admin/promote" class="mod-link">Admin</a>
+        <a href="/admin/promote" class="mod-link">{$t('nav.admin')}</a>
       {/if}
-      <button class="logout" on:click={handleLogout}>Salir</button>
+      <button class="logout" on:click={handleLogout}>{$t('nav.logout')}</button>
     {:else}
-      <a href="/login">Login</a>
+      <a href="/login">{$t('nav.login')}</a>
     {/if}
+    <select class="lang-select" value={$locale} on:change={(e) => setLocale(e.target.value)}>
+      {#each SUPPORTED_LOCALES as lang}
+        <option value={lang}>{$t(`lang.${lang}`)}</option>
+      {/each}
+    </select>
   </nav>
 </header>
 
@@ -361,6 +368,18 @@
   nav a:hover { color: var(--accent); }
 
   .mod-link { color: #7c3aed !important; }
+
+  .lang-select {
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: none;
+  }
 
   .logout {
     border: 1px solid var(--line-strong);

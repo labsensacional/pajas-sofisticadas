@@ -1,31 +1,35 @@
+<script>
+  import { t } from '$lib/i18n.js';
+</script>
+
 <svelte:head><title>Laboratorio Sensacional</title></svelte:head>
 
 <main class="home">
   <section class="hero">
     <h1>Laboratorio Sensacional</h1>
-    <p>Red social de psiconáutica recreativa y sexual. Comparti y charla sobre prácticas para alcanzar estados de trance, placer y/o excitación</p>
+    <p>{$t('home.tagline')}</p>
     <div class="links">
-      <a href="/teoria" class="btn primary">Leer la teoría</a>
-      <a href="/acciones" class="btn ghost">Explorar acciones</a>
-      <a href="/sesiones" class="btn ghost">Ver sesiones</a>
+      <a href="/teoria" class="btn primary">{$t('home.cta.teoria')}</a>
+      <a href="/acciones" class="btn ghost">{$t('home.cta.acciones')}</a>
+      <a href="/sesiones" class="btn ghost">{$t('home.cta.sesiones')}</a>
     </div>
   </section>
 
   <section class="sections">
     <a href="/teoria" class="section-card">
       <span class="icon">📖</span>
-      <h2>Teoría</h2>
-      <p>El modelo de 3 ejes, cómo combinar prácticas y principios detrás de los estados alterados.</p>
+      <h2>{$t('home.card.teoria.title')}</h2>
+      <p>{$t('home.card.teoria.desc')}</p>
     </a>
     <a href="/acciones" class="section-card">
       <span class="icon">◎</span>
-      <h2>Acciones</h2>
-      <p>Catálogo de técnicas y prácticas con puntuaciones de arousal, trance y placer.</p>
+      <h2>{$t('home.card.acciones.title')}</h2>
+      <p>{$t('home.card.acciones.desc')}</p>
     </a>
     <a href="/sesiones" class="section-card">
       <span class="icon">◇</span>
-      <h2>Sesiones</h2>
-      <p>Relatos de sesiones reales compartidos por la comunidad.</p>
+      <h2>{$t('home.card.sesiones.title')}</h2>
+      <p>{$t('home.card.sesiones.desc')}</p>
     </a>
   </section>
 </main>

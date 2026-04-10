@@ -10,6 +10,7 @@
   import { compressImage } from '$lib/compressImage.js';
   import { ACTIONS } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -105,7 +106,7 @@
 
   async function handleSubmit() {
     if (!user || !db) return;
-    if (!title.trim()) { error = 'El título es obligatorio.'; return; }
+    if (!title.trim()) { error = $t('sesion_form.required'); return; }
     saving = true; error = '';
     try {
       let photos = [...existingPhotos];
@@ -126,32 +127,32 @@
         updatedAt: serverTimestamp()
       });
       goto(`/sesiones/${id}`);
-    } catch (e) { error = e?.message ?? 'Error al guardar.'; saving = false; uploading = false; }
+    } catch (e) { error = e?.message ?? 'Error.'; saving = false; uploading = false; }
   }
 </script>
 
 <svelte:head><title>Editar sesión · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/sesiones/{id}" class="back">← Volver</a>
-  <h1>Editar sesión</h1>
+  <a href="/sesiones/{id}" class="back">{$t('sesion.back')}</a>
+  <h1>{$t('sesion_form.title.edit')}</h1>
 
   {#if loading}
-    <p class="hint">Cargando…</p>
+    <p class="hint">{$t('sesion.loading')}</p>
   {:else if error && !sesion}
     <p class="error">{error}</p>
   {:else if sesion}
     <form on:submit|preventDefault={handleSubmit}>
-      <label>Título *
-        <input type="text" bind:value={title} required placeholder="Un título descriptivo…" />
+      <label>{$t('sesion_form.title_field')}
+        <input type="text" bind:value={title} required placeholder={$t('sesion_form.title_field.placeholder')} />
       </label>
 
-      <label>Descripción / relato <small>(opcional)</small>
-        <textarea rows="8" bind:value={body} placeholder="Describí la sesión en detalle…"></textarea>
+      <label>{$t('sesion_form.body')}
+        <textarea rows="8" bind:value={body} placeholder={$t('sesion_form.body.placeholder')}></textarea>
       </label>
 
       <div class="field-group">
-        <span class="field-label">Acciones usadas <small>(opcional)</small></span>
+        <span class="field-label">{$t('sesion_form.acciones')}</span>
         {#if accionTags.length}
           <div class="accion-chips">
             {#each accionTags as a}
@@ -165,7 +166,7 @@
         <input
           class="accion-search"
           type="text"
-          placeholder="Buscar acción para agregar…"
+          placeholder={$t('sesion_form.acciones.placeholder')}
           bind:value={accionSearch}
           autocomplete="off"
         />
@@ -178,14 +179,14 @@
         {/if}
       </div>
 
-      <label>Tags <small>(opcional — Enter o coma para agregar)</small>
+      <label>{$t('sesion_form.tags')}
         <div class="tag-input-box">
-          {#each tags as t}
-            <span class="tag-chip">{t} <button type="button" on:click={() => tags = tags.filter(x => x !== t)}>×</button></span>
+          {#each tags as tag}
+            <span class="tag-chip">{tag} <button type="button" on:click={() => tags = tags.filter(x => x !== tag)}>×</button></span>
           {/each}
           <input
             type="text"
-            placeholder="tantra, porro, solo…"
+            placeholder={$t('sesion_form.tags.placeholder')}
             bind:value={tag_field_value}
             on:keydown={handleTagKeydown}
             on:blur={handleTagBlur}
@@ -195,7 +196,7 @@
 
       {#if existingPhotos.length}
         <div class="field-group">
-          <span class="field-label">Fotos actuales</span>
+          <span class="field-label">{$t('sesion_form.existing_photos')}</span>
           <div class="existing-photos">
             {#each existingPhotos as p}
               <div class="existing-photo">
@@ -207,12 +208,12 @@
         </div>
       {/if}
 
-      <label>Agregar fotos <small>(opcional — máximo 5 nuevas)</small>
+      <label>{$t('sesion_form.photos')} <small>{$t('accion_form.photos.hint')}</small>
         <input class="file-input" type="file" multiple accept="image/*" id="editar-sesion-fotos" on:change={handleFiles} />
         <label for="editar-sesion-fotos" class="upload-box">
-          <span class="upload-kicker">Imagenes</span>
-          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) nuevos` : 'Agregar fotos nuevas'}</strong>
-          <span>{imageFiles.length ? 'Se sumarán a las fotos actuales que mantengas.' : 'Hasta 5 imagenes adicionales para esta sesion.'}</span>
+          <span class="upload-kicker">{$t('sesion_form.photos.label')}</span>
+          <strong>{imageFiles.length ? $t('sesion_form.photos.selected', { count: imageFiles.length }) : $t('sesion_form.photos.choose')}</strong>
+          <span>{imageFiles.length ? $t('sesion_form.photos.replace') : $t('sesion_form.photos.info')}</span>
         </label>
       </label>
 
@@ -227,7 +228,7 @@
       {#if error}<p class="error">{error}</p>{/if}
 
       <button type="submit" class="submit" disabled={saving}>
-        {uploading ? 'Subiendo fotos…' : saving ? 'Guardando…' : 'Guardar cambios'}
+        {uploading ? $t('sesion_form.submit.uploading') : saving ? $t('sesion_form.submit.loading') : $t('sesion_form.submit.edit')}
       </button>
     </form>
   {/if}

@@ -10,6 +10,7 @@
   } from 'firebase/firestore';
   import { findStatic } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -34,14 +35,14 @@
 
   $: id = $page.params.id;
 
-  const AXES = [
-    { key: 'arousal',    label: 'Activación', color: '#FF8C42' },
-    { key: 'trance',     label: 'Trance',     color: '#7B68EE' },
-    { key: 'pleasure',   label: 'Placer',     color: '#FF6B9D' },
-    { key: 'dopamine',   label: 'Dopamina',   color: '#FFD166' },
-    { key: 'endorphins', label: 'Endorfinas', color: '#06D6A0' },
-    { key: 'oxytocin',   label: 'Oxitocina',  color: '#74B0FF' },
-    { key: 'energy',     label: 'Energía',    color: '#aaa' },
+  $: AXES = [
+    { key: 'arousal',    label: $t('axis.arousal'),    color: '#FF8C42' },
+    { key: 'trance',     label: $t('axis.trance'),     color: '#7B68EE' },
+    { key: 'pleasure',   label: $t('axis.pleasure'),   color: '#FF6B9D' },
+    { key: 'dopamine',   label: $t('axis.dopamine'),   color: '#FFD166' },
+    { key: 'endorphins', label: $t('axis.endorphins'), color: '#06D6A0' },
+    { key: 'oxytocin',   label: $t('axis.oxytocin'),   color: '#74B0FF' },
+    { key: 'energy',     label: $t('axis.energy'),     color: '#aaa' },
   ];
 
   onMount(() => {
@@ -89,7 +90,7 @@
         });
         saved = true; saveId = ref.id; saveCount++;
       }
-    } catch (e) { error = e?.message ?? 'Error al guardar.'; }
+    } catch (e) { error = e?.message ?? $t('accion.error_save'); }
   }
 
   async function loadComments() {
@@ -103,11 +104,11 @@
     if (!user || !commentText.trim()) return;
     error = '';
     try {
-      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario';
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       await addDoc(collection(db, 'comments'), {
         parentId: id, parentType: 'accion', uid: user.uid,
         text: commentText.trim(),
-        displayName: commentAnonymous ? 'Anónimo' : currentUsername,
+        displayName: commentAnonymous ? $t('common.anonymous') : currentUsername,
         isAnonymous: commentAnonymous,
         createdAt: serverTimestamp()
       });
@@ -126,30 +127,30 @@
     try {
       await updateDoc(doc(db, 'acciones', id), { reviewed: true });
       accion = { ...accion, reviewed: true };
-      notice = 'Marcada como revisada.';
+      notice = $t('accion.marked_reviewed');
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 
   async function deleteAccion() {
-    if (!confirm('¿Eliminar esta acción?')) return;
+    if (!confirm($t('accion.delete_confirm'))) return;
     try {
       if (storage && accion.photos?.length) {
         const { ref, deleteObject } = await import('firebase/storage');
         await Promise.all(accion.photos.map(url => deleteObject(ref(storage, url)).catch(() => {})));
       }
       await deleteDoc(doc(db, 'acciones', id));
-      notice = 'Acción eliminada.'; accion = null;
+      notice = $t('accion.deleted'); accion = null;
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 </script>
 
-<svelte:head><title>{accion?.name ?? 'Acción'} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{accion?.name ?? $t('accion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/acciones" class="back">← Acciones</a>
+  <a href="/acciones" class="back">{$t('accion.back')}</a>
 
   {#if !accion}
-    <p class="loading">Cargando…</p>
+    <p class="loading">{$t('accion.loading')}</p>
   {:else}
     <article class="card">
       <header class="art-header">
@@ -178,11 +179,7 @@
       <p class="desc">{accion.description}</p>
 
       <div class="axes">
-        {#each [
-          { key:'arousal', label:'Activación', color:'#FF8C42' },
-          { key:'trance',  label:'Trance',  color:'#7B68EE' },
-          { key:'pleasure',label:'Placer',  color:'#FF6B9D' },
-        ] as ax}
+        {#each AXES.slice(0, 3) as ax}
           {@const v = accion[ax.key] ?? 0}
           <div class="axis-block">
             <div class="axis-head" style="color:{ax.color}">{ax.label}</div>
@@ -196,25 +193,21 @@
         {/each}
       </div>
 
-      <p class="score-note">Estas puntuaciones son referencias vagas y orientativas; no tomarlas muy en serio.</p>
+      <p class="score-note">{$t('accion.score_note')}</p>
 
       <section class="subscores">
         <div class="subscores-header">
-          <h3>Detalle del placer</h3>
-          <p>Dopamina, endorfinas y oxitocina refinan cómo se siente y qué deja la acción.</p>
+          <h3>{$t('accion.pleasure_detail.title')}</h3>
+          <p>{$t('accion.pleasure_detail.desc')}</p>
         </div>
         <div class="secondary-bars">
-        {#each [
-          { key:'dopamine',   label:'Dopamina',   color:'#FFD166', bipolar: true },
-          { key:'endorphins', label:'Endorfinas',  color:'#06D6A0', bipolar: true },
-          { key:'oxytocin',   label:'Oxitocina',   color:'#74B0FF', bipolar: true },
-        ] as ax}
+        {#each AXES.slice(3, 6) as ax}
           {@const v = accion[ax.key] ?? 0}
           <div class="sec-row">
             <span class="sec-label">{ax.label}</span>
             <div class="bar-track">
-              {#if ax.bipolar}<div class="bar-center"></div>{/if}
-              <div class="bar-fill" style="{ax.bipolar ? `left:${v >= 0 ? 50 : 50 + v * 5}%; width:${Math.abs(v) * 5}%` : `left:0; width:${v * 10}%`}; background:{ax.color}"></div>
+              <div class="bar-center"></div>
+              <div class="bar-fill" style="left:{v >= 0 ? 50 : 50 + v * 5}%; width:{Math.abs(v) * 5}%; background:{ax.color}"></div>
             </div>
             <span class="sec-val">{v}</span>
           </div>
@@ -224,11 +217,11 @@
 
       <section class="energy-block">
         <div class="energy-header">
-          <h3>Energía requerida</h3>
-          <p>Cuánto esfuerzo físico o mental demanda.</p>
+          <h3>{$t('accion.energy.title')}</h3>
+          <p>{$t('accion.energy.desc')}</p>
         </div>
         <div class="sec-row energy-row">
-          <span class="sec-label">Energía</span>
+          <span class="sec-label">{$t('axis.energy')}</span>
           <div class="bar-track energy-track">
             <div class="bar-fill" style={`left:0; width:${energyValue * 10}%; background:#aaa`}></div>
           </div>
@@ -238,22 +231,21 @@
 
       {#if accion.hello_world}
         <section class="section">
-          <h3>Cómo se hace</h3>
-          <p class="section-subtitle">Versión mínima para probarla</p>
+          <h3>{$t('accion.how_to.title')}</h3>
+          <p class="section-subtitle">{$t('accion.how_to.subtitle')}</p>
           <p>{accion.hello_world}</p>
         </section>
       {/if}
 
       {#if allWarnings.length}
         <section class="section">
-          <h3>Advertencias</h3>
-          <p class="section-subtitle">Riesgos o errores comunes</p>
+          <h3>{$t('accion.warnings.title')}</h3>
+          <p class="section-subtitle">{$t('accion.warnings.subtitle')}</p>
           <div class="warnings">
             {#each allWarnings as w}<p>⚠ {w}</p>{/each}
           </div>
         </section>
       {/if}
-
 
       {#if accion.tags?.length}
         <div class="tags">
@@ -265,18 +257,18 @@
 
       <div class="actions-row">
         <button class="save-btn {saved ? 'saved' : ''}" on:click={toggleSave} disabled={!user}>
-          {saved ? '★ Guardada' : '☆ Guardar'} ({saveCount})
+          {saved ? $t('accion.saved') : $t('accion.save')} ({saveCount})
         </button>
-        {#if !user}<span class="auth-hint"><a href="/login">Login</a> para guardar y comentar</span>{/if}
+        {#if !user}<span class="auth-hint"><a href="/login">Login</a> {$t('accion.auth_hint')}</span>{/if}
 
         {#if isMod(user) || (user && accion.createdBy === user.uid)}
           <div class="mod-actions">
             {#if isMod(user) && !accion.reviewed && !accion._static}
-              <button class="mod-btn review" on:click={markReviewed}>Marcar como revisada</button>
+              <button class="mod-btn review" on:click={markReviewed}>{$t('accion.mark_reviewed')}</button>
             {/if}
-            <a href="/acciones/{id}/editar" class="mod-btn edit">Editar</a>
+            <a href="/acciones/{id}/editar" class="mod-btn edit">{$t('accion.edit')}</a>
             {#if !accion._static}
-              <button class="mod-btn delete" on:click={deleteAccion}>Eliminar</button>
+              <button class="mod-btn delete" on:click={deleteAccion}>{$t('accion.delete')}</button>
             {/if}
           </div>
         {/if}
@@ -287,33 +279,33 @@
     </article>
 
     <section class="comments-section">
-      <h2>Comentarios</h2>
+      <h2>{$t('comments.title')}</h2>
       {#if user}
         <div class="comment-form">
-          <textarea rows="3" placeholder="Escribí un comentario…" bind:value={commentText}></textarea>
+          <textarea rows="3" placeholder={$t('comments.placeholder')} bind:value={commentText}></textarea>
           <label class="comment-anon">
             <input type="checkbox" bind:checked={commentAnonymous} />
-            <span>Comentar como anónimo</span>
+            <span>{$t('comments.anonymous_label')}</span>
           </label>
-          <button on:click={addComment} disabled={!commentText.trim()}>Comentar</button>
+          <button on:click={addComment} disabled={!commentText.trim()}>{$t('comments.submit')}</button>
         </div>
       {:else}
-        <p class="auth-hint"><a href="/login">Iniciá sesión</a> para comentar.</p>
+        <p class="auth-hint"><a href="/login">{$t('comments.auth_prefix')}</a> {$t('comments.auth_suffix')}</p>
       {/if}
 
       {#if loadingComments}
-        <p class="loading">Cargando comentarios…</p>
+        <p class="loading">{$t('comments.loading')}</p>
       {:else if comments.length === 0}
-        <p class="empty-comments">Sin comentarios todavía.</p>
+        <p class="empty-comments">{$t('comments.empty')}</p>
       {:else}
         <div class="comment-list">
           {#each comments as c}
             <div class="comment">
               <div class="comment-header">
-                <strong>{c.isAnonymous ? 'Anónimo' : (c.displayName || 'Usuario')}</strong>
+                <strong>{c.isAnonymous ? $t('common.anonymous') : (c.displayName || $t('common.user'))}</strong>
                 <span class="comment-date">{c.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
                 {#if user && (c.uid === user.uid || isMod(user))}
-                  <button class="del-comment" on:click={() => deleteComment(c.id)}>Borrar</button>
+                  <button class="del-comment" on:click={() => deleteComment(c.id)}>{$t('comments.delete')}</button>
                 {/if}
               </div>
               <p>{c.text}</p>

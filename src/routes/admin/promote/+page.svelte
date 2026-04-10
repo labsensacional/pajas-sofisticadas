@@ -5,6 +5,7 @@
   import { onAuthStateChanged } from 'firebase/auth';
   import { collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc, where } from 'firebase/firestore';
   import { isMod } from '$lib/moderator.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -42,22 +43,21 @@
       await updateDoc(doc(db, type, id), { reviewed: true });
       if (type === 'acciones') acciones = acciones.filter(a => a.id !== id);
       else sesiones = sesiones.filter(s => s.id !== id);
-      notice = 'Marcado como revisado.';
+      notice = $t('admin.marked_reviewed');
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 
   async function deleteItem(type, id) {
-    if (!confirm('¿Eliminar?')) return;
+    if (!confirm($t('admin.delete_confirm'))) return;
     try {
       await deleteDoc(doc(db, type, id));
       if (type === 'acciones') acciones = acciones.filter(a => a.id !== id);
       else sesiones = sesiones.filter(s => s.id !== id);
-      notice = 'Eliminado.';
+      notice = $t('admin.deleted');
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 
   function exportToJS() {
-    const reviewed = acciones.filter(a => a.reviewed !== false || true); // all shown are unreviewed
     const snippet = acciones.map(a => {
       const { createdBy, createdAt, reviewed: _, cat: _cat, ...clean } = a;
       return `  ${JSON.stringify({ ...clean, _static: true })}`;
@@ -66,40 +66,40 @@
   }
 
   function copy() {
-    navigator.clipboard.writeText(exportText).then(() => notice = 'Copiado al portapapeles.');
+    navigator.clipboard.writeText(exportText).then(() => notice = $t('admin.copied'));
   }
 </script>
 
 <svelte:head><title>Admin · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <h1>Panel de moderación</h1>
+  <h1>{$t('admin.title')}</h1>
 
   {#if !authed}
-    <p>Cargando…</p>
+    <p>{$t('admin.loading')}</p>
   {:else if !isMod(user)}
-    <p class="no-access">Acceso denegado.</p>
+    <p class="no-access">{$t('admin.no_access')}</p>
   {:else}
     {#if notice}<div class="notice">{notice}</div>{/if}
     {#if error}<div class="error">{error}</div>{/if}
 
     <div class="tabs">
       <button class="tab {activeTab === 'acciones' ? 'active' : ''}" on:click={() => activeTab = 'acciones'}>
-        Acciones sin revisar ({acciones.length})
+        {$t('admin.tab.acciones')} ({acciones.length})
       </button>
       <button class="tab {activeTab === 'sesiones' ? 'active' : ''}" on:click={() => activeTab = 'sesiones'}>
-        Sesiones sin revisar ({sesiones.length})
+        {$t('admin.tab.sesiones')} ({sesiones.length})
       </button>
       <button class="tab {activeTab === 'promote' ? 'active' : ''}" on:click={() => { activeTab = 'promote'; exportToJS(); }}>
-        Exportar a static
+        {$t('admin.tab.export')}
       </button>
     </div>
 
     {#if loading}
-      <p>Cargando…</p>
+      <p>{$t('admin.loading')}</p>
     {:else if activeTab === 'acciones'}
       {#if acciones.length === 0}
-        <p class="empty">No hay acciones pendientes de revisión.</p>
+        <p class="empty">{$t('admin.acciones.empty')}</p>
       {:else}
         <div class="list">
           {#each acciones as a}
@@ -111,12 +111,12 @@
                 <div class="scores">
                   AR:{a.arousal} TR:{a.trance} PL:{a.pleasure}
                 </div>
-                <p class="meta-info">Tags: {(a.tags ?? []).join(', ')} · Publicado: {a.createdAt?.toDate?.().toLocaleDateString?.() ?? 'N/A'}</p>
+                <p class="meta-info">{$t('admin.tags')}: {(a.tags ?? []).join(', ')} · {$t('admin.published')}: {a.createdAt?.toDate?.().toLocaleDateString?.() ?? 'N/A'}</p>
               </div>
               <div class="item-actions">
-                <a href="/acciones/{a.id}" target="_blank" class="btn view">Ver</a>
-                <button class="btn review" on:click={() => markReviewed('acciones', a.id)}>Marcar revisada</button>
-                <button class="btn delete" on:click={() => deleteItem('acciones', a.id)}>Eliminar</button>
+                <a href="/acciones/{a.id}" target="_blank" class="btn view">{$t('admin.view')}</a>
+                <button class="btn review" on:click={() => markReviewed('acciones', a.id)}>{$t('admin.mark_reviewed')}</button>
+                <button class="btn delete" on:click={() => deleteItem('acciones', a.id)}>{$t('admin.delete')}</button>
               </div>
             </div>
           {/each}
@@ -125,7 +125,7 @@
 
     {:else if activeTab === 'sesiones'}
       {#if sesiones.length === 0}
-        <p class="empty">No hay sesiones pendientes de revisión.</p>
+        <p class="empty">{$t('admin.sesiones.empty')}</p>
       {:else}
         <div class="list">
           {#each sesiones as s}
@@ -133,13 +133,13 @@
               <div class="item-main">
                 <h2>{s.title}</h2>
                 {#if s.body}<p class="desc">{s.body.slice(0, 200)}…</p>{/if}
-                <p class="meta-info">Por: {s.authorName} · {s.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</p>
-                {#if s.photos?.length}<p class="meta-info">{s.photos.length} foto(s)</p>{/if}
+                <p class="meta-info">{s.authorName} · {s.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</p>
+                {#if s.photos?.length}<p class="meta-info">{s.photos.length} {$t('admin.photos')}</p>{/if}
               </div>
               <div class="item-actions">
-                <a href="/sesiones/{s.id}" target="_blank" class="btn view">Ver</a>
-                <button class="btn review" on:click={() => markReviewed('sesiones', s.id)}>Marcar revisada</button>
-                <button class="btn delete" on:click={() => deleteItem('sesiones', s.id)}>Eliminar</button>
+                <a href="/sesiones/{s.id}" target="_blank" class="btn view">{$t('admin.view')}</a>
+                <button class="btn review" on:click={() => markReviewed('sesiones', s.id)}>{$t('admin.mark_reviewed')}</button>
+                <button class="btn delete" on:click={() => deleteItem('sesiones', s.id)}>{$t('admin.delete')}</button>
               </div>
             </div>
           {/each}
@@ -147,17 +147,14 @@
       {/if}
 
     {:else if activeTab === 'promote'}
-      <p class="promote-hint">
-        Copiá el JSON de abajo y pegalo en <code>src/lib/actions.js</code> dentro del array <code>ACTIONS</code>.
-        Luego usá "Marcar revisada" en cada acción para sacarla del queue.
-      </p>
+      <p class="promote-hint">{$t('admin.export.hint')}</p>
       {#if exportText}
         <div class="export-box">
           <textarea class="export-textarea" rows="20" readonly value={exportText}></textarea>
-          <button class="btn view" on:click={copy}>Copiar al portapapeles</button>
+          <button class="btn view" on:click={copy}>{$t('admin.copy')}</button>
         </div>
       {:else}
-        <p class="empty">No hay acciones para exportar.</p>
+        <p class="empty">{$t('admin.export.empty')}</p>
       {/if}
     {/if}
   {/if}

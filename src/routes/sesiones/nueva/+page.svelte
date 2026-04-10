@@ -8,6 +8,7 @@
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
   import { compressImage } from '$lib/compressImage.js';
   import { ACTIONS } from '$lib/actions.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -79,10 +80,10 @@
 
   async function handleSubmit() {
     if (!user || !hasFirebaseConfig || !db) return;
-    if (!title.trim()) { error = 'El título es obligatorio.'; return; }
+    if (!title.trim()) { error = $t('sesion_form.required'); return; }
     loading = true; error = '';
     try {
-      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario';
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       const sesionRef = (await import('firebase/firestore')).doc(collection(db, 'sesiones'));
       const sesionId = sesionRef.id;
       const photos = [];
@@ -117,31 +118,31 @@
 <svelte:head><title>Nueva sesión · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/sesiones" class="back">← Sesiones</a>
-  <h1>Compartir una sesión</h1>
+  <a href="/sesiones" class="back">{$t('sesion.back')}</a>
+  <h1>{$t('sesion_form.title.new')}</h1>
 
   {#if !user}
-    <div class="warn">Necesitás <a href="/login">iniciar sesión</a> para publicar.</div>
+    <div class="warn">{$t('sesion_form.login_warn')}</div>
   {:else if submitted}
     <div class="success">
-      <p>Sesión publicada.</p>
+      <p>{$t('sesion_form.success')}</p>
       <div class="links">
-        <a href="/sesiones" class="btn primary">Ver sesiones</a>
-        <button class="btn ghost" on:click={() => { submitted = false; title = ''; body = ''; tags = []; accionTags = []; imageFiles = []; }}>Publicar otra</button>
+        <a href="/sesiones" class="btn primary">{$t('sesiones.title')}</a>
+        <button class="btn ghost" on:click={() => { submitted = false; title = ''; body = ''; tags = []; accionTags = []; imageFiles = []; }}>{$t('sesion_form.submit.new')}</button>
       </div>
     </div>
   {:else}
     <form on:submit|preventDefault={handleSubmit}>
-      <label>Título *
-        <input type="text" bind:value={title} required placeholder="Un título descriptivo…" />
+      <label>{$t('sesion_form.title_field')}
+        <input type="text" bind:value={title} required placeholder={$t('sesion_form.title_field.placeholder')} />
       </label>
 
-      <label>Descripción / relato (opcional)
-        <textarea rows="8" bind:value={body} placeholder="Describí la sesión en detalle — qué probaste, qué pasó, el estado antes y después…"></textarea>
+      <label>{$t('sesion_form.body')}
+        <textarea rows="8" bind:value={body} placeholder={$t('sesion_form.body.placeholder')}></textarea>
       </label>
 
       <div class="field-group">
-        <span class="field-label">Acciones usadas (opcional)</span>
+        <span class="field-label">{$t('sesion_form.acciones')}</span>
         {#if accionTags.length}
           <div class="accion-chips">
             {#each accionTags as a}
@@ -155,7 +156,7 @@
         <input
           class="accion-search"
           type="text"
-          placeholder="Buscar acción para agregar…"
+          placeholder={$t('sesion_form.acciones.placeholder')}
           bind:value={accionSearch}
           autocomplete="off"
         />
@@ -168,14 +169,14 @@
         {/if}
       </div>
 
-      <label>Tags (opcional) <small>Enter o coma para agregar</small>
+      <label>{$t('sesion_form.tags')}
         <div class="tag-input-box">
-          {#each tags as t}
-            <span class="tag-chip">{t} <button type="button" on:click={() => tags = tags.filter(x => x !== t)}>×</button></span>
+          {#each tags as tag}
+            <span class="tag-chip">{tag} <button type="button" on:click={() => tags = tags.filter(x => x !== tag)}>×</button></span>
           {/each}
           <input
             type="text"
-            placeholder="tantra, porro, solo…"
+            placeholder={$t('sesion_form.tags.placeholder')}
             bind:value={tag_field_value}
             on:keydown={handleTagKeydown}
             on:blur={handleTagBlur}
@@ -185,15 +186,15 @@
 
       <label class="checkbox-row">
         <input type="checkbox" bind:checked={publishAnonymous} />
-        <span>Publicar como anónimo</span>
+        <span>{$t('sesion_form.anonymous')}</span>
       </label>
 
-      <label>Fotos (opcional) <small>Máximo 5</small>
+      <label>{$t('sesion_form.photos')} <small>{$t('accion_form.photos.hint')}</small>
         <input class="file-input" type="file" multiple accept="image/*" id="sesion-fotos" on:change={handleFiles} />
         <label for="sesion-fotos" class="upload-box">
-          <span class="upload-kicker">Imagenes</span>
-          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) listos` : 'Adjuntar fotos a la sesion'}</strong>
-          <span>{imageFiles.length ? 'Podés volver a tocar para cambiarlas.' : 'Hace que el relato quede más claro. Hasta 5 imagenes.'}</span>
+          <span class="upload-kicker">{$t('sesion_form.photos.label')}</span>
+          <strong>{imageFiles.length ? $t('sesion_form.photos.selected', { count: imageFiles.length }) : $t('sesion_form.photos.choose')}</strong>
+          <span>{imageFiles.length ? $t('sesion_form.photos.replace') : $t('sesion_form.photos.info')}</span>
         </label>
       </label>
 
@@ -208,7 +209,7 @@
       {#if error}<p class="error">{error}</p>{/if}
 
       <button type="submit" class="submit" disabled={loading}>
-        {uploading ? 'Subiendo fotos…' : loading ? 'Guardando…' : 'Publicar sesión'}
+        {uploading ? $t('sesion_form.submit.uploading') : loading ? $t('sesion_form.submit.loading') : $t('sesion_form.submit.new')}
       </button>
     </form>
   {/if}

@@ -7,7 +7,8 @@
   import { addDoc, collection, doc, serverTimestamp } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
   import { compressImage } from '$lib/compressImage.js';
-  import { SCORE_FIELDS } from '$lib/scoreFields.js';
+  import { getScoreFields } from '$lib/scoreFields.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -34,16 +35,18 @@
   /** @type {string|null} */
   let expandedTooltip = null;
 
+  $: SCORE_FIELDS = getScoreFields($t);
+
   onMount(() => {
     if (auth) return onAuthStateChanged(auth, v => { user = v; if (!v) goto('/login'); });
   });
 
   async function handleSubmit() {
     if (!user || !hasFirebaseConfig || !db) return;
-    if (!name.trim() || !description.trim()) { error = 'Nombre y descripción son obligatorios.'; return; }
+    if (!name.trim() || !description.trim()) { error = $t('accion_form.required'); return; }
     loading = true; error = '';
     try {
-      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario';
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       const tags = tags_input.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
       const warnings = warnings_text.split('\n').map(l => l.trim()).filter(Boolean);
       const accionRef = doc(collection(db, 'acciones'));
@@ -82,42 +85,42 @@
 <svelte:head><title>Nueva acción · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/acciones" class="back">← Acciones</a>
-  <h1>Agregar acción</h1>
-  <p class="hint">Las acciones nuevas se publican enseguida y después quedan sujetas a revisión.</p>
+  <a href="/acciones" class="back">{$t('accion.back')}</a>
+  <h1>{$t('accion_form.title.new')}</h1>
+  <p class="hint">{$t('accion_form.hint')}</p>
 
   {#if !hasFirebaseConfig}
-    <div class="warn">Configura Firebase en .env</div>
+    <div class="warn">{$t('accion_form.firebase_warn')}</div>
   {:else if !user}
-    <div class="warn">Necesitás <a href="/login">iniciar sesión</a> para agregar acciones.</div>
+    <div class="warn">{$t('accion_form.login_warn_prefix')} <a href="/login">{$t('accion_form.login_warn_link')}</a> {$t('accion_form.login_warn_suffix')}</div>
   {:else if submitted}
     <div class="success">
-      <p>Acción enviada. Gracias por contribuir.</p>
+      <p>{$t('accion_form.success')}</p>
       <div class="links">
-        <a href="/acciones" class="btn primary">Ver acciones</a>
-        <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; }}>Agregar otra</button>
+        <a href="/acciones" class="btn primary">{$t('accion_form.view_actions')}</a>
+        <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; }}>{$t('accion_form.add_another')}</button>
       </div>
     </div>
   {:else}
     <form on:submit|preventDefault={handleSubmit}>
-      <label>Nombre *
-        <input type="text" bind:value={name} placeholder="Ej: Vibración externa" required />
+      <label>{$t('accion_form.name')}
+        <input type="text" bind:value={name} placeholder={$t('accion_form.name.placeholder')} required />
       </label>
 
-      <label>Descripción * <small>(qué es, cómo se usa y qué suele producir)</small>
-        <textarea rows="3" bind:value={description} required placeholder="Descripción breve y clara de la práctica…"></textarea>
+      <label>{$t('accion_form.description')} <small>{$t('accion_form.description.hint')}</small>
+        <textarea rows="3" bind:value={description} required placeholder={$t('accion_form.description.placeholder')}></textarea>
       </label>
 
-      <label>Cómo se hace (opcional) <small>Versión mínima para probarla</small>
-        <textarea rows="2" bind:value={hello_world} placeholder="Paso a paso simple para testearla…"></textarea>
+      <label>{$t('accion_form.how_to')} <small>{$t('accion_form.how_to.hint')}</small>
+        <textarea rows="2" bind:value={hello_world} placeholder={$t('accion_form.how_to.placeholder')}></textarea>
       </label>
 
-      <label>Advertencias (opcional) <small>Una por línea</small>
-        <textarea rows="3" bind:value={warnings_text} placeholder={"Riesgo o error común\nOtro riesgo relevante\nEj: No combinar con X"}></textarea>
+      <label>{$t('accion_form.warnings')} <small>{$t('accion_form.warnings.hint')}</small>
+        <textarea rows="3" bind:value={warnings_text} placeholder={$t('accion_form.warnings.placeholder')}></textarea>
       </label>
 
       <fieldset>
-        <legend>Puntuaciones (opcional) <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">guía rápida →</a></legend>
+        <legend>{$t('accion_form.scores')} <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">{$t('accion_form.scores.guide')}</a></legend>
         <div class="scores">
           {#each SCORE_FIELDS as field}
             {@const isSet = scores[field.key] !== null}
@@ -130,12 +133,12 @@
                 <div class="score-right">
                   {#if isSet}
                     <span class="score-val" style="color:{field.color}">{scores[field.key]}</span>
-                    <button type="button" class="clear-btn" title="Quitar puntaje"
+                    <button type="button" class="clear-btn" title={$t('accion_form.scores.remove')}
                       on:click={() => scores[field.key] = null}>×</button>
                   {:else}
                     <span class="score-none">—</span>
                   {/if}
-                  <button type="button" class="tooltip-btn" title="Ver descripción"
+                  <button type="button" class="tooltip-btn" title={$t('accion_form.scores.info')}
                     on:click={() => expandedTooltip = expandedTooltip === field.key ? null : field.key}>?</button>
                 </div>
               </div>
@@ -144,7 +147,7 @@
                   style="--c: {field.color}" />
               {:else}
                 <button type="button" class="activate-btn"
-                  on:click={() => scores[field.key] = 0}>+ Puntuar</button>
+                  on:click={() => scores[field.key] = 0}>{$t('accion_form.scores.add')}</button>
               {/if}
               {#if expandedTooltip === field.key}
                 <p class="tooltip-text">{field.tooltip}</p>
@@ -152,28 +155,28 @@
               {#if isSet && field.key in whyValues}
                 <input type="text" class="why-input"
                   bind:value={whyValues[field.key]}
-                  placeholder="Suma detalles aca si querés" />
+                  placeholder={$t('accion_form.scores.why.placeholder')} />
               {/if}
             </div>
           {/each}
         </div>
       </fieldset>
 
-      <label>Tags (opcional) <small>Separados por coma</small>
-        <input type="text" bind:value={tags_input} placeholder="genital, sostenido, accesible…" />
+      <label>{$t('accion_form.tags')} <small>{$t('accion_form.tags.hint')}</small>
+        <input type="text" bind:value={tags_input} placeholder={$t('accion_form.tags.placeholder')} />
       </label>
 
       <label class="checkbox-row">
         <input type="checkbox" bind:checked={publishAnonymous} />
-        <span>Publicar como anónimo</span>
+        <span>{$t('accion_form.anonymous')}</span>
       </label>
 
-      <label>Fotos (opcional) <small>Hasta 5</small>
+      <label>{$t('accion_form.photos')} <small>{$t('accion_form.photos.hint')}</small>
         <input class="file-input" type="file" multiple accept="image/*" id="accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
         <label for="accion-fotos" class="upload-box">
-          <span class="upload-kicker">Imagenes</span>
-          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) listos` : 'Elegir fotos'}</strong>
-          <span>{imageFiles.length ? 'Podés volver a tocar para reemplazarlas.' : 'JPG, PNG o WEBP. Hasta 5 imagenes por accion.'}</span>
+          <span class="upload-kicker">{$t('accion_form.photos.label')}</span>
+          <strong>{imageFiles.length ? $t('accion_form.photos.selected', { count: imageFiles.length }) : $t('accion_form.photos.choose')}</strong>
+          <span>{imageFiles.length ? $t('accion_form.photos.replace') : $t('accion_form.photos.info')}</span>
         </label>
       </label>
       {#if imageFiles.length}
@@ -187,7 +190,7 @@
       {#if error}<p class="error">{error}</p>{/if}
 
       <button type="submit" class="submit" disabled={loading}>
-        {uploading ? 'Subiendo fotos…' : loading ? 'Guardando…' : 'Publicar acción'}
+        {uploading ? $t('accion_form.submit.uploading') : loading ? $t('accion_form.submit.loading') : $t('accion_form.submit.new')}
       </button>
     </form>
   {/if}

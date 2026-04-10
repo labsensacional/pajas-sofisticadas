@@ -5,6 +5,7 @@
   import { auth, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { login, loginWithGoogle, register, resetPassword } from '$lib/auth.js';
   import { onAuthStateChanged } from 'firebase/auth';
+  import { t } from '$lib/i18n.js';
 
   let email = '';
   let password = '';
@@ -39,37 +40,37 @@
 
 <main class="page">
   <div class="card">
-    <h1>{mode === 'reset' ? 'Recuperar contraseña' : mode === 'register' ? 'Crear cuenta' : 'Iniciar sesión'}</h1>
+    <h1>{mode === 'reset' ? $t('login.title.reset') : mode === 'register' ? $t('login.title.register') : $t('login.title.login')}</h1>
 
     {#if !hasFirebaseConfig}
-      <div class="warn">Configura Firebase en el archivo .env</div>
+      <div class="warn">{$t('login.firebase_warning')}</div>
     {/if}
 
     {#if notice}<p class="success">{notice}</p>{/if}
     {#if error}<p class="error">{error}</p>{/if}
 
     <form on:submit|preventDefault={handleSubmit}>
-      <label>Email <input type="email" bind:value={email} required /></label>
+      <label>{$t('login.email')} <input type="email" bind:value={email} required /></label>
       {#if mode !== 'reset'}
-        <label>Contraseña <input type="password" bind:value={password} required /></label>
+        <label>{$t('login.password')} <input type="password" bind:value={password} required /></label>
       {/if}
       <button type="submit" class="primary" disabled={loading}>
-        {loading ? '...' : mode === 'reset' ? 'Enviar' : mode === 'register' ? 'Crear cuenta' : 'Entrar'}
+        {loading ? '...' : mode === 'reset' ? $t('login.submit.reset') : mode === 'register' ? $t('login.submit.register') : $t('login.submit.login')}
       </button>
     </form>
 
     {#if mode !== 'reset'}
       <button class="google" on:click={handleGoogle} disabled={loading}>
-        Entrar con Google
+        {$t('login.google')}
       </button>
     {/if}
 
     <div class="links">
       {#if mode === 'login'}
-        <button class="link" on:click={() => mode = 'register'}>Crear cuenta</button>
-        <button class="link" on:click={() => mode = 'reset'}>Olvidé mi contraseña</button>
+        <button class="link" on:click={() => mode = 'register'}>{$t('login.link.register')}</button>
+        <button class="link" on:click={() => mode = 'reset'}>{$t('login.link.forgot')}</button>
       {:else}
-        <button class="link" on:click={() => mode = 'login'}>Volver al login</button>
+        <button class="link" on:click={() => mode = 'login'}>{$t('login.link.back')}</button>
       {/if}
     </div>
   </div>

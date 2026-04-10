@@ -10,6 +10,7 @@
   } from 'firebase/firestore';
   import { findStatic } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
+  import { t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -78,11 +79,11 @@
   async function addComment() {
     if (!user || !commentText.trim()) return;
     try {
-      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario';
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       await addDoc(collection(db, 'comments'), {
         parentId: id, parentType: 'sesion', uid: user.uid,
         text: commentText.trim(),
-        displayName: commentAnonymous ? 'Anónimo' : currentUsername,
+        displayName: commentAnonymous ? $t('common.anonymous') : currentUsername,
         isAnonymous: commentAnonymous,
         createdAt: serverTimestamp()
       });
@@ -98,32 +99,32 @@
   }
 
   async function markReviewed() {
-    try { await updateDoc(doc(db, 'sesiones', id), { reviewed: true }); sesion = { ...sesion, reviewed: true }; notice = 'Marcada como revisada.'; }
+    try { await updateDoc(doc(db, 'sesiones', id), { reviewed: true }); sesion = { ...sesion, reviewed: true }; notice = $t('sesion.marked_reviewed'); }
     catch (e) { error = e?.message ?? 'Error.'; }
   }
 
   async function deleteSesion() {
-    if (!confirm('¿Eliminar esta sesión?')) return;
+    if (!confirm($t('sesion.delete_confirm'))) return;
     try {
       if (storage && sesion.photos?.length) {
         const { ref, deleteObject } = await import('firebase/storage');
         await Promise.all(sesion.photos.map(url => deleteObject(ref(storage, url)).catch(() => {})));
       }
       await deleteDoc(doc(db, 'sesiones', id));
-      notice = 'Sesión eliminada.'; sesion = null;
+      notice = $t('sesion.deleted'); sesion = null;
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 
   function accionName(aid) { return findStatic(aid)?.name ?? aid; }
 </script>
 
-<svelte:head><title>{sesion?.title ?? 'Sesión'} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{sesion?.title ?? $t('sesion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/sesiones" class="back">← Sesiones</a>
+  <a href="/sesiones" class="back">{$t('sesion.back')}</a>
 
   {#if !sesion && !notice}
-    <p class="loading">Cargando…</p>
+    <p class="loading">{$t('sesion.loading')}</p>
   {:else if notice && !sesion}
     <p class="notice-big">{notice}</p>
   {:else if sesion}
@@ -131,7 +132,7 @@
       <header class="art-header">
         <h1>{sesion.title}</h1>
         <div class="meta">
-          <span>{sesion.authorName || 'Anónimo'}</span>
+          <span>{sesion.authorName || $t('sesiones.anonymous')}</span>
           <span>·</span>
           <span>{sesion.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
         </div>
@@ -143,7 +144,7 @@
 
       {#if sesion.accionTags?.length}
         <div class="tag-group">
-          <span class="tag-group-label">Acciones usadas</span>
+          <span class="tag-group-label">{$t('sesion_form.acciones')}</span>
           <div class="action-chips">
             {#each sesion.accionTags as at}
               <a href="/acciones/{at}" class="action-chip">{accionName(at)}</a>
@@ -154,10 +155,10 @@
 
       {#if sesion.tags?.length}
         <div class="tag-group">
-          <span class="tag-group-label">Tags</span>
+          <span class="tag-group-label">{$t('sesion_form.tags')}</span>
           <div class="free-chips">
-            {#each sesion.tags as t}
-              <a href="/sesiones?tag={t}" class="free-chip">#{t}</a>
+            {#each sesion.tags as tag}
+              <a href="/sesiones?tag={tag}" class="free-chip">#{tag}</a>
             {/each}
           </div>
         </div>
@@ -182,18 +183,18 @@
 
       <div class="actions-row">
         <button class="save-btn {saved ? 'saved' : ''}" on:click={toggleSave} disabled={!user}>
-          {saved ? '★ Guardada' : '☆ Guardar'} ({saveCount})
+          {saved ? $t('sesion.saved') : $t('sesion.save')} ({saveCount})
         </button>
-        {#if !user}<span class="auth-hint"><a href="/login">Login</a> para guardar y comentar</span>{/if}
+        {#if !user}<span class="auth-hint"><a href="/login">Login</a> {$t('sesion.auth_hint')}</span>{/if}
 
         {#if isMod(user) || (user && sesion.authorUid === user.uid)}
           <div class="mod-actions">
             {#if isMod(user) && !sesion.reviewed}
-              <button class="mod-btn review" on:click={markReviewed}>Marcar como revisada</button>
+              <button class="mod-btn review" on:click={markReviewed}>{$t('sesion.mark_reviewed')}</button>
             {/if}
-            <a href="/sesiones/{id}/editar" class="mod-btn edit">Editar</a>
+            <a href="/sesiones/{id}/editar" class="mod-btn edit">{$t('sesion.edit')}</a>
             {#if isMod(user) || (user && sesion.authorUid === user.uid)}
-              <button class="mod-btn delete" on:click={deleteSesion}>Eliminar</button>
+              <button class="mod-btn delete" on:click={deleteSesion}>{$t('sesion.delete')}</button>
             {/if}
           </div>
         {/if}
@@ -204,32 +205,32 @@
     </article>
 
     <section class="comments-section">
-      <h2>Comentarios</h2>
+      <h2>{$t('comments.title')}</h2>
       {#if user}
         <div class="comment-form">
-          <textarea rows="3" placeholder="Escribí un comentario…" bind:value={commentText}></textarea>
+          <textarea rows="3" placeholder={$t('comments.placeholder')} bind:value={commentText}></textarea>
           <label class="comment-anon">
             <input type="checkbox" bind:checked={commentAnonymous} />
-            <span>Comentar como anónimo</span>
+            <span>{$t('comments.anonymous_label')}</span>
           </label>
-          <button on:click={addComment} disabled={!commentText.trim()}>Comentar</button>
+          <button on:click={addComment} disabled={!commentText.trim()}>{$t('comments.submit')}</button>
         </div>
       {:else}
-        <p class="auth-hint"><a href="/login">Iniciá sesión</a> para comentar.</p>
+        <p class="auth-hint"><a href="/login">{$t('comments.auth_prefix')}</a> {$t('comments.auth_suffix')}</p>
       {/if}
       {#if loadingComments}
-        <p>Cargando…</p>
+        <p>{$t('comments.loading')}</p>
       {:else if comments.length === 0}
-        <p class="empty-c">Sin comentarios todavía.</p>
+        <p class="empty-c">{$t('comments.empty')}</p>
       {:else}
         <div class="comment-list">
           {#each comments as c}
             <div class="comment">
               <div class="comment-header">
-                <strong>{c.isAnonymous ? 'Anónimo' : (c.displayName || 'Usuario')}</strong>
+                <strong>{c.isAnonymous ? $t('common.anonymous') : (c.displayName || $t('common.user'))}</strong>
                 <span class="cdate">{c.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
                 {#if user && (c.uid === user.uid || isMod(user))}
-                  <button class="del-c" on:click={() => deleteComment(c.id)}>Borrar</button>
+                  <button class="del-c" on:click={() => deleteComment(c.id)}>{$t('comments.delete')}</button>
                 {/if}
               </div>
               <p>{c.text}</p>
