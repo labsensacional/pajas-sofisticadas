@@ -196,6 +196,8 @@
         {/each}
       </div>
 
+      <p class="score-note">Estas puntuaciones son referencias vagas y orientativas; no hace falta tomarlas demasiado en serio.</p>
+
       <section class="subscores">
         <div class="subscores-header">
           <h3>Detalle del placer</h3>
@@ -223,7 +225,7 @@
       <section class="energy-block">
         <div class="energy-header">
           <h3>Energía requerida</h3>
-          <p>Se lee de 0 a 10 porque no describe dirección, sino cuánto esfuerzo físico o mental demanda.</p>
+          <p>Cuánto esfuerzo físico o mental demanda.</p>
         </div>
         <div class="sec-row energy-row">
           <span class="sec-label">Energía</span>
@@ -374,6 +376,12 @@
   .axis-bar-fill { position: absolute; height: 100%; border-radius: 4px; transition: left 0.3s, width 0.3s; }
   .axis-val { font-size: 1.2rem; font-weight: 800; font-family: monospace; color: var(--text); }
   .axis-why { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
+  .score-note {
+    margin: -4px 0 2px;
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
 
   .subscores,
   .energy-block {
