@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 
-const KEY = 'ps_age_gate_confirmed';
+const KEY = 'ls_age_gate_confirmed';
 
 export function isAgeGateConfirmed() {
   if (!browser) return false;

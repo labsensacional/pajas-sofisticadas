@@ -1,284 +1,377 @@
 <script>
+  // @ts-nocheck
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
+  import { onAuthStateChanged } from 'firebase/auth';
+  import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+  import { findStatic } from '$lib/actions.js';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
-  import {
-    EmailAuthProvider,
-    onAuthStateChanged,
-    reauthenticateWithCredential,
-    sendPasswordResetEmail,
-    updatePassword
-  } from 'firebase/auth';
-  import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+  import { ensureUserProfile, updateCurrentUserPassword, updateDisplayName } from '$lib/auth.js';
 
   let user = null;
   let loading = true;
-  let displayName = '';
-  let message = '';
-  let error = '';
-  let passwordMessage = '';
-  let passwordError = '';
-  let currentPassword = '';
+  let loadingSaved = true;
+  let saving = false;
+  let savingPassword = false;
+  let publicName = '';
   let newPassword = '';
+  let confirmPassword = '';
+  let notice = '';
+  let error = '';
+  let savedActions = [];
+  let savedSessions = [];
+  let accountPanelOpen = false;
+  let savedPanelOpen = false;
+
+  $: hasPasswordProvider = Boolean(user?.providerData?.some((provider) => provider.providerId === 'password'));
 
   onMount(() => {
-    if (!hasFirebaseConfig) {
+    if (!auth) {
       loading = false;
       return;
     }
 
-    if (auth) {
-      return onAuthStateChanged(auth, async (value) => {
-        user = value;
-        if (user) {
-          await loadProfile();
-        }
-        loading = false;
-      });
-    }
+    return onAuthStateChanged(auth, async (value) => {
+      if (!value) {
+        goto('/login');
+        return;
+      }
+
+      await ensureUserProfile(value);
+      user = auth.currentUser ?? value;
+      publicName = user.displayName || '';
+      await loadSavedContent(user.uid);
+      loading = false;
+    });
   });
 
-  async function loadProfile() {
-    if (!user) return;
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    if (snap.exists()) {
-      displayName = snap.data().displayName ?? '';
-    } else {
-      displayName = user.email?.split('@')[0] ?? '';
-    }
-  }
+  async function loadSavedContent(uid) {
+    loadingSaved = true;
+    savedActions = [];
+    savedSessions = [];
 
-  async function saveProfile() {
-    if (!user) return;
-    message = '';
-    error = '';
-
-    const name = displayName.trim();
-    if (!name) {
-      error = 'El nombre de usuario no puede quedar vacio.';
+    if (!hasFirebaseConfig || !db) {
+      loadingSaved = false;
       return;
     }
 
     try {
-      await setDoc(
-        doc(db, 'users', user.uid),
-        {
-          displayName: name,
-          updatedAt: serverTimestamp()
-        },
-        { merge: true }
-      );
-      message = 'Nombre actualizado.';
-    } catch (err) {
-      error = err?.message ?? 'No se pudo guardar.';
+      const snap = await getDocs(query(collection(db, 'saves'), where('uid', '==', uid)));
+      const saves = snap.docs.map((entry) => entry.data());
+
+      const savedActionIds = [...new Set(saves.filter((entry) => entry.parentType === 'accion').map((entry) => entry.parentId))];
+      const savedSessionIds = [...new Set(saves.filter((entry) => entry.parentType === 'sesion').map((entry) => entry.parentId))];
+
+      savedActions = await Promise.all(savedActionIds.map(async (id) => {
+        const staticAction = findStatic(id);
+        if (staticAction) return staticAction;
+
+        const actionSnap = await getDoc(doc(db, 'acciones', id));
+        return actionSnap.exists() ? { id: actionSnap.id, ...actionSnap.data() } : null;
+      })).then((items) => items.filter(Boolean));
+
+      savedSessions = await Promise.all(savedSessionIds.map(async (id) => {
+        const sessionSnap = await getDoc(doc(db, 'sesiones', id));
+        return sessionSnap.exists() ? { id: sessionSnap.id, ...sessionSnap.data() } : null;
+      })).then((items) => items.filter(Boolean));
+    } catch (e) {
+      error = e?.message ?? 'No se pudieron cargar tus guardados.';
+    } finally {
+      loadingSaved = false;
+    }
+  }
+
+  async function saveUsername() {
+    const nextUsername = publicName.trim();
+    if (!nextUsername) {
+      error = 'El nombre público no puede estar vacío.';
+      return;
+    }
+
+    saving = true;
+    error = '';
+    notice = '';
+
+    try {
+      await updateDisplayName(nextUsername);
+      user = auth.currentUser ?? user;
+      notice = 'Nombre público actualizado.';
+    } catch (e) {
+      error = e?.message ?? 'No se pudo actualizar el nombre público.';
+    } finally {
+      saving = false;
     }
   }
 
   async function savePassword() {
-    if (!user || !auth) return;
-    passwordMessage = '';
-    passwordError = '';
-
-    if (!user.email) {
-      passwordError = 'No encontramos un email asociado.';
+    if (newPassword.length < 6) {
+      error = 'La contraseña debe tener al menos 6 caracteres.';
       return;
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      passwordError = 'La nueva contraseña debe tener al menos 6 caracteres.';
+    if (newPassword !== confirmPassword) {
+      error = 'Las contraseñas no coinciden.';
       return;
     }
+
+    savingPassword = true;
+    error = '';
+    notice = '';
 
     try {
-      const hasPasswordProvider = user.providerData?.some((p) => p.providerId === 'password');
-      if (hasPasswordProvider) {
-        if (!currentPassword) {
-          passwordError = 'Ingresa tu contraseña actual.';
-          return;
-        }
-        const credential = EmailAuthProvider.credential(user.email, currentPassword);
-        await reauthenticateWithCredential(user, credential);
-      }
-
-      await updatePassword(user, newPassword);
-      currentPassword = '';
+      await updateCurrentUserPassword(newPassword);
       newPassword = '';
-      passwordMessage = 'Contraseña actualizada.';
-    } catch (err) {
-      passwordError = err?.message ?? 'No se pudo actualizar la contraseña.';
-    }
-  }
-
-  async function sendResetLink() {
-    if (!user || !auth) return;
-    passwordMessage = '';
-    passwordError = '';
-
-    if (!user.email) {
-      passwordError = 'No encontramos un email asociado.';
-      return;
-    }
-
-    try {
-      await sendPasswordResetEmail(auth, user.email);
-      passwordMessage = 'Te enviamos un email para crear o cambiar la contraseña.';
-    } catch (err) {
-      passwordError = err?.message ?? 'No se pudo enviar el email.';
+      confirmPassword = '';
+      notice = hasPasswordProvider
+        ? 'Contraseña actualizada.'
+        : 'Contraseña definida para esta cuenta.';
+    } catch (e) {
+      error = e?.code === 'auth/requires-recent-login'
+        ? 'Por seguridad, cerrá sesión y volvé a entrar antes de cambiar la contraseña.'
+        : (e?.message ?? 'No se pudo actualizar la contraseña.');
+    } finally {
+      savingPassword = false;
     }
   }
 </script>
 
-<svelte:head>
-  <title>Perfil · Pajas Sofisticadas</title>
-</svelte:head>
+<svelte:head><title>Perfil · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <header class="header">
-    <h1>Perfil</h1>
-    <p>Edita tu nombre de usuario visible en posts no anonimos.</p>
-  </header>
+  <a href="/" class="back">← Inicio</a>
+  <h1>Perfil</h1>
 
-  {#if !hasFirebaseConfig}
-    <div class="warning">Completa `.env` con Firebase.</div>
-  {:else if !user}
-    <div class="warning">Inicia sesion para editar tu perfil. <a href="/login">Login</a></div>
-  {:else if loading}
-    <p>Cargando...</p>
-  {:else}
+  {#if loading}
+    <p class="hint">Cargando…</p>
+  {:else if user}
     <div class="card">
-      <label>
-        Nombre de usuario
-        <input type="text" bind:value={displayName} />
-      </label>
-      <button on:click={saveProfile}>Guardar cambios</button>
-      {#if message}
-        <p class="message">{message}</p>
-      {/if}
-      {#if error}
-        <p class="error">{error}</p>
-      {/if}
-    </div>
-    <div class="card">
-      <h2>Seguridad</h2>
-      <p class="hint">Puedes cambiar tu contraseña o crear una si entraste con Google.</p>
-      {#if user.providerData?.some((p) => p.providerId === 'password')}
-        <label>
-          Contraseña actual
-          <input type="password" bind:value={currentPassword} />
-        </label>
-      {/if}
-      <label>
-        Nueva contraseña
-        <input type="password" bind:value={newPassword} />
-      </label>
-      <div class="actions">
-        <button on:click={savePassword}>Guardar contraseña</button>
-        <button class="ghost" on:click={sendResetLink}>Enviar link por email</button>
-      </div>
-      {#if passwordMessage}
-        <p class="message">{passwordMessage}</p>
-      {/if}
-      {#if passwordError}
-        <p class="error">{passwordError}</p>
-      {/if}
-    </div>
-    <div class="links">
-      <a href="/mis-posts">Ver mis posts</a>
-      <a href="/listas">Ver mis listas</a>
+      <section class="panel">
+        <button class="panel-toggle" on:click={() => accountPanelOpen = !accountPanelOpen} aria-expanded={accountPanelOpen}>
+          <div>
+            <h2>Cuenta</h2>
+            <p class="subtle">Nombre Público y contraseña</p>
+          </div>
+          <span class="panel-icon">{accountPanelOpen ? '−' : '+'}</span>
+        </button>
+
+        {#if accountPanelOpen}
+          <div class="panel-content">
+            <section class="block">
+              <h3>Nombre Público</h3>
+              <p class="subtle">Si todavía no elegiste uno, la cuenta recibe uno aleatorio. Podés cambiarlo siempre.</p>
+              <label>
+                <span>Nombre Público</span>
+                <input type="text" bind:value={publicName} placeholder="Cómo querés aparecer" />
+              </label>
+              <button class="primary" on:click={saveUsername} disabled={saving}>
+                {saving ? 'Guardando…' : 'Guardar nombre público'}
+              </button>
+            </section>
+
+            <section class="block">
+              <h3>{hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}</h3>
+              <p class="subtle">
+                {#if hasPasswordProvider}
+                  Cambiala directamente desde esta página.
+                {:else}
+                  Si entraste con Google, podés definir una contraseña acá y después entrar también con email.
+                {/if}
+              </p>
+              <label>
+                <span>Nueva contraseña</span>
+                <input type="password" bind:value={newPassword} placeholder="Mínimo 6 caracteres" />
+              </label>
+              <label>
+                <span>Repetir contraseña</span>
+                <input type="password" bind:value={confirmPassword} placeholder="Repetí la contraseña" />
+              </label>
+              <button class="secondary" on:click={savePassword} disabled={savingPassword}>
+                {savingPassword ? 'Guardando…' : hasPasswordProvider ? 'Cambiar contraseña' : 'Definir contraseña'}
+              </button>
+            </section>
+          </div>
+        {/if}
+      </section>
+
+      <section class="panel">
+        <button class="panel-toggle" on:click={() => savedPanelOpen = !savedPanelOpen} aria-expanded={savedPanelOpen}>
+          <div>
+            <h2>Guardados</h2>
+            <p class="subtle">Acciones y sesiones guardadas</p>
+          </div>
+          <span class="panel-icon">{savedPanelOpen ? '−' : '+'}</span>
+        </button>
+
+        {#if savedPanelOpen}
+          <div class="panel-content">
+            <div class="saved-header">
+              <div class="saved-links">
+                <a href="#acciones-guardadas" class="pill-link">Acciones ({savedActions.length})</a>
+                <a href="#sesiones-guardadas" class="pill-link">Sesiones ({savedSessions.length})</a>
+              </div>
+            </div>
+
+            {#if loadingSaved}
+              <p class="subtle">Cargando guardados…</p>
+            {:else}
+              <div class="saved-grid">
+                <div class="saved-column" id="acciones-guardadas">
+                  <h3>Acciones guardadas</h3>
+                  {#if savedActions.length === 0}
+                    <p class="subtle">Todavía no guardaste acciones.</p>
+                  {:else}
+                    <div class="saved-list">
+                      {#each savedActions as action}
+                        <a href="/acciones/{action.id}" class="saved-item">
+                          <strong>{action.name}</strong>
+                          {#if action.description}<span>{action.description.slice(0, 90)}{action.description.length > 90 ? '…' : ''}</span>{/if}
+                        </a>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+
+                <div class="saved-column" id="sesiones-guardadas">
+                  <h3>Sesiones guardadas</h3>
+                  {#if savedSessions.length === 0}
+                    <p class="subtle">Todavía no guardaste sesiones.</p>
+                  {:else}
+                    <div class="saved-list">
+                      {#each savedSessions as session}
+                        <a href="/sesiones/{session.id}" class="saved-item">
+                          <strong>{session.title}</strong>
+                          {#if session.body}<span>{session.body.slice(0, 90)}{session.body.length > 90 ? '…' : ''}</span>{/if}
+                        </a>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            {/if}
+          </div>
+        {/if}
+      </section>
+
+      {#if notice}<p class="notice">{notice}</p>{/if}
+      {#if error}<p class="error">{error}</p>{/if}
     </div>
   {/if}
 </main>
 
 <style>
-  .page {
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 40px 24px;
-  }
-
-  .header {
-    margin-bottom: 20px;
-  }
+  .page { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+  .back { display: inline-block; margin-bottom: 16px; text-decoration: none; color: #6b7280; font-weight: 600; font-size: 0.9rem; }
+  h1 { margin: 0 0 24px; }
+  .hint { color: #9ca3af; }
 
   .card {
-    background: rgba(255, 255, 255, 0.85);
-    padding: 20px;
+    background: #fff;
+    border: 1px solid rgba(12,12,21,0.08);
+    border-radius: 18px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .panel {
+    border: 1px solid rgba(12,12,21,0.08);
     border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 16px;
+    background: #fafafa;
   }
 
-  label {
+  .panel-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: transparent;
+    border: none;
+    padding: 20px 22px;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .panel-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    color: #6b7280;
+  }
+
+  .panel-content {
+    padding: 0 22px 22px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 20px;
+  }
+
+  .block { display: flex; flex-direction: column; gap: 12px; }
+  .block h3 { margin: 0; font-size: 0.95rem; }
+  .subtle { margin: 0; color: #6b7280; line-height: 1.5; }
+
+  .saved-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .saved-links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill-link {
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #111827;
     font-weight: 600;
+    font-size: 0.85rem;
   }
 
-  input {
-    border: 1px solid rgba(12, 12, 21, 0.2);
+  .saved-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+
+  .saved-column { display: flex; flex-direction: column; gap: 10px; }
+  .saved-list { display: flex; flex-direction: column; gap: 8px; }
+  .saved-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid rgba(12,12,21,0.08);
     border-radius: 12px;
+    padding: 12px 14px;
+    background: #fafafa;
+  }
+  .saved-item strong { font-size: 0.92rem; }
+  .saved-item span { color: #6b7280; font-size: 0.82rem; line-height: 1.4; }
+
+  label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 0.9rem; }
+  input {
+    border: 1px solid rgba(12,12,21,0.15);
+    border-radius: 10px;
     padding: 10px 12px;
     font: inherit;
   }
 
   button {
-    align-self: flex-start;
+    width: fit-content;
     border: none;
-    background: #0c0c15;
-    color: #fff;
-    padding: 8px 16px;
     border-radius: 999px;
+    padding: 12px 18px;
+    font: inherit;
+    font-weight: 700;
     cursor: pointer;
   }
+  button:disabled { opacity: 0.6; cursor: default; }
+  .primary { background: #0c0c15; color: #fff; }
+  .secondary { background: #eff6ff; color: #1d4ed8; }
 
-  .actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .ghost {
-    background: transparent;
-    color: #0c0c15;
-    border: 1px solid #0c0c15;
-  }
-
-  h2 {
-    margin: 0;
-  }
-
-  .hint {
-    margin: 0;
-    color: #4b5563;
-    font-size: 0.92rem;
-  }
-
-  .links {
-    margin-top: 16px;
-    display: flex;
-    gap: 16px;
-  }
-
-  .links a {
-    color: #0c0c15;
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  .warning {
-    background: #fff3d4;
-    padding: 12px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-  }
-
-  .message {
-    color: #0b6b3a;
-  }
-
-  .error {
-    color: #b91c1c;
-  }
+  .notice { margin: 0; color: #047857; background: #ecfdf5; padding: 10px 12px; border-radius: 10px; }
+  .error { margin: 0; color: #b91c1c; background: #fee2e2; padding: 10px 12px; border-radius: 10px; }
 </style>

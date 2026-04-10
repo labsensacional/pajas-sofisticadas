@@ -1,0 +1,308 @@
+<script>
+  // @ts-nocheck
+  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
+  import { onAuthStateChanged } from 'firebase/auth';
+  import {
+    addDoc, collection, deleteDoc, doc, getDoc,
+    getDocs, orderBy, query, serverTimestamp, updateDoc, where
+  } from 'firebase/firestore';
+  import { findStatic } from '$lib/actions.js';
+  import { isMod } from '$lib/moderator.js';
+
+  /** @type {any} */
+  let user = null;
+  /** @type {any} */
+  let sesion = null;
+  let saved = false;
+  let saveId = null;
+  let saveCount = 0;
+  let commentText = '';
+  /** @type {any[]} */
+  let comments = [];
+  let loadingComments = false;
+  let currentPhoto = 0;
+  let error = '';
+  let notice = '';
+  let commentAnonymous = false;
+
+  $: id = $page.params.id;
+
+  onMount(() => {
+    if (auth) onAuthStateChanged(auth, v => { user = v; if (v) loadUserSave(); });
+    if (hasFirebaseConfig && db) {
+      loadSesion();
+      loadComments();
+      loadSaveCount();
+    }
+  });
+
+  async function loadSesion() {
+    const snap = await getDoc(doc(db, 'sesiones', id));
+    if (snap.exists()) sesion = { id: snap.id, ...snap.data() };
+  }
+
+  async function loadSaveCount() {
+    const snap = await getDocs(query(collection(db, 'saves'), where('parentId', '==', id), where('parentType', '==', 'sesion')));
+    saveCount = snap.size;
+  }
+
+  async function loadUserSave() {
+    if (!user) return;
+    const snap = await getDocs(query(collection(db, 'saves'), where('uid', '==', user.uid), where('parentId', '==', id), where('parentType', '==', 'sesion')));
+    if (!snap.empty) { saved = true; saveId = snap.docs[0].id; }
+    else { saved = false; saveId = null; }
+  }
+
+  async function toggleSave() {
+    if (!user || !db) return;
+    try {
+      if (saved && saveId) {
+        await deleteDoc(doc(db, 'saves', saveId));
+        saved = false; saveId = null; saveCount--;
+      } else {
+        const ref = await addDoc(collection(db, 'saves'), { uid: user.uid, parentId: id, parentType: 'sesion', createdAt: serverTimestamp() });
+        saved = true; saveId = ref.id; saveCount++;
+      }
+    } catch (e) { error = e?.message ?? 'Error.'; }
+  }
+
+  async function loadComments() {
+    loadingComments = true;
+    const snap = await getDocs(query(collection(db, 'comments'), where('parentId', '==', id), where('parentType', '==', 'sesion'), orderBy('createdAt', 'asc')));
+    comments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadingComments = false;
+  }
+
+  async function addComment() {
+    if (!user || !commentText.trim()) return;
+    try {
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario';
+      await addDoc(collection(db, 'comments'), {
+        parentId: id, parentType: 'sesion', uid: user.uid,
+        text: commentText.trim(),
+        displayName: commentAnonymous ? 'Anónimo' : currentUsername,
+        isAnonymous: commentAnonymous,
+        createdAt: serverTimestamp()
+      });
+      commentText = '';
+      commentAnonymous = false;
+      await loadComments();
+    } catch (e) { error = e?.message ?? 'Error.'; }
+  }
+
+  async function deleteComment(cid) {
+    try { await deleteDoc(doc(db, 'comments', cid)); await loadComments(); }
+    catch (e) { error = e?.message ?? 'Error.'; }
+  }
+
+  async function markReviewed() {
+    try { await updateDoc(doc(db, 'sesiones', id), { reviewed: true }); sesion = { ...sesion, reviewed: true }; notice = 'Marcada como revisada.'; }
+    catch (e) { error = e?.message ?? 'Error.'; }
+  }
+
+  async function deleteSesion() {
+    if (!confirm('¿Eliminar esta sesión?')) return;
+    try {
+      if (storage && sesion.photos?.length) {
+        const { ref, deleteObject } = await import('firebase/storage');
+        await Promise.all(sesion.photos.map(url => deleteObject(ref(storage, url)).catch(() => {})));
+      }
+      await deleteDoc(doc(db, 'sesiones', id));
+      notice = 'Sesión eliminada.'; sesion = null;
+    } catch (e) { error = e?.message ?? 'Error.'; }
+  }
+
+  function accionName(aid) { return findStatic(aid)?.name ?? aid; }
+</script>
+
+<svelte:head><title>{sesion?.title ?? 'Sesión'} · Laboratorio Sensacional</title></svelte:head>
+
+<main class="page">
+  <a href="/sesiones" class="back">← Sesiones</a>
+
+  {#if !sesion && !notice}
+    <p class="loading">Cargando…</p>
+  {:else if notice && !sesion}
+    <p class="notice-big">{notice}</p>
+  {:else if sesion}
+    <article class="card">
+      <header class="art-header">
+        <h1>{sesion.title}</h1>
+        <div class="meta">
+          <span>{sesion.authorName || 'Anónimo'}</span>
+          <span>·</span>
+          <span>{sesion.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
+        </div>
+      </header>
+
+      {#if sesion.body}
+        <div class="body">{sesion.body}</div>
+      {/if}
+
+      {#if sesion.accionTags?.length}
+        <div class="tag-group">
+          <span class="tag-group-label">Acciones usadas</span>
+          <div class="action-chips">
+            {#each sesion.accionTags as at}
+              <a href="/acciones/{at}" class="action-chip">{accionName(at)}</a>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      {#if sesion.tags?.length}
+        <div class="tag-group">
+          <span class="tag-group-label">Tags</span>
+          <div class="free-chips">
+            {#each sesion.tags as t}
+              <a href="/sesiones?tag={t}" class="free-chip">#{t}</a>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      {#if sesion.photos?.length}
+        <div class="gallery">
+          <div class="photo-frame">
+            <img src={sesion.photos[currentPhoto]} alt={sesion.title} class="main-photo" />
+          </div>
+          {#if sesion.photos.length > 1}
+            <div class="photo-thumbs">
+              {#each sesion.photos as p, i}
+                <button class="thumb-btn {currentPhoto === i ? 'active' : ''}" on:click={() => currentPhoto = i}>
+                  <img src={p} alt="" />
+                </button>
+              {/each}
+            </div>
+          {/if}
+        </div>
+      {/if}
+
+      <div class="actions-row">
+        <button class="save-btn {saved ? 'saved' : ''}" on:click={toggleSave} disabled={!user}>
+          {saved ? '★ Guardada' : '☆ Guardar'} ({saveCount})
+        </button>
+        {#if !user}<span class="auth-hint"><a href="/login">Login</a> para guardar y comentar</span>{/if}
+
+        {#if isMod(user) || (user && sesion.authorUid === user.uid)}
+          <div class="mod-actions">
+            {#if isMod(user) && !sesion.reviewed}
+              <button class="mod-btn review" on:click={markReviewed}>Marcar como revisada</button>
+            {/if}
+            <a href="/sesiones/{id}/editar" class="mod-btn edit">Editar</a>
+            {#if isMod(user) || (user && sesion.authorUid === user.uid)}
+              <button class="mod-btn delete" on:click={deleteSesion}>Eliminar</button>
+            {/if}
+          </div>
+        {/if}
+      </div>
+
+      {#if error}<p class="error">{error}</p>{/if}
+      {#if notice}<p class="notice">{notice}</p>{/if}
+    </article>
+
+    <section class="comments-section">
+      <h2>Comentarios</h2>
+      {#if user}
+        <div class="comment-form">
+          <textarea rows="3" placeholder="Escribí un comentario…" bind:value={commentText}></textarea>
+          <label class="comment-anon">
+            <input type="checkbox" bind:checked={commentAnonymous} />
+            <span>Comentar como anónimo</span>
+          </label>
+          <button on:click={addComment} disabled={!commentText.trim()}>Comentar</button>
+        </div>
+      {:else}
+        <p class="auth-hint"><a href="/login">Iniciá sesión</a> para comentar.</p>
+      {/if}
+      {#if loadingComments}
+        <p>Cargando…</p>
+      {:else if comments.length === 0}
+        <p class="empty-c">Sin comentarios todavía.</p>
+      {:else}
+        <div class="comment-list">
+          {#each comments as c}
+            <div class="comment">
+              <div class="comment-header">
+                <strong>{c.isAnonymous ? 'Anónimo' : (c.displayName || 'Usuario')}</strong>
+                <span class="cdate">{c.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
+                {#if user && (c.uid === user.uid || isMod(user))}
+                  <button class="del-c" on:click={() => deleteComment(c.id)}>Borrar</button>
+                {/if}
+              </div>
+              <p>{c.text}</p>
+            </div>
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
+</main>
+
+<style>
+  .page { max-width: 760px; margin: 0 auto; padding: 44px 24px; }
+  .back { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #6b7280; font-weight: 600; font-size: 0.9rem; }
+  .back:hover { color: #0c0c15; }
+  .loading, .notice-big { color: #9ca3af; }
+
+  .card { background: #fff; border-radius: 18px; padding: 32px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 20px; }
+
+  .art-header h1 { margin: 0 0 8px; font-size: 1.6rem; letter-spacing: -0.01em; }
+  .meta { display: flex; gap: 8px; font-size: 0.85rem; color: #9ca3af; }
+
+  .gallery { display: flex; flex-direction: column; gap: 8px; }
+  .photo-frame { width: 100%; height: 420px; background: #f3f4f6; border-radius: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .main-photo { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px; }
+  .photo-thumbs { display: flex; gap: 8px; }
+  .thumb-btn { border: 2px solid transparent; border-radius: 8px; overflow: hidden; cursor: pointer; padding: 0; background: none; }
+  .thumb-btn.active { border-color: #0c0c15; }
+  .thumb-btn img { width: 60px; height: 60px; object-fit: cover; display: block; }
+
+  .body { white-space: pre-wrap; font-size: 0.95rem; line-height: 1.7; color: #374151; }
+
+  .tag-group { display: flex; flex-direction: column; gap: 8px; }
+  .tag-group-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9ca3af; }
+  .action-chips, .free-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .action-chip { font-size: 0.82rem; background: #ede9fe; color: #5b21b6; padding: 4px 12px; border-radius: 999px; text-decoration: none; font-weight: 600; }
+  .action-chip:hover { background: #ddd6fe; }
+  .free-chip { font-size: 0.82rem; background: #f3f4f6; color: #4b5563; padding: 4px 12px; border-radius: 999px; text-decoration: none; }
+  .free-chip:hover { background: #e5e7eb; }
+
+  .actions-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .save-btn { border: 1.5px solid rgba(12,12,21,0.2); background: transparent; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 0.9rem; }
+  .save-btn.saved { background: #0c0c15; color: #fff; border-color: #0c0c15; }
+  .save-btn:disabled { opacity: 0.5; cursor: default; }
+  .auth-hint { font-size: 0.85rem; color: #6b7280; }
+  .auth-hint a { color: #0c0c15; }
+  .mod-actions { display: flex; gap: 8px; margin-left: auto; }
+  .mod-btn { padding: 6px 14px; border-radius: 999px; cursor: pointer; font-size: 0.85rem; font-weight: 600; border: none; }
+  .mod-btn.review { background: #ecfdf5; color: #047857; }
+  .mod-btn.edit { background: #eff6ff; color: #1d4ed8; text-decoration: none; }
+  .mod-btn.delete { background: #fee2e2; color: #b91c1c; }
+  .error { color: #b91c1c; font-size: 0.9rem; margin: 0; }
+  .notice { color: #047857; font-size: 0.9rem; margin: 0; }
+
+  .comments-section { background: #fff; border-radius: 18px; padding: 28px 32px; }
+  .comments-section h2 { margin: 0 0 20px; font-size: 1.1rem; }
+  .comment-form { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+  .comment-form textarea { border: 1px solid rgba(12,12,21,0.15); border-radius: 10px; padding: 10px 12px; font: inherit; resize: vertical; }
+  .comment-form button { align-self: flex-start; background: #0c0c15; color: #fff; border: none; padding: 8px 16px; border-radius: 999px; cursor: pointer; font-weight: 700; }
+  .comment-form button:disabled { opacity: 0.4; }
+  .comment-anon { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #4b5563; }
+  .comment-list { display: flex; flex-direction: column; gap: 12px; }
+  .comment { border-bottom: 1px solid rgba(12,12,21,0.06); padding-bottom: 12px; }
+  .comment:last-child { border-bottom: none; }
+  .comment-header { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .comment-header strong { font-size: 0.9rem; }
+  .cdate { font-size: 0.75rem; color: #9ca3af; }
+  .del-c { margin-left: auto; background: #fee2e2; border: none; cursor: pointer; color: #b91c1c; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
+  .comment p { margin: 0; font-size: 0.9rem; line-height: 1.5; }
+  .empty-c { color: #9ca3af; font-size: 0.9rem; }
+
+  @media (max-width: 600px) {
+    .card { padding: 22px 18px; }
+    .comments-section { padding: 20px 18px; }
+  }
+</style>

@@ -1,134 +1,100 @@
-<svelte:head>
-  <title>Pajas Sofisticadas</title>
-  <meta
-    name="description"
-    content="Archivo comunitario de exploraciones emocionales, sensoriales y de consciencia."
-  />
-</svelte:head>
+<svelte:head><title>Laboratorio Sensacional</title></svelte:head>
 
-<main class="page">
-  <header class="hero">
-    <p class="eyebrow">Archivo comunitario</p>
-    <h1>Pajas Sofisticadas</h1>
-    <p class="lede">
-      Un espacio para registrar experiencias, descubrir prácticas y conectar con la exploracion personal
-      sin estigma.
-    </p>
-    <div class="cta-row">
-      <a class="primary" href="/archivo">Entrar al archivo</a>
-      <a class="ghost" href="/publicar">Publicar una experiencia</a>
+<main class="home">
+  <section class="hero">
+    <h1>Laboratorio Sensacional</h1>
+    <p>Red social de psiconáutica recreativa y sexual. Comparti y charla sobre prácticas para alcanzar estados de trance, placer y/o excitación</p>
+    <div class="links">
+      <a href="/teoria" class="btn primary">Leer la teoría</a>
+      <a href="/acciones" class="btn ghost">Explorar acciones</a>
+      <a href="/sesiones" class="btn ghost">Ver sesiones</a>
     </div>
-  </header>
+  </section>
 
-  <section class="grid">
-    <article>
-      <h2>Explorar en minutos</h2>
-      <p>Subi una experiencia completa en menos de dos minutos con un formato sencillo.</p>
-    </article>
-    <article>
-      <h2>Etiquetas vivas</h2>
-      <p>Descubri practicas por tags creados por la comunidad.</p>
-    </article>
-    <article>
-      <h2>Anonimato real</h2>
-      <p>Decidi en cada post si queres figurar o mantenerte anonimo.</p>
-    </article>
+  <section class="sections">
+    <a href="/teoria" class="section-card">
+      <span class="icon">📖</span>
+      <h2>Teoría</h2>
+      <p>El modelo de 3 ejes, cómo combinar prácticas y principios detrás de los estados alterados.</p>
+    </a>
+    <a href="/acciones" class="section-card">
+      <span class="icon">◎</span>
+      <h2>Acciones</h2>
+      <p>Catálogo de técnicas y prácticas con puntuaciones de arousal, trance y placer.</p>
+    </a>
+    <a href="/sesiones" class="section-card">
+      <span class="icon">◇</span>
+      <h2>Sesiones</h2>
+      <p>Relatos de sesiones reales compartidos por la comunidad.</p>
+    </a>
   </section>
 </main>
 
 <style>
-  :global(body) {
-    margin: 0;
-    font-family: "Space Grotesk", system-ui, sans-serif;
-    color: #141414;
-    background: radial-gradient(circle at top, #faf4ff 0%, #f1f5ff 55%, #fff7ef 100%);
-  }
-
-  .page {
-    min-height: 100vh;
-    padding: 64px 24px 96px;
-    max-width: 960px;
+  .home {
+    max-width: 900px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 48px;
+    padding: 64px 24px;
   }
 
   .hero {
-    background: rgba(255, 255, 255, 0.72);
-    border-radius: 24px;
-    padding: 48px;
-    box-shadow: 0 24px 60px rgba(27, 0, 71, 0.08);
-  }
-
-  .eyebrow {
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    font-size: 0.72rem;
-    font-weight: 600;
-    margin: 0 0 16px;
-  }
-
-  h1 {
-    margin: 0 0 16px;
-    font-size: clamp(2.6rem, 4vw, 4rem);
-  }
-
-  .lede {
-    font-size: 1.1rem;
-    max-width: 560px;
-    line-height: 1.6;
-  }
-
-  .cta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 32px;
-  }
-
-  .primary,
-  .ghost {
-    text-decoration: none;
     text-align: center;
-    font-size: 0.95rem;
-    padding: 12px 22px;
+    margin-bottom: 64px;
+  }
+
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+
+  .hero p {
+    font-size: 1.15rem;
+    color: #4b5563;
+    max-width: 520px;
+    margin: 0 auto 32px;
+    line-height: 1.65;
+  }
+
+  .links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .btn {
+    padding: 12px 24px;
     border-radius: 999px;
-    cursor: pointer;
-    display: inline-block;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.95rem;
+    transition: transform 120ms, box-shadow 120ms;
   }
 
-  .primary {
-    background: #0c0c15;
-    color: #fff;
-  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
-  .ghost {
-    background: transparent;
-    border: 1px solid #0c0c15;
-    color: #0c0c15;
-  }
+  .btn.primary { background: #0c0c15; color: #fff; }
 
-  .grid {
+  .btn.ghost { border: 2px solid rgba(12,12,21,0.15); color: #0c0c15; }
+
+  .sections {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 20px;
   }
 
-  article {
-    background: rgba(255, 255, 255, 0.75);
-    padding: 24px;
-    border-radius: 20px;
-    box-shadow: 0 16px 40px rgba(12, 12, 21, 0.06);
+  .section-card {
+    background: #fff;
+    border: 1px solid rgba(12,12,21,0.08);
+    border-radius: 18px;
+    padding: 28px 24px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 140ms, box-shadow 140ms;
   }
 
-  h2 {
-    margin: 0 0 12px;
-  }
+  .section-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.08); }
 
-  @media (max-width: 640px) {
-    .hero {
-      padding: 32px;
-    }
-  }
+  .icon { font-size: 1.8rem; display: block; margin-bottom: 12px; }
+
+  .section-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
+
+  .section-card p { margin: 0; color: #6b7280; font-size: 0.92rem; line-height: 1.5; }
 </style>

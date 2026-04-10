@@ -1,11 +1,24 @@
-import { auth, hasFirebaseConfig } from './firebase/client.js';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db, hasFirebaseConfig } from './firebase/client.js';
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  updatePassword,
+  updateProfile
 } from 'firebase/auth';
+
+const USERNAME_ADJECTIVES = ['cosmico', 'sensual', 'lucido', 'suave', 'hipnotico', 'vibrante', 'nocturno', 'orbital'];
+const USERNAME_NOUNS = ['viajero', 'loto', 'pulso', 'ritual', 'eco', 'cometa', 'faro', 'delta'];
+
+export function generateRandomUsername() {
+  const adjective = USERNAME_ADJECTIVES[Math.floor(Math.random() * USERNAME_ADJECTIVES.length)];
+  const noun = USERNAME_NOUNS[Math.floor(Math.random() * USERNAME_NOUNS.length)];
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `${adjective}-${noun}-${suffix}`;
+}
 
 export function ensureAuthReady() {
   if (!hasFirebaseConfig || !auth) {
@@ -15,21 +28,73 @@ export function ensureAuthReady() {
 
 export async function register(email, password) {
   ensureAuthReady();
-  return createUserWithEmailAndPassword(auth, email, password);
+  const result = await createUserWithEmailAndPassword(auth, email, password);
+  await ensureUserProfile(result.user);
+  return result;
 }
 
 export async function login(email, password) {
   ensureAuthReady();
-  return signInWithEmailAndPassword(auth, email, password);
+  const result = await signInWithEmailAndPassword(auth, email, password);
+  await ensureUserProfile(result.user);
+  return result;
 }
 
 export async function loginWithGoogle() {
   ensureAuthReady();
   const provider = new GoogleAuthProvider();
-  return signInWithPopup(auth, provider);
+  const result = await signInWithPopup(auth, provider);
+  await ensureUserProfile(result.user);
+  return result;
 }
 
 export async function resetPassword(email) {
   ensureAuthReady();
   return sendPasswordResetEmail(auth, email);
+}
+
+export async function updateDisplayName(displayName) {
+  ensureAuthReady();
+  if (!auth.currentUser) throw new Error('No hay una sesión activa.');
+
+  await updateProfile(auth.currentUser, { displayName });
+
+  if (db) {
+    await setDoc(doc(db, 'users', auth.currentUser.uid), {
+      displayName,
+      updatedAt: serverTimestamp()
+    });
+  }
+}
+
+export async function sendCurrentUserPasswordReset() {
+  ensureAuthReady();
+  if (!auth.currentUser?.email) throw new Error('Tu cuenta no tiene email asociado.');
+  return sendPasswordResetEmail(auth, auth.currentUser.email);
+}
+
+export async function updateCurrentUserPassword(password) {
+  ensureAuthReady();
+  if (!auth.currentUser) throw new Error('No hay una sesión activa.');
+  return updatePassword(auth.currentUser, password);
+}
+
+export async function ensureUserProfile(user = auth?.currentUser) {
+  ensureAuthReady();
+  if (!user) throw new Error('No hay una sesión activa.');
+
+  const displayName = user.displayName?.trim() || generateRandomUsername();
+
+  if (user.displayName !== displayName) {
+    await updateProfile(user, { displayName });
+  }
+
+  if (db) {
+    await setDoc(doc(db, 'users', user.uid), {
+      displayName,
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  return displayName;
 }

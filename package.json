@@ -1,17 +1,18 @@
 {
-  "name": "pajas-sofisticadas",
-  "version": "0.1.0",
+  "name": "laboratorio-sensacional-v4",
   "private": true,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 5174",
+    "dev": "vite dev --port 5176",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch"
+    "check": "svelte-check --tsconfig ./jsconfig.json"
   },
   "dependencies": {
-    "firebase": "^10.12.4"
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "firebase": "^10.12.4",
+    "marked": "^12.0.0"
   },
   "devDependencies": {
     "@sveltejs/adapter-netlify": "^4.2.2",

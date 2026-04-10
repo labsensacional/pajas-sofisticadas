@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth';
-import { enableIndexedDbPersistence, getFirestore } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const config = {
@@ -25,7 +25,6 @@ if (browser && hasFirebaseConfig) {
   auth = getAuth(app);
   setPersistence(auth, browserLocalPersistence).catch(() => {});
   db = getFirestore(app);
-  enableIndexedDbPersistence(db).catch(() => {});
   storage = getStorage(app);
 }
 
