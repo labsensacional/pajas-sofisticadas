@@ -189,7 +189,12 @@
       </label>
 
       <label>Fotos <small>(opcional — máximo 5)</small>
-        <input type="file" multiple accept="image/*" on:change={handleFiles} />
+        <input class="file-input" type="file" multiple accept="image/*" id="sesion-fotos" on:change={handleFiles} />
+        <label for="sesion-fotos" class="upload-box">
+          <span class="upload-kicker">Imagenes</span>
+          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) listos` : 'Adjuntar fotos a la sesion'}</strong>
+          <span>{imageFiles.length ? 'Podés volver a tocar para cambiarlas.' : 'Hace que el relato quede más claro. Hasta 5 imagenes.'}</span>
+        </label>
       </label>
 
       {#if imageFiles.length}
@@ -257,6 +262,32 @@
 
   .previews { display: flex; gap: 10px; flex-wrap: wrap; }
   .preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }
+  .file-input { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+  .upload-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 16px;
+    background: var(--surface-soft);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 120ms ease, transform 120ms ease, background 120ms ease;
+  }
+  .upload-box:hover {
+    border-color: var(--accent);
+    background: var(--surface-solid);
+    transform: translateY(-1px);
+  }
+  .upload-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .upload-box strong { font-size: 1rem; }
+  .upload-box span:last-child { font-size: 0.84rem; color: var(--muted); font-weight: 400; }
 
   .submit { background: #0c0c15; color: #fff; border: none; padding: 13px 24px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 1rem; align-self: flex-start; }
   .submit:disabled { opacity: 0.5; }

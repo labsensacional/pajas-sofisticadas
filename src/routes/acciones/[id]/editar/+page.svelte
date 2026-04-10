@@ -219,7 +219,12 @@
       {/if}
 
       <label>Agregar fotos <small>(opcional — máximo 5 nuevas)</small>
-        <input type="file" multiple accept="image/*" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
+        <input class="file-input" type="file" multiple accept="image/*" id="editar-accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
+        <label for="editar-accion-fotos" class="upload-box">
+          <span class="upload-kicker">Imagenes</span>
+          <strong>{imageFiles.length ? `${imageFiles.length} archivo(s) nuevos` : 'Agregar fotos nuevas'}</strong>
+          <span>{imageFiles.length ? 'Se subirán junto con las fotos que dejes activas.' : 'JPG, PNG o WEBP. Hasta 5 imagenes nuevas.'}</span>
+        </label>
       </label>
       {#if imageFiles.length}
         <div class="previews">
@@ -326,6 +331,32 @@
   .remove-photo { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 999px; width: 22px; height: 22px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; padding: 0; }
   .previews { display: flex; gap: 10px; flex-wrap: wrap; }
   .preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }
+  .file-input { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+  .upload-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    border: 1.5px dashed var(--line-strong);
+    border-radius: 16px;
+    background: var(--surface-soft);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 120ms ease, transform 120ms ease, background 120ms ease;
+  }
+  .upload-box:hover {
+    border-color: var(--accent);
+    background: var(--surface-solid);
+    transform: translateY(-1px);
+  }
+  .upload-kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    color: var(--muted-soft);
+  }
+  .upload-box strong { font-size: 1rem; }
+  .upload-box span:last-child { font-size: 0.84rem; color: var(--muted); font-weight: 400; }
 
   .submit { background: #0c0c15; color: #fff; border: none; padding: 13px 24px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 1rem; align-self: flex-start; }
   .submit:disabled { opacity: 0.5; }
