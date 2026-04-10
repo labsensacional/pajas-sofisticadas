@@ -289,7 +289,18 @@
   .upload-box strong { font-size: 1rem; }
   .upload-box span:last-child { font-size: 0.84rem; color: var(--muted); font-weight: 400; }
 
-  .submit { background: #0c0c15; color: #fff; border: none; padding: 13px 24px; border-radius: 999px; cursor: pointer; font-weight: 700; font-size: 1rem; align-self: flex-start; }
+  .submit {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.18);
+    padding: 13px 24px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 1rem;
+    align-self: flex-start;
+  }
   .submit:disabled { opacity: 0.5; }
 
   .error { color: #b91c1c; font-size: 0.9rem; }
