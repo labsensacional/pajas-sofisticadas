@@ -34,7 +34,7 @@
   $: id = $page.params.id;
 
   const AXES = [
-    { key: 'arousal',    label: 'Arousal',    color: '#FF8C42' },
+    { key: 'arousal',    label: 'Activación', color: '#FF8C42' },
     { key: 'trance',     label: 'Trance',     color: '#7B68EE' },
     { key: 'pleasure',   label: 'Placer',     color: '#FF6B9D' },
     { key: 'dopamine',   label: 'Dopamina',   color: '#FFD166' },
@@ -184,7 +184,7 @@
 
       <div class="axes">
         {#each [
-          { key:'arousal', label:'Arousal', color:'#FF8C42' },
+          { key:'arousal', label:'Activación', color:'#FF8C42' },
           { key:'trance',  label:'Trance',  color:'#7B68EE' },
           { key:'pleasure',label:'Placer',  color:'#FF6B9D' },
         ] as ax}

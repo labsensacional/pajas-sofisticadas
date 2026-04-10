@@ -74,7 +74,7 @@ export const SCORE_FIELDS = [
   },
   {
     key: 'energy', color: '#aaa', min: 0, max: 10,
-    question: '¿Cuánta energía física requiere?',
+    question: '¿Cuánta energía física o mental requiere?',
     tech: 'Energía requerida',
     tooltip: [
       'Esfuerzo físico necesario para realizarla — no la energía que produce.',
