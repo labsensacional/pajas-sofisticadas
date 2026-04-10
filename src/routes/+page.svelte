@@ -51,7 +51,7 @@
 
   .hero p {
     font-size: 1.15rem;
-    color: #4b5563;
+    color: var(--muted);
     max-width: 520px;
     margin: 0 auto 32px;
     line-height: 1.65;
@@ -70,9 +70,9 @@
 
   .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
 
-  .btn.primary { background: #0c0c15; color: #fff; }
+  .btn.primary { background: var(--accent); color: var(--accent-contrast); }
 
-  .btn.ghost { border: 2px solid rgba(12,12,21,0.15); color: #0c0c15; }
+  .btn.ghost { border: 2px solid var(--line-strong); color: var(--pill-text); background: var(--pill-bg); }
 
   .sections {
     display: grid;
@@ -81,8 +81,9 @@
   }
 
   .section-card {
-    background: #fff;
-    border: 1px solid rgba(12,12,21,0.08);
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
     border-radius: 18px;
     padding: 28px 24px;
     text-decoration: none;
@@ -90,11 +91,11 @@
     transition: transform 140ms, box-shadow 140ms;
   }
 
-  .section-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.08); }
+  .section-card:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.14); }
 
   .icon { font-size: 1.8rem; display: block; margin-bottom: 12px; }
 
   .section-card h2 { margin: 0 0 8px; font-size: 1.2rem; }
 
-  .section-card p { margin: 0; color: #6b7280; font-size: 0.92rem; line-height: 1.5; }
+  .section-card p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
 </style>
