@@ -194,6 +194,11 @@
     box-shadow: inset 0 0 0 999px var(--surface-solid);
   }
 
+  :global(option) {
+    background: var(--surface-solid);
+    color: var(--text);
+  }
+
   :global(input::placeholder),
   :global(textarea::placeholder) {
     color: var(--muted-soft);
