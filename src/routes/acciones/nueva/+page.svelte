@@ -152,7 +152,7 @@
               {#if isSet && field.key in whyValues}
                 <input type="text" class="why-input"
                   bind:value={whyValues[field.key]}
-                  placeholder="Justificación breve…" />
+                  placeholder="Suma detalles aca si querés" />
               {/if}
             </div>
           {/each}
@@ -272,13 +272,13 @@
     white-space: pre-line;
   }
   .why-input {
-    border: 1px solid rgba(12,12,21,0.12) !important;
+    border: 1px solid var(--line-strong) !important;
     border-radius: 8px !important; padding: 7px 10px !important;
     font: inherit; font-size: 0.8rem !important;
-    color: #4b5563;
-    background: #fff;
+    color: var(--text);
+    background: var(--surface-solid);
   }
-  .why-input::placeholder { color: #c0c4cc; }
+  .why-input::placeholder { color: var(--muted-soft); }
 
   .previews { display: flex; gap: 10px; flex-wrap: wrap; }
   .preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }

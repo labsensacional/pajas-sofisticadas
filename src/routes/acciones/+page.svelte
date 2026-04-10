@@ -81,9 +81,9 @@
   }
 
   const AXES = [
-    { key: 'arousal', label: 'AR', color: '#FF8C42' },
-    { key: 'trance',  label: 'TR', color: '#7B68EE' },
-    { key: 'pleasure',label: 'PL', color: '#FF6B9D' },
+    { key: 'arousal', label: 'Activacion', color: '#FF8C42' },
+    { key: 'trance',  label: 'Trance', color: '#7B68EE' },
+    { key: 'pleasure',label: 'Placer', color: '#FF6B9D' },
     { key: 'dopamine',label: 'DO', color: '#FFD166' },
     { key: 'endorphins',label:'EN', color: '#06D6A0' },
     { key: 'oxytocin',label: 'OX', color: '#74B0FF' },
@@ -297,10 +297,10 @@
 
   .bars { display: flex; flex-direction: column; gap: 4px; }
   .bar-row { display: flex; align-items: center; gap: 6px; }
-  .bar-label { font-size: 0.7rem; font-family: monospace; color: #9ca3af; width: 20px; text-align: right; }
-  .bar-track { flex: 1; height: 4px; background: var(--surface-soft); border-radius: 4px; position: relative; overflow: hidden; }
+  .bar-label { font-size: 0.68rem; color: #9ca3af; width: 62px; text-align: left; line-height: 1.1; }
+  .bar-track { flex: 1; height: 3px; background: var(--surface-soft); border-radius: 999px; position: relative; overflow: hidden; }
   .bar-center { position: absolute; left: 50%; width: 1px; height: 100%; background: var(--line-strong); }
-  .bar-fill { position: absolute; height: 100%; border-radius: 4px; transition: left 0.3s, width 0.3s; }
+  .bar-fill { position: absolute; height: 100%; border-radius: 999px; transition: left 0.3s, width 0.3s; }
   .bar-val { font-size: 0.7rem; font-family: monospace; color: var(--muted-soft); width: 16px; }
 
   .tags { display: flex; flex-wrap: wrap; gap: 4px; }
