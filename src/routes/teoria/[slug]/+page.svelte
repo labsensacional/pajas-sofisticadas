@@ -38,6 +38,15 @@
   :global(.content h3) { font-size: 1.05rem; margin: 28px 0 10px; }
   :global(.content p) { margin: 0 0 16px; }
   :global(.content strong) { color: var(--accent); }
+  :global(.content img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
   :global(.content blockquote) {
     border-left: 3px solid var(--line-strong);
     margin: 20px 0;

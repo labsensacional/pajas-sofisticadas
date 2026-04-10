@@ -28,6 +28,8 @@ Cuando **activación**, **placer** y **trance** suben al mismo tiempo, aparecen 
 
 Esa combinación vuelve más probable que aparezcan **reatribuciones** e **inversiones**: dolor que se vuelve placentero, miedo que se vuelve excitación, vergüenza que se vuelve entrega, risa que se vuelve orgasmo, llanto que se vuelve alivio o apertura.
 
+Barbara Carrellas, Annie Sprinkle y Joseph Kramer son nombres útiles para pensar esta zona porque trabajan justamente con prácticas donde el objetivo no es "llegar rápido", sino construir condiciones para que el cuerpo cambie de régimen.
+
 ## El placer como ancla
 
 No todo estado extremo es deseable. Mucha activación y mucho trance sin una base placentera o segura puede derivar en susto, freeze, caos o desconexión.
@@ -44,6 +46,8 @@ Después de los tres ejes principales, conviene mirar algunas variables secundar
 - **Energía requerida**: cuánto esfuerzo físico o mental pide la práctica.
 
 No reemplazan a los tres ejes. Los afinan.
+
+También sirven para explicar por qué dos experiencias con orgasmo pueden sentirse radicalmente distintas: no es lo mismo un placer con mucha dopamina y mucha activación que un placer con activación baja, oxitocina alta o prolactina ya subiendo después del pico.
 
 ## Estados emergentes útiles
 
@@ -65,6 +69,8 @@ La pregunta no es sólo "qué hago", sino:
 - cuál acompaña
 - cuál falta
 - qué moduladores están sosteniendo o rompiendo la experiencia
+
+La escala de intensidad subjetiva inspirada en [Alexander Shulgin](https://en.wikipedia.org/wiki/Alexander_Shulgin), por ejemplo, no sirve para sexualidad de forma directa, pero sí para recordar algo importante: hay diferencias reales entre un umbral, un estado confirmado, un estado dominante y una experiencia que ya reorganiza todo el campo atencional.
 
 ---
 

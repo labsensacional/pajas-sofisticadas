@@ -18,6 +18,10 @@ Ejemplos simples:
 
 Los marcadores corporales no sólo expresan un estado: a veces también lo producen.
 
+![Lion pose como ejemplo de marcador somático exagerado que puede empujar activación, vocalización y desinhibición.](/lion-pose.jpg)
+
+La **lion pose** es un buen ejemplo de esto: mandíbula abierta, lengua extendida, ojos activos, garganta expuesta y respiración marcada. No "significa" éxtasis por sí sola, pero sí fuerza varios componentes somáticos que pueden empujar desinhibición, activación y vocalización.
+
 ### Marcadores que suelen empujar activación
 
 - respiración conectada o más rápida
@@ -34,6 +38,8 @@ La lógica se parece a otras inversiones conocidas:
 - **misattribution of arousal** o *fear-ections*: activación que se reinterpreta como atracción o excitación
 - paradojas eróticas: cosas que no deberían sentirse bien, pero en contexto correcto sí
 
+Joseph Kramer es una referencia fuerte para pensar este tipo de ingeniería somática del estado: respiración, sonido, pelvis, repetición, atención y contexto como formas de entrar en otra cualidad de experiencia sin depender sólo del "contenido sexual" explícito.
+
 ## Puentes emocionales
 
 La emoción también puede ser lábil. No siempre hace falta "salir" de una emoción para llegar a otra; a veces conviene usar su energía.
@@ -44,7 +50,7 @@ Ejemplos conocidos:
 - **crygasms**: llanto, release o vulnerabilidad que se vuelve placer u orgasmo
 - **angergasms**: rabia, empuje o intensidad agresiva que se canaliza eróticamente
 
-Barbara Carrellas y Annie Sprinkle aparecen seguido en este territorio porque trabajan una sexualidad menos rígida, donde el cuerpo puede entrar por muchas puertas distintas.
+Barbara Carrellas y Annie Sprinkle aparecen seguido en este territorio porque trabajan una sexualidad menos rígida, donde el cuerpo puede entrar por muchas puertas distintas. No sólo por deseo genital directo, sino también por respiración, voz, juego, catarsis, cuidado, vergüenza, performance o entrega.
 
 ## Marcadores somáticos e inversiones
 
@@ -103,6 +109,15 @@ Algunos proyectos vuelven visibles estos puentes. Un ejemplo interesante es usar
 - pensar qué emoción o postura puede servir como rampa de acceso
 
 La sesión no siempre empieza donde termina. Muchas veces el trabajo real consiste en construir el puente.
+
+### Nombres útiles para seguir tirando del hilo
+
+- [Barbara Carrellas](https://en.wikipedia.org/wiki/Barbara_Carrellas)
+- [Annie Sprinkle](https://en.wikipedia.org/wiki/Annie_Sprinkle)
+- [Joseph Kramer](https://en.wikipedia.org/wiki/Joseph_Kramer)
+- [Alexander Shulgin](https://en.wikipedia.org/wiki/Alexander_Shulgin)
+
+Shulgin aparece menos por contenido sexual directo y más por una enseñanza metodológica: describir estados con cuidado, comparar umbrales, matices e intensidades, y no confundir una etiqueta rápida con una fenomenología bien observada.
 
 ---
 
