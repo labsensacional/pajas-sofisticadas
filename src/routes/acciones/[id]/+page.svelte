@@ -196,7 +196,7 @@
         {/each}
       </div>
 
-      <p class="score-note">Estas puntuaciones son referencias vagas y orientativas; no hace falta tomarlas demasiado en serio.</p>
+      <p class="score-note">Estas puntuaciones son referencias vagas y orientativas; no tomarlas muy en serio.</p>
 
       <section class="subscores">
         <div class="subscores-header">
