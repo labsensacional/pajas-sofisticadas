@@ -8,6 +8,8 @@
   import { isMod } from '$lib/moderator.js';
   import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
 
+  export let data;
+
   let showGate = true;
   let user = null;
   let theme = 'light';
@@ -45,6 +47,28 @@
 </script>
 
 <svelte:head>
+  <title>{data.meta.title}</title>
+  <meta name="description" content={data.meta.description} />
+  <link rel="canonical" href={data.meta.canonical} />
+
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content={data.meta.siteName} />
+  <meta property="og:title" content={data.meta.title} />
+  <meta property="og:description" content={data.meta.description} />
+  <meta property="og:url" content={data.meta.canonical} />
+  <meta property="og:image" content={data.meta.image} />
+  <meta property="og:image:secure_url" content={data.meta.image} />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Preview de Laboratorio Sensacional con fondo oscuro y acceso a teoria, acciones y sesiones." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={data.meta.title} />
+  <meta name="twitter:description" content={data.meta.description} />
+  <meta name="twitter:image" content={data.meta.image} />
+
   <link rel="manifest" href="/manifest.webmanifest" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
