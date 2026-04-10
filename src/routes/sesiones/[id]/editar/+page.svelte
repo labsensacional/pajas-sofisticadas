@@ -256,23 +256,23 @@
 
   .tag-input-box {
     display: flex; flex-wrap: wrap; gap: 6px;
-    border: 1px solid rgba(12,12,21,0.15); border-radius: 10px;
-    padding: 8px 10px; background: #fff; min-height: 44px;
+    border: 1px solid var(--line-strong); border-radius: 10px;
+    padding: 8px 10px; background: var(--surface-solid); min-height: 44px;
   }
-  .tag-input-box input { border: none; outline: none; font: inherit; flex: 1; min-width: 120px; padding: 2px; }
+  .tag-input-box input { border: none; outline: none; font: inherit; flex: 1; min-width: 120px; padding: 2px; background: transparent; color: var(--text); }
 
   .accion-tag, .tag-chip {
     display: inline-flex; align-items: center; gap: 5px;
     padding: 3px 10px; border-radius: 999px; font-size: 0.82rem; font-weight: 600;
   }
   .accion-tag { background: #ede9fe; color: #5b21b6; }
-  .tag-chip { background: #f3f4f6; color: #374151; }
+  .tag-chip { background: var(--pill-bg); color: var(--pill-text); }
   .accion-tag button, .tag-chip button { background: none; border: none; cursor: pointer; font-size: 0.9rem; color: inherit; padding: 0; }
 
   .suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
   .suggestions button {
-    background: #f3f4f6; border: none; padding: 5px 12px; border-radius: 999px;
-    cursor: pointer; font-size: 0.82rem; font-weight: 600; color: #374151;
+    background: var(--pill-bg); border: 1px solid var(--line); padding: 5px 12px; border-radius: 999px;
+    cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--pill-text);
   }
   .suggestions button:hover { background: #ddd6fe; color: #5b21b6; }
 
