@@ -55,7 +55,7 @@ Pensarlo en ejes permite describir estados sin inventar una etiqueta nueva para 
 
 - **Ansiedad**: activación alta + trance bajo + contenido mental negativo.
 - **Flow**: activación media + trance medio/alto + fricción cognitiva baja.
-- **Subspace**: trance alto + foco relacional muy estrecho + entrega, confianza y vínculo; más cerca de oxitocina y dopamina que de una simple descarga de endorfinas.
+- **Subspace**: activación alta + trance alto + endorfinas altas + oxitocina alta (*aunque conviene distinguir el subspace relacional de una simple descarga de endorfinas*: [Altered states of consciousness in BDSM](https://fetlife.com/CompassionSadist/posts/2550144)).
 - **Drop**: baja de dopamina o endorfinas después de un pico sostenido.
 - **Extasis**: no es una variable separada; suele parecerse a un acople raro y fértil entre activación, placer y trance.
 
