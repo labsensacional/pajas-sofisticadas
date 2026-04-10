@@ -238,7 +238,8 @@
 
       {#if accion.hello_world}
         <section class="section">
-          <h3>Hello world</h3>
+          <h3>Cómo se hace</h3>
+          <p class="section-subtitle">Versión mínima para probarla</p>
           <p>{accion.hello_world}</p>
         </section>
       {/if}
