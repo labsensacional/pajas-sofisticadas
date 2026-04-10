@@ -149,11 +149,11 @@
         <textarea rows="3" bind:value={description} required placeholder="Qué es, para qué sirve, efectos habituales…"></textarea>
       </label>
 
-      <label>Hello world <small>(opcional — cómo replicarlo fácil y rápido)</small>
+      <label>Hello world (opcional) <small>Cómo replicarlo fácil y rápido</small>
         <textarea rows="2" bind:value={hello_world} placeholder="Paso a paso mínimo para probarlo…"></textarea>
       </label>
 
-      <label>Advertencias <small>(opcional — uno por línea)</small>
+      <label>Advertencias (opcional) <small>Uno por línea</small>
         <textarea rows="3" bind:value={warnings_text} placeholder={"Error o riesgo común\nOtro error frecuente\nEj: No combinar con X"}></textarea>
       </label>
 
@@ -200,7 +200,7 @@
         </div>
       </fieldset>
 
-      <label>Tags <small>(opcional — separados por coma)</small>
+      <label>Tags (opcional) <small>Separados por coma</small>
         <input type="text" bind:value={tags_input} placeholder="genital, sostenido, accesible" />
       </label>
 
