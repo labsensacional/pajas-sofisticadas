@@ -368,9 +368,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 16px;
+    min-width: 0;
   }
 
-  .saved-column { display: flex; flex-direction: column; gap: 10px; }
+  .saved-column { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
   .saved-list { display: flex; flex-direction: column; gap: 8px; }
   .saved-item {
     display: flex;
@@ -382,9 +383,10 @@
     border-radius: 12px;
     padding: 12px 14px;
     background: var(--surface-solid);
+    min-width: 0;
   }
-  .saved-item strong { font-size: 0.92rem; }
-  .saved-item span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; }
+  .saved-item strong { font-size: 0.92rem; overflow-wrap: anywhere; }
+  .saved-item span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
   label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 0.9rem; }
   input {
@@ -410,4 +412,12 @@
 
   .notice { margin: 0; color: #047857; background: #ecfdf5; padding: 10px 12px; border-radius: 10px; }
   .error { margin: 0; color: #b91c1c; background: #fee2e2; padding: 10px 12px; border-radius: 10px; }
+
+  @media (max-width: 640px) {
+    .page { padding: 36px 16px; }
+    .card { padding: 20px; }
+    .panel-toggle { padding: 18px 16px; }
+    .panel-content { padding: 0 16px 16px; }
+    .saved-grid { grid-template-columns: 1fr; }
+  }
 </style>
