@@ -266,9 +266,14 @@
     accent-color: var(--c, #0c0c15);
   }
   .tooltip-text {
-    font-size: 0.78rem; color: #4b5563; line-height: 1.55;
-    background: rgba(12,12,21,0.04); border-radius: 8px;
-    padding: 8px 10px; margin: 0;
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.6;
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 9px 11px;
+    margin: 0;
     white-space: pre-line;
   }
   .why-input {
