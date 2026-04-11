@@ -8,6 +8,7 @@
   import { onAuthStateChanged } from 'firebase/auth';
   import { collection, getDocs, orderBy, query } from 'firebase/firestore';
   import { ACTIONS } from '$lib/actions.js';
+  import { splitTextWithLinks } from '$lib/linkify.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
 
@@ -39,6 +40,18 @@
   let showMoreTags = false;
 
   const TOP_TAGS = 5;
+  const previewText = (text) => `${text?.slice(0, 100) ?? ''}${text?.length > 100 ? '…' : ''}`;
+
+  function openAccion(id) {
+    goto(`/acciones/${id}`);
+  }
+
+  function onCardKeydown(event, id) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openAccion(id);
+    }
+  }
 
   function updateTag(tag) {
     const params = new URLSearchParams($page.url.searchParams);
@@ -155,7 +168,13 @@
     {/if}
     <div class="grid">
       {#each filtered as a (a.id)}
-        <a href="/acciones/{a.id}" class="card">
+        <div
+          class="card"
+          role="link"
+          tabindex="0"
+          on:click={() => openAccion(a.id)}
+          on:keydown={(event) => onCardKeydown(event, a.id)}
+        >
           {#if !a._static}
             <div class="card-top">
               <span class="badge-new">{$t('acciones.badge.new')}</span>
@@ -165,7 +184,17 @@
             </div>
           {/if}
           <h2 class="card-name">{a.name}</h2>
-          <p class="card-desc">{a.description?.slice(0, 100)}{a.description?.length > 100 ? '…' : ''}</p>
+          <p class="card-desc">
+            {#each splitTextWithLinks(previewText(a.description)) as part}
+              {#if part.type === 'link'}
+                <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link" on:click|stopPropagation>
+                  {part.value}
+                </a>
+              {:else}
+                {part.value}
+              {/if}
+            {/each}
+          </p>
           <div class="bars">
             {#each AXES.slice(0, 3) as ax}
               {@const v = a[ax.key] ?? 0}
@@ -186,7 +215,7 @@
               {/each}
             </div>
           {/if}
-        </a>
+        </div>
       {/each}
     </div>
   {/if}
@@ -295,6 +324,14 @@
 
   .card-name { margin: 0; font-size: 1rem; font-weight: 700; }
   .card-desc { margin: 0; font-size: 0.85rem; color: #6b7280; line-height: 1.45; flex: 1; }
+  .inline-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.16em;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 
   .bars { display: flex; flex-direction: column; gap: 4px; }
   .bar-row { display: flex; align-items: center; gap: 6px; }

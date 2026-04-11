@@ -190,7 +190,6 @@
   .empty { color: #9ca3af; padding: 32px 0; }
 
   .promote-hint { color: #4b5563; font-size: 0.9rem; margin-bottom: 16px; line-height: 1.6; }
-  .promote-hint code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
 
   .export-box { display: flex; flex-direction: column; gap: 10px; }
   .export-textarea { font-family: monospace; font-size: 0.8rem; border: 1px solid rgba(12,12,21,0.12); border-radius: 10px; padding: 14px; resize: vertical; }

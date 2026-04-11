@@ -9,6 +9,7 @@
     orderBy, query, serverTimestamp, updateDoc, where
   } from 'firebase/firestore';
   import { findStatic } from '$lib/actions.js';
+  import { splitTextWithLinks } from '$lib/linkify.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
 
@@ -176,7 +177,17 @@
         </div>
       {/if}
 
-      <p class="desc">{accion.description}</p>
+      <p class="desc">
+        {#each splitTextWithLinks(accion.description) as part}
+          {#if part.type === 'link'}
+            <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link">
+              {part.value}
+            </a>
+          {:else}
+            {part.value}
+          {/if}
+        {/each}
+      </p>
 
       <div class="axes">
         {#each AXES.slice(0, 3) as ax}
@@ -233,7 +244,17 @@
         <section class="section">
           <h3>{$t('accion.how_to.title')}</h3>
           <p class="section-subtitle">{$t('accion.how_to.subtitle')}</p>
-          <p>{accion.hello_world}</p>
+          <p>
+            {#each splitTextWithLinks(accion.hello_world) as part}
+              {#if part.type === 'link'}
+                <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link">
+                  {part.value}
+                </a>
+              {:else}
+                {part.value}
+              {/if}
+            {/each}
+          </p>
         </section>
       {/if}
 
@@ -348,6 +369,14 @@
   .thumb-btn img { width: 60px; height: 60px; object-fit: cover; display: block; }
 
   .desc { margin: 0; line-height: 1.7; color: var(--text); }
+  .inline-link {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 0.16em;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 
   .warnings {
     background: #fff7ed; border: 1px solid #fdba74;
