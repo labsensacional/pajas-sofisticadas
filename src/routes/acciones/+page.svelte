@@ -6,7 +6,7 @@
   import { db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { auth } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+  import { collection, getDocs } from 'firebase/firestore';
   import { ACTIONS } from '$lib/actions.js';
   import { splitTextWithLinks } from '$lib/linkify.js';
   import { isMod } from '$lib/moderator.js';
@@ -88,8 +88,14 @@
     if (!hasFirebaseConfig || !db) return;
     loadingFirestore = true;
     try {
-      const snap = await getDocs(query(collection(db, 'acciones'), orderBy('createdAt', 'desc')));
-      newAcciones = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      const snap = await getDocs(collection(db, 'acciones'));
+      newAcciones = snap.docs
+        .map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => {
+          const aTime = a.createdAt?.toMillis?.() ?? a.updatedAt?.toMillis?.() ?? 0;
+          const bTime = b.createdAt?.toMillis?.() ?? b.updatedAt?.toMillis?.() ?? 0;
+          return bTime - aTime;
+        });
     } catch (e) { console.error(e); }
     loadingFirestore = false;
   }

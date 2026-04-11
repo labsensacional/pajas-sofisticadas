@@ -173,6 +173,7 @@ export default {
   'accion_form.submit.loading': 'Saving…',
   'accion_form.submit.uploading': 'Uploading photos…',
   'accion_form.required': 'Name and description are required.',
+  'accion_form.required_scores': 'Arousal, trance, and pleasure are required.',
   'accion_form.not_found': 'Action not found.',
 
   // Sesiones list

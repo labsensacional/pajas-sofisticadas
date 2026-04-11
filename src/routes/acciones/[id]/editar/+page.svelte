@@ -38,6 +38,7 @@
 
   /** @type {string|null} */
   let expandedTooltip = null;
+  const REQUIRED_SCORE_KEYS = new Set(['arousal', 'trance', 'pleasure']);
 
   $: SCORE_FIELDS = getScoreFields($t);
 
@@ -99,6 +100,10 @@
   async function handleSubmit() {
     if (!user || !db) return;
     if (!name.trim() || !description.trim()) { error = $t('accion_form.required'); return; }
+    if ([scores.arousal, scores.trance, scores.pleasure].some(value => value === null)) {
+      error = $t('accion_form.required_scores');
+      return;
+    }
     saving = true; error = '';
     try {
       const tags = tags_input.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
@@ -124,6 +129,9 @@
         arousal_why: whyValues.arousal.trim(), trance_why: whyValues.trance.trim(), pleasure_why: whyValues.pleasure.trim(),
         tags,
         createdBy: accion.createdBy || user.uid,
+        authorName: accion.authorName ?? user.displayName ?? user.email?.split('@')[0] ?? $t('common.user'),
+        isAnonymous: accion.isAnonymous ?? false,
+        createdAt: accion.createdAt ?? serverTimestamp(),
         reviewed: accion.reviewed ?? false,
         updatedAt: serverTimestamp()
       });
@@ -168,7 +176,7 @@
             <div class="score-card" class:unset={!isSet} style="--accent: {field.color}">
               <div class="score-header">
                 <div class="score-meta">
-                  <span class="score-name">{field.tech}</span>
+                  <span class="score-name">{field.tech}{#if REQUIRED_SCORE_KEYS.has(field.key)} <span class="required-mark">*</span>{/if}</span>
                   <span class="score-question">{field.question}</span>
                 </div>
                 <div class="score-right">
@@ -274,6 +282,7 @@
   .score-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .score-meta { display: flex; flex-direction: column; gap: 2px; }
   .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); }
+  .required-mark { color: #dc2626; }
   .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; }
   .score-card.unset { background: transparent; border-color: rgba(12,12,21,0.05); }
   .score-card.unset .score-name { color: #9ca3af; }

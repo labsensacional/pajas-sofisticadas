@@ -33,6 +33,8 @@
     ? (accion.warnings ?? [...(accion.common_errors ?? []), ...(accion.warning ? [accion.warning] : [])])
     : [];
   $: energyValue = accion?.energy ?? 0;
+  $: hasPleasureBreakdown = AXES.slice(3, 6).some(ax => accion?.[ax.key] != null);
+  $: hasEnergyData = accion?.energy != null;
 
   $: id = $page.params.id;
 
@@ -206,39 +208,43 @@
 
       <p class="score-note">{$t('accion.score_note')}</p>
 
-      <section class="subscores">
-        <div class="subscores-header">
-          <h3>{$t('accion.pleasure_detail.title')}</h3>
-          <p>{$t('accion.pleasure_detail.desc')}</p>
-        </div>
-        <div class="secondary-bars">
-        {#each AXES.slice(3, 6) as ax}
-          {@const v = accion[ax.key] ?? 0}
-          <div class="sec-row">
-            <span class="sec-label">{ax.label}</span>
-            <div class="bar-track">
-              <div class="bar-center"></div>
-              <div class="bar-fill" style="left:{v >= 0 ? 50 : 50 + v * 5}%; width:{Math.abs(v) * 5}%; background:{ax.color}"></div>
+      {#if hasPleasureBreakdown}
+        <section class="subscores">
+          <div class="subscores-header">
+            <h3>{$t('accion.pleasure_detail.title')}</h3>
+            <p>{$t('accion.pleasure_detail.desc')}</p>
+          </div>
+          <div class="secondary-bars">
+          {#each AXES.slice(3, 6) as ax}
+            {@const v = accion[ax.key] ?? 0}
+            <div class="sec-row">
+              <span class="sec-label">{ax.label}</span>
+              <div class="bar-track">
+                <div class="bar-center"></div>
+                <div class="bar-fill" style="left:{v >= 0 ? 50 : 50 + v * 5}%; width:{Math.abs(v) * 5}%; background:{ax.color}"></div>
+              </div>
+              <span class="sec-val">{v}</span>
             </div>
-            <span class="sec-val">{v}</span>
+          {/each}
           </div>
-        {/each}
-        </div>
-      </section>
+        </section>
+      {/if}
 
-      <section class="energy-block">
-        <div class="energy-header">
-          <h3>{$t('accion.energy.title')}</h3>
-          <p>{$t('accion.energy.desc')}</p>
-        </div>
-        <div class="sec-row energy-row">
-          <span class="sec-label">{$t('axis.energy')}</span>
-          <div class="bar-track energy-track">
-            <div class="bar-fill" style={`left:0; width:${energyValue * 10}%; background:#aaa`}></div>
+      {#if hasEnergyData}
+        <section class="energy-block">
+          <div class="energy-header">
+            <h3>{$t('accion.energy.title')}</h3>
+            <p>{$t('accion.energy.desc')}</p>
           </div>
-          <span class="sec-val">{energyValue}</span>
-        </div>
-      </section>
+          <div class="sec-row energy-row">
+            <span class="sec-label">{$t('axis.energy')}</span>
+            <div class="bar-track energy-track">
+              <div class="bar-fill" style={`left:0; width:${energyValue * 10}%; background:#aaa`}></div>
+            </div>
+            <span class="sec-val">{energyValue}</span>
+          </div>
+        </section>
+      {/if}
 
       {#if accion.hello_world}
         <section class="section">

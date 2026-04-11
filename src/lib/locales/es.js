@@ -173,6 +173,7 @@ export default {
   'accion_form.submit.loading': 'Guardando…',
   'accion_form.submit.uploading': 'Subiendo fotos…',
   'accion_form.required': 'Nombre y descripción son obligatorios.',
+  'accion_form.required_scores': 'Excitación, trance y placer son obligatorios.',
   'accion_form.not_found': 'Acción no encontrada.',
 
   // Sesiones list
