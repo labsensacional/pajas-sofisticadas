@@ -1,13 +1,14 @@
 <script>
   // @ts-nocheck
+  import { t } from '$lib/i18n.js';
   export let data;
   const { html, title } = data;
 </script>
 
-<svelte:head><title>{title} · Teoría · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{title} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/teoria" class="back">← Teoría</a>
+  <a href="/teoria" class="back">{$t('teoria.back')}</a>
   <article class="content">
     {@html html}
   </article>

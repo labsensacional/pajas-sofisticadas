@@ -1,50 +1,55 @@
 <script>
   // @ts-nocheck
-  import { t } from '$lib/i18n.js';
   export let data;
-  const { docs } = data;
+  const { html, title } = data;
 </script>
 
-<svelte:head><title>Teoría · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{title} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <header class="header">
-    <h1>{$t('teoria.title')}</h1>
-    <p>{$t('teoria.subtitle')}</p>
-  </header>
-
-  {#if docs.length === 0}
-    <p class="empty">{$t('teoria.empty')}</p>
-  {:else}
-    <div class="grid">
-      {#each docs as doc}
-        <a href="/teoria/{doc.slug}" class="card">
-          <h2>{doc.title}</h2>
-          {#if doc.summary}<p>{doc.summary}</p>{/if}
-        </a>
-      {/each}
-    </div>
-  {/if}
+  <article class="content">
+    {@html html}
+  </article>
 </main>
 
 <style>
-  .page { max-width: 800px; margin: 0 auto; padding: 52px 24px; }
-  .header { margin-bottom: 36px; }
-  .header h1 { margin: 0 0 8px; }
-  .header p { color: var(--muted); margin: 0; }
-  .grid { display: grid; gap: 14px; }
-  .card {
+  .page { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
+  .content {
     background: var(--surface-solid);
     border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 36px 40px;
+    line-height: 1.75;
+    color: var(--text);
     box-shadow: var(--shadow);
-    border-radius: 14px;
-    padding: 22px 24px;
-    text-decoration: none;
-    color: inherit;
-    transition: transform 120ms, box-shadow 120ms;
   }
-  .card:hover { transform: translateY(-1px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
-  .card h2 { margin: 0 0 6px; font-size: 1.1rem; }
-  .card p { margin: 0; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
-  .empty { color: var(--muted-soft); }
+  :global(.content h1) { font-size: 1.9rem; margin: 0 0 24px; letter-spacing: -0.02em; }
+  :global(.content h2) { font-size: 1.25rem; margin: 36px 0 12px; }
+  :global(.content h3) { font-size: 1.05rem; margin: 28px 0 10px; }
+  :global(.content p) { margin: 0 0 16px; }
+  :global(.content strong) { color: var(--accent); }
+  :global(.content img) {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+    border-radius: 14px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  :global(.content blockquote) {
+    border-left: 3px solid var(--line-strong);
+    margin: 20px 0;
+    padding: 10px 20px;
+    color: var(--muted);
+    background: var(--surface-soft);
+    border-radius: 0 12px 12px 0;
+  }
+  :global(.content ul, .content ol) { padding-left: 24px; margin: 0 0 16px; }
+  :global(.content li) { margin-bottom: 6px; }
+  :global(.content hr) { border: none; border-top: 1px solid var(--line); margin: 32px 0; }
+
+  @media (max-width: 640px) {
+    .content { padding: 24px 20px; }
+  }
 </style>

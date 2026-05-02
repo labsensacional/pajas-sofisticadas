@@ -1,9 +1,10 @@
 const THEME_KEY = 'laboratorio-theme';
+const VALID_THEMES = new Set(['system', 'light', 'dark']);
 
 export function getStoredTheme() {
   if (typeof localStorage === 'undefined') return null;
   const value = localStorage.getItem(THEME_KEY);
-  return value === 'dark' || value === 'light' ? value : null;
+  return VALID_THEMES.has(value) ? value : null;
 }
 
 export function getSystemTheme() {
@@ -11,8 +12,8 @@ export function getSystemTheme() {
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
-export function resolveTheme() {
-  return getStoredTheme() ?? getSystemTheme();
+export function resolveTheme(preference = getStoredTheme()) {
+  return preference === 'light' || preference === 'dark' ? preference : getSystemTheme();
 }
 
 export function applyTheme(theme) {
@@ -24,6 +25,9 @@ export function applyTheme(theme) {
 
 export function persistTheme(theme) {
   if (typeof localStorage === 'undefined') return;
+  if (theme === 'system') {
+    localStorage.removeItem(THEME_KEY);
+    return;
+  }
   localStorage.setItem(THEME_KEY, theme);
 }
-

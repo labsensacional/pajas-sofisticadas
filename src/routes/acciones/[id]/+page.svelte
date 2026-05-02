@@ -250,7 +250,7 @@
         <section class="section">
           <h3>{$t('accion.how_to.title')}</h3>
           <p class="section-subtitle">{$t('accion.how_to.subtitle')}</p>
-          <p>
+          <p class="preserve-breaks">
             {#each splitTextWithLinks(accion.hello_world) as part}
               {#if part.type === 'link'}
                 <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link">
@@ -467,6 +467,7 @@
   .section h3 { margin: 0 0 8px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-soft); }
   .section-subtitle { margin: -4px 0 10px; font-size: 0.84rem; line-height: 1.5; color: var(--muted); }
   .section p { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--text); }
+  .preserve-breaks { white-space: pre-line; }
 
   .tags { display: flex; flex-wrap: wrap; gap: 6px; }
   .tag { font-size: 0.78rem; background: var(--pill-bg); color: var(--pill-text); padding: 4px 10px; border-radius: 999px; text-decoration: none; border: 1px solid var(--line); }

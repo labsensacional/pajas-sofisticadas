@@ -18,9 +18,11 @@ function detectLocale() {
     }
   }
   if (typeof navigator !== 'undefined') {
-    const lang = navigator.language?.split('-')[0];
-    if (lang && SUPPORTED_LOCALES.includes(/** @type {any} */ (lang))) {
-      return /** @type {'es' | 'en'} */ (lang);
+    for (const entry of navigator.languages ?? [navigator.language]) {
+      const lang = entry?.split('-')[0];
+      if (lang && SUPPORTED_LOCALES.includes(/** @type {any} */ (lang))) {
+        return /** @type {'es' | 'en'} */ (lang);
+      }
     }
   }
   return 'es';
@@ -36,6 +38,7 @@ export function setLocale(lang) {
   if (SUPPORTED_LOCALES.includes(lang)) {
     locale.set(lang);
     if (typeof localStorage !== 'undefined') localStorage.setItem('locale', lang);
+    if (typeof document !== 'undefined') document.documentElement.lang = lang;
   }
 }
 
@@ -45,6 +48,7 @@ export function setLocale(lang) {
 export function initLocale() {
   const detected = detectLocale();
   locale.set(detected);
+  if (typeof document !== 'undefined') document.documentElement.lang = detected;
   return detected;
 }
 

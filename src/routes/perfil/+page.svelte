@@ -8,7 +8,7 @@
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { ensureUserProfile, updateCurrentUserPassword, updateDisplayName } from '$lib/auth.js';
   import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
-  import { t } from '$lib/i18n.js';
+  import { t, locale, setLocale, SUPPORTED_LOCALES } from '$lib/i18n.js';
 
   let user = null;
   let loading = true;
@@ -25,12 +25,12 @@
   let accountPanelOpen = false;
   let appearancePanelOpen = false;
   let savedPanelOpen = false;
-  let theme = 'light';
+  let themePreference = 'system';
 
   $: hasPasswordProvider = Boolean(user?.providerData?.some((provider) => provider.providerId === 'password'));
 
   onMount(() => {
-    theme = resolveTheme();
+    themePreference = localStorage.getItem('laboratorio-theme') ?? 'system';
 
     if (!auth) {
       loading = false;
@@ -140,10 +140,14 @@
     }
   }
 
-  function toggleTheme() {
-    theme = theme === 'dark' ? 'light' : 'dark';
-    persistTheme(theme);
-    applyTheme(theme);
+  function updateThemePreference(nextTheme) {
+    themePreference = nextTheme;
+    persistTheme(nextTheme);
+    applyTheme(resolveTheme(nextTheme));
+  }
+
+  function updateLanguage(nextLocale) {
+    setLocale(nextLocale);
   }
 </script>
 
@@ -219,9 +223,27 @@
             <section class="block">
               <h3>{$t('perfil.theme.title')}</h3>
               <p class="subtle">{$t('perfil.theme.desc')}</p>
-              <button class="secondary theme-toggle" on:click={toggleTheme}>
-                {theme === 'dark' ? $t('perfil.theme.to_light') : $t('perfil.theme.to_dark')}
-              </button>
+              <label>
+                <span>{$t('perfil.theme.label')}</span>
+                <select bind:value={themePreference} on:change={(e) => updateThemePreference(e.target.value)}>
+                  <option value="system">{$t('perfil.theme.system')}</option>
+                  <option value="light">{$t('perfil.theme.light')}</option>
+                  <option value="dark">{$t('perfil.theme.dark')}</option>
+                </select>
+              </label>
+            </section>
+
+            <section class="block">
+              <h3>{$t('perfil.language.title')}</h3>
+              <p class="subtle">{$t('perfil.language.desc')}</p>
+              <label>
+                <span>{$t('perfil.language.label')}</span>
+                <select value={$locale} on:change={(e) => updateLanguage(e.target.value)}>
+                  {#each SUPPORTED_LOCALES as lang}
+                    <option value={lang}>{$t(`lang.${lang}`)}</option>
+                  {/each}
+                </select>
+              </label>
             </section>
           </div>
         {/if}
@@ -390,7 +412,8 @@
   .saved-item span { color: var(--muted); font-size: 0.82rem; line-height: 1.4; overflow-wrap: anywhere; }
 
   label { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 0.9rem; }
-  input {
+  input,
+  select {
     border: 1px solid rgba(12,12,21,0.15);
     border-radius: 10px;
     padding: 10px 12px;
@@ -409,8 +432,6 @@
   button:disabled { opacity: 0.6; cursor: default; }
   .primary { background: var(--pill-active-bg); color: var(--pill-active-text); }
   .secondary { background: var(--pill-bg); color: var(--pill-text); border: 1px solid var(--line); }
-  .theme-toggle { align-self: flex-start; }
-
   .notice { margin: 0; color: #047857; background: #ecfdf5; padding: 10px 12px; border-radius: 10px; }
   .error { margin: 0; color: #b91c1c; background: #fee2e2; padding: 10px 12px; border-radius: 10px; }
 

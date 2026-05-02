@@ -1,0 +1,94 @@
+arousal:
+  - from: -10
+    to: -1
+    text: "This looks like sympathetic down-regulation: longer exhales, less muscle tension, less motor urgency, a dropping pulse, and a looser posture. Useful when a practice cools, regulates, or interrupts escalation."
+  - from: 0
+    to: 3
+    text: "The body stays relatively calm: even breathing, economical movement, low impulsivity, stable gaze, and few genital or active-seeking signs."
+  - from: 4
+    to: 6
+    text: "Bodily activation is noticeable without losing regulation: somewhat faster breathing, more muscle tone, stronger orientation to the stimulus, micromovements, and available energy that still feels manageable."
+  - from: 7
+    to: 10
+    text: "Sympathetic activation dominates: marked breathing, elevated pulse, motor restlessness, urgency to act, narrowed focus, and involuntary signs of excitation such as tension, moaning, or intense stimulus-seeking."
+
+trance:
+  - from: -10
+    to: -1
+    text: "It pushes toward alertness and external monitoring: wider eyes, rapid orienting to the environment, easy startle, vigilant thinking, and recovery of fine conscious control."
+  - from: 0
+    to: 3
+    text: "The person remains fairly context-oriented: quick responses, active environmental monitoring, intact inner speech, and little distortion of time or body perception."
+  - from: 4
+    to: 6
+    text: "Partial absorption appears: less inner chatter, sustained attention on one source, somewhat slower responses, and some time distortion, but still with clear capacity to modulate and decide."
+  - from: 7
+    to: 10
+    text: "Absorption dominates the experience: glazed or half-closed eyes, slower responding, reduced awareness of the environment, altered subjective time, and visible signs of surrender, dissolution, or functional dissociation of conscious control."
+
+pleasure:
+  - from: -10
+    to: -1
+    text: "Markers of aversion or roughness dominate: grimacing, withdrawal, bodily bracing, interrupted breathing, or sustained discomfort, even if the context later allows an erotic reinterpretation."
+  - from: 0
+    to: 3
+    text: "There is little direct hedonic load: the sensation may be neutral or faint, with limited visible enjoyment or immediate desire to repeat, even if the practice is useful as a bridge."
+  - from: 4
+    to: 6
+    text: "Clearly pleasant sensations are present: softer facial tone, small sounds of enjoyment, moving toward the stimulus, and a wish to keep it going, though without full overwhelm."
+  - from: 7
+    to: 10
+    text: "Pleasure is obvious and sustained: involuntary moans or smiling, bodily yielding to the stimulus, pleasurable contractions, clear desire for continuation, and strong orientation toward what feels good."
+
+dopamine:
+  - from: -10
+    to: -1
+    text: "Rather than driving repetition, it cuts momentum: there is less urge to chase the stimulus, less insistence, and more of a sense of closure, satiety, or motivational reset."
+  - from: 0
+    to: 3
+    text: "It may be satisfying, but it produces little behavioral pull: less anticipatory fantasy, little urgency to return immediately, and less post-practice rumination about doing it again."
+  - from: 4
+    to: 6
+    text: "It leaves noticeable interest in repeating and some anticipatory pull: attention returns to the practice and there is curiosity about resuming, but without a strong compulsive quality."
+  - from: 7
+    to: 10
+    text: "Appetitive motivation dominates: strong desire to return, extend the session, plan the next round, or chase more stimulation, with attention captured by reward expectation."
+
+endorphins:
+  - from: -10
+    to: -1
+    text: "Instead of afterglow, it leaves a cost: fatigue, emptiness, a drop in mood, or a crash-like aftermath, with little analgesia or mood lift."
+  - from: 0
+    to: 3
+    text: "It leaves very little post-practice trace: limited relief, limited analgesia, minimal mood change, and a fairly quick return to baseline."
+  - from: 4
+    to: 6
+    text: "There is a noticeable post-practice softening: relief, reduced pain or friction, a sense of discharge, and moderate bodily well-being afterward."
+  - from: 7
+    to: 10
+    text: "The afterglow is strong: clear analgesia, calm euphoria, involuntary smiling, a lighter body, and a somatic reward state that lasts for a while after finishing."
+
+oxytocin:
+  - from: -10
+    to: -1
+    text: "It cools relational tone: more distance, less tenderness, less desire for contact, or greater difficulty entering trust, even if stimulation is intense."
+  - from: 0
+    to: 3
+    text: "The practice feels more technical, instrumental, or individual: little impulse to hug, care, gaze, or hold the other, and few bodily markers of tenderness."
+  - from: 4
+    to: 6
+    text: "Moderate affiliative warmth appears: more ease in approaching, soft touching, trusting, staying close, and feeling some tenderness or emotional openness."
+  - from: 7
+    to: 10
+    text: "Signals of bonding and attachment dominate: desire to hug or be held, high trust, softer gaze, spontaneous tenderness, intimacy, and strong orientation toward affiliative contact."
+
+energy:
+  - from: 0
+    to: 3
+    text: "It has very low physical or mental cost: it can be sustained with little available energy, in stillness, or with minimal effort."
+  - from: 4
+    to: 6
+    text: "It asks for sustained bodily or mental presence: moderate attentional, respiratory, or motor work, but without fully draining the system."
+  - from: 7
+    to: 10
+    text: "It demands substantial resources: real physical effort, coordination, endurance, or heavy mental engagement, with accumulating fatigue if prolonged."

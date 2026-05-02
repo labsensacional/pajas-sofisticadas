@@ -5,13 +5,15 @@
   import { goto } from '$app/navigation';
   import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+  import { collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+  import { ACTIONS } from '$lib/actions.js';
   import { compressImage } from '$lib/compressImage.js';
   import { findStatic } from '$lib/actions.js';
   import { isMod } from '$lib/moderator.js';
-  import { getScoreFields } from '$lib/scoreFields.js';
-  import { t } from '$lib/i18n.js';
+  import { getAutoWhyText, getScoreFields } from '$lib/scoreFields.js';
+  import { extractTags, getFilteredTagSuggestions, normalizeTag } from '$lib/tagInput.js';
+  import { locale, t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
@@ -33,18 +35,31 @@
   /** @type {Record<string, number|null>} */
   let scores = { arousal: null, trance: null, pleasure: null, dopamine: null, endorphins: null, oxytocin: null, energy: null };
   /** @type {Record<string,string>} */
-  let whyValues = { arousal: '', trance: '', pleasure: '' };
-  let tags_input = '';
+  let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', endorphins: '', oxytocin: '', energy: '' };
+  let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, endorphins: false, oxytocin: false, energy: false };
+  let tagInput = '';
+  /** @type {string[]} */
+  let tagValues = [];
+  /** @type {string[]} */
+  let knownTags = [];
 
   /** @type {string|null} */
   let expandedTooltip = null;
   const REQUIRED_SCORE_KEYS = new Set(['arousal', 'trance', 'pleasure']);
 
   $: SCORE_FIELDS = getScoreFields($t);
+  $: {
+    scores;
+    whyTouched;
+    SCORE_FIELDS;
+    syncAutoWhyText();
+  }
+  $: filteredTagSuggestions = getFilteredTagSuggestions(knownTags, tagValues, tagInput);
 
   $: id = $page.params.id;
 
   onMount(() => {
+    loadKnownTags();
     if (auth) onAuthStateChanged(auth, async v => {
       user = v;
       if (!v) { goto('/login'); return; }
@@ -90,8 +105,21 @@
         arousal: accion.arousal_why ?? '',
         trance: accion.trance_why ?? '',
         pleasure: accion.pleasure_why ?? '',
+        dopamine: accion.dopamine_why ?? '',
+        endorphins: accion.endorphins_why ?? '',
+        oxytocin: accion.oxytocin_why ?? '',
+        energy: accion.energy_why ?? '',
       };
-      tags_input = (Array.isArray(accion.tags) ? accion.tags : (accion.tags ?? '').split(' ')).filter(Boolean).join(', ');
+      whyTouched = {
+        arousal: Boolean(whyValues.arousal),
+        trance: Boolean(whyValues.trance),
+        pleasure: Boolean(whyValues.pleasure),
+        dopamine: Boolean(whyValues.dopamine),
+        endorphins: Boolean(whyValues.endorphins),
+        oxytocin: Boolean(whyValues.oxytocin),
+        energy: Boolean(whyValues.energy),
+      };
+      tagValues = extractTags([accion]);
       existingPhotos = accion.photos ?? [];
     } catch (e) { error = e?.message ?? 'Error al cargar.'; }
     loading = false;
@@ -106,7 +134,7 @@
     }
     saving = true; error = '';
     try {
-      const tags = tags_input.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+      const tags = tagValues;
       const warnings = warnings_text.split('\n').map(l => l.trim()).filter(Boolean);
       // setDoc creates or overwrites — handles both new Firestore overrides and existing docs
       let photos = [...existingPhotos];
@@ -126,7 +154,13 @@
         name: name.trim(), description: description.trim(),
         hello_world: hello_world.trim(), warnings, photos,
         arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy,
-        arousal_why: whyValues.arousal.trim(), trance_why: whyValues.trance.trim(), pleasure_why: whyValues.pleasure.trim(),
+        arousal_why: whyValues.arousal.trim(),
+        trance_why: whyValues.trance.trim(),
+        pleasure_why: whyValues.pleasure.trim(),
+        dopamine_why: whyValues.dopamine.trim(),
+        endorphins_why: whyValues.endorphins.trim(),
+        oxytocin_why: whyValues.oxytocin.trim(),
+        energy_why: whyValues.energy.trim(),
         tags,
         createdBy: accion.createdBy || user.uid,
         authorName: accion.authorName ?? user.displayName ?? user.email?.split('@')[0] ?? $t('common.user'),
@@ -138,9 +172,112 @@
       goto(`/acciones/${id}`);
     } catch (e) { error = e?.message ?? 'Error al guardar.'; saving = false; uploading = false; }
   }
+
+  function syncAutoWhyText() {
+    const nextWhyValues = { ...whyValues };
+    const nextWhyTouched = { ...whyTouched };
+    let changed = false;
+
+    for (const key of Object.keys(nextWhyValues)) {
+      const score = scores[key];
+      if (score === null) {
+        if (nextWhyValues[key] !== '' || nextWhyTouched[key] !== false) {
+          nextWhyValues[key] = '';
+          nextWhyTouched[key] = false;
+          changed = true;
+        }
+        continue;
+      }
+
+      if (nextWhyTouched[key]) continue;
+
+      const field = SCORE_FIELDS.find((entry) => entry.key === key);
+      if (!field) continue;
+      const autoText = getAutoWhyText(field.key, Number(score), $locale);
+      if (nextWhyValues[key] !== autoText) {
+        nextWhyValues[key] = autoText;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      whyValues = nextWhyValues;
+      whyTouched = nextWhyTouched;
+    }
+  }
+
+  function clearScore(key) {
+    scores = { ...scores, [key]: null };
+    if (key in whyValues) {
+      whyValues = { ...whyValues, [key]: '' };
+      whyTouched = { ...whyTouched, [key]: false };
+    }
+  }
+
+  function handleWhyInput(key, value) {
+    whyTouched = { ...whyTouched, [key]: true };
+    whyValues = { ...whyValues, [key]: value };
+  }
+
+  function setScore(key, value) {
+    scores = { ...scores, [key]: value };
+  }
+
+  async function loadKnownTags() {
+    const tagSet = new Set(extractTags(ACTIONS));
+
+    if (db && hasFirebaseConfig) {
+      try {
+        const snap = await getDocs(collection(db, 'acciones'));
+        extractTags(snap.docs.map((entry) => entry.data())).forEach((tag) => tagSet.add(tag));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    knownTags = [...tagSet].sort((a, b) => a.localeCompare(b));
+  }
+
+  function handleTagInput(event) {
+    const value = event.currentTarget.value;
+    if (value.includes(',')) {
+      const parts = value.split(',');
+      parts.slice(0, -1).forEach(commitTag);
+      tagInput = parts.at(-1) ?? '';
+      return;
+    }
+    tagInput = value;
+  }
+
+  function handleTagKeydown(event) {
+    if (event.key === ',' || event.key === 'Enter' || event.key === 'Tab') {
+      if (!tagInput.trim()) return;
+      event.preventDefault();
+      commitTag(tagInput);
+      return;
+    }
+
+    if (event.key === 'Backspace' && !tagInput && tagValues.length) {
+      tagValues = tagValues.slice(0, -1);
+    }
+  }
+
+  function commitTag(rawTag) {
+    const tag = normalizeTag(rawTag);
+    if (!tag || tagValues.includes(tag)) {
+      tagInput = '';
+      return;
+    }
+    tagValues = [...tagValues, tag];
+    tagInput = '';
+  }
+
+  function removeTag(tag) {
+    tagValues = tagValues.filter((entry) => entry !== tag);
+  }
 </script>
 
-<svelte:head><title>Editar acción · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{$t('accion_form.title.edit')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/acciones/{id}" class="back">{$t('accion.back')}</a>
@@ -183,7 +320,7 @@
                   {#if isSet}
                     <span class="score-val" style="color:{field.color}">{scores[field.key]}</span>
                     <button type="button" class="clear-btn" title={$t('accion_form.scores.remove')}
-                      on:click={() => scores[field.key] = null}>×</button>
+                      on:click={() => clearScore(field.key)}>×</button>
                   {:else}
                     <span class="score-none">—</span>
                   {/if}
@@ -192,18 +329,20 @@
                 </div>
               </div>
               {#if isSet}
-                <input type="range" min={field.min} max={field.max} step="1" bind:value={scores[field.key]}
+                <input type="range" min={field.min} max={field.max} step="1" value={scores[field.key]}
+                  on:input={(event) => setScore(field.key, Number(event.currentTarget.value))}
                   style="--c: {field.color}" />
               {:else}
                 <button type="button" class="activate-btn"
-                  on:click={() => scores[field.key] = 0}>{$t('accion_form.scores.add')}</button>
+                  on:click={() => setScore(field.key, 0)}>{$t('accion_form.scores.add')}</button>
               {/if}
               {#if expandedTooltip === field.key}
                 <p class="tooltip-text">{field.tooltip}</p>
               {/if}
               {#if isSet && field.key in whyValues}
                 <input type="text" class="why-input"
-                  bind:value={whyValues[field.key]}
+                  value={whyValues[field.key]}
+                  on:input={(event) => handleWhyInput(field.key, event.currentTarget.value)}
                   placeholder={$t('accion_form.scores.why.placeholder')} />
               {/if}
             </div>
@@ -212,7 +351,30 @@
       </fieldset>
 
       <label>{$t('accion_form.tags')} <small>{$t('accion_form.tags.hint')}</small>
-        <input type="text" bind:value={tags_input} placeholder={$t('accion_form.tags.placeholder')} />
+        <div class="tags-field">
+          <div class="tags-box">
+            {#each tagValues as tag}
+              <button type="button" class="tag-chip" on:click={() => removeTag(tag)}>
+                {tag} <span>×</span>
+              </button>
+            {/each}
+            <input
+              type="text"
+              class="tag-input"
+              value={tagInput}
+              on:input={handleTagInput}
+              on:keydown={handleTagKeydown}
+              placeholder={tagValues.length ? '' : $t('accion_form.tags.placeholder')}
+            />
+          </div>
+          {#if filteredTagSuggestions.length}
+            <div class="tag-suggestions">
+              {#each filteredTagSuggestions as tag}
+                <button type="button" class="tag-suggestion" on:click={() => commitTag(tag)}>{tag}</button>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </label>
 
       {#if existingPhotos.length}
@@ -270,6 +432,48 @@
   legend { font-weight: 700; font-size: 0.9rem; padding: 0 6px; display: flex; align-items: center; gap: 10px; }
   .more-info { font-size: 0.78rem; font-weight: 500; color: #6b7280; text-decoration: none; border: 1px solid rgba(12,12,21,0.15); border-radius: 999px; padding: 2px 8px; }
   .more-info:hover { color: #0c0c15; border-color: rgba(12,12,21,0.35); }
+  .tags-field { display: flex; flex-direction: column; gap: 8px; }
+  .tags-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    border: 1px solid rgba(12,12,21,0.15);
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: var(--surface-solid);
+  }
+  .tag-input {
+    border: none !important;
+    padding: 4px 2px !important;
+    flex: 1 1 160px;
+    min-width: 120px;
+    background: transparent;
+    outline: none;
+  }
+  .tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(12,12,21,0.12);
+    background: rgba(12,12,21,0.05);
+    border-radius: 999px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font: inherit;
+  }
+  .tag-chip span { color: #6b7280; }
+  .tag-suggestions { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-suggestion {
+    border: 1px dashed rgba(12,12,21,0.18);
+    background: transparent;
+    border-radius: 999px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font: inherit;
+    color: var(--muted);
+  }
+  .tag-suggestion:hover { color: var(--text); border-color: rgba(12,12,21,0.35); }
 
   .scores { display: flex; flex-direction: column; gap: 8px; }
   .score-card {

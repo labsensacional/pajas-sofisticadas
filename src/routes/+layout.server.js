@@ -4,7 +4,7 @@ function metaForPath(pathname) {
   if (pathname === '/') {
     return {
       title: SITE_NAME,
-      description: 'Teoria, acciones y sesiones para explorar estados de trance, placer y excitacion en comunidad.'
+      description: 'Introducción, prácticas y sesiones para explorar estados de inmersión, placer y excitación en comunidad.'
     };
   }
 
@@ -12,15 +12,15 @@ function metaForPath(pathname) {
 
   if (section === 'teoria') {
     return {
-      title: `Teoria · ${SITE_NAME}`,
-      description: 'Marco teorico sobre arousal, trance, placer y combinacion de practicas para estados alterados.'
+      title: `¿Qué es esto? · ${SITE_NAME}`,
+      description: 'Introducción al laboratorio y a sus ejes de excitación, placer e inmersión.'
     };
   }
 
   if (section === 'acciones') {
     return {
-      title: `Acciones · ${SITE_NAME}`,
-      description: 'Catalogo de tecnicas y practicas con ejes de arousal, trance, placer y otros moduladores.'
+      title: `Prácticas · ${SITE_NAME}`,
+      description: 'Catálogo de técnicas y prácticas con ejes de arousal, inmersión, placer y otros moduladores.'
     };
   }
 
@@ -34,7 +34,7 @@ function metaForPath(pathname) {
   if (section === 'login') {
     return {
       title: `Login · ${SITE_NAME}`,
-      description: 'Entrá a Laboratorio Sensacional para compartir acciones, sesiones y teoria.'
+      description: 'Entrá a Laboratorio Sensacional para compartir prácticas, sesiones e introducción.'
     };
   }
 
@@ -47,7 +47,7 @@ function metaForPath(pathname) {
 
   return {
     title: SITE_NAME,
-    description: 'Comunidad para explorar teoria, acciones y sesiones de psiconautica recreativa y sexual.'
+    description: 'Comunidad para explorar introducción, prácticas y sesiones de psiconáutica recreativa y sexual.'
   };
 }
 
@@ -64,4 +64,3 @@ export function load({ url }) {
     }
   };
 }
-

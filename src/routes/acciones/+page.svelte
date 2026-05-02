@@ -111,7 +111,7 @@
   ];
 </script>
 
-<svelte:head><title>Acciones · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{$t('acciones.title')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
   <header class="header">

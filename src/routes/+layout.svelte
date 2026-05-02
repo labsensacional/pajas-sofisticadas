@@ -7,7 +7,7 @@
   import { ensureUserProfile } from '$lib/auth.js';
   import { isMod } from '$lib/moderator.js';
   import { applyTheme, resolveTheme } from '$lib/theme.js';
-  import { t, initLocale, setLocale, locale, SUPPORTED_LOCALES } from '$lib/i18n.js';
+  import { t, initLocale } from '$lib/i18n.js';
 
   export let data;
 
@@ -17,12 +17,6 @@
     initLocale();
     applyTheme(resolveTheme());
     showGate = !isAgeGateConfirmed();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').catch((error) => {
-        console.error('Service worker registration failed', error);
-      });
-    }
 
     if (auth) {
       return onAuthStateChanged(auth, async (v) => {
@@ -56,7 +50,7 @@
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Preview de Laboratorio Sensacional con fondo oscuro y acceso a teoria, acciones y sesiones." />
+  <meta property="og:image:alt" content="Preview de Laboratorio Sensacional con fondo oscuro y acceso a introducción, prácticas y sesiones." />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={data.meta.title} />
@@ -87,9 +81,9 @@
 <header class="topbar">
   <a class="brand" href="/">Laboratorio Sensacional</a>
   <nav>
-    <a href="/teoria">{$t('nav.teoria')}</a>
     <a href="/acciones">{$t('nav.acciones')}</a>
     <a href="/sesiones">{$t('nav.sesiones')}</a>
+    <a href="/teoria">{$t('nav.teoria')}</a>
     {#if user}
       <a href="/perfil">{$t('nav.perfil')}</a>
       {#if isMod(user)}
@@ -99,11 +93,6 @@
     {:else}
       <a href="/login">{$t('nav.login')}</a>
     {/if}
-    <select class="lang-select" value={$locale} on:change={(e) => setLocale(e.target.value)}>
-      {#each SUPPORTED_LOCALES as lang}
-        <option value={lang}>{$t(`lang.${lang}`)}</option>
-      {/each}
-    </select>
   </nav>
 </header>
 
@@ -368,18 +357,6 @@
   nav a:hover { color: var(--accent); }
 
   .mod-link { color: #7c3aed !important; }
-
-  .lang-select {
-    border: 1px solid var(--line-strong);
-    background: transparent;
-    color: var(--text);
-    padding: 4px 8px;
-    border-radius: 999px;
-    cursor: pointer;
-    font-size: 0.82rem;
-    font-weight: 600;
-    box-shadow: none;
-  }
 
   .logout {
     border: 1px solid var(--line-strong);

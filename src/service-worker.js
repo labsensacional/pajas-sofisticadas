@@ -19,9 +19,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  if (event.url.startsWith('chrome-extension://')) return;
 
   const request = event.request;
+  if (request.url.startsWith('chrome-extension://')) return;
   const isSameOrigin = new URL(request.url).origin === self.location.origin;
 
   if (!isSameOrigin) return;
@@ -50,4 +50,3 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
-

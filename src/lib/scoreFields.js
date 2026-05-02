@@ -1,3 +1,10 @@
+import { parse } from 'yaml';
+import autoWhyEsRaw from './content/score-auto-why.es.yml?raw';
+import autoWhyEnRaw from './content/score-auto-why.en.yml?raw';
+
+const autoWhyEs = parse(autoWhyEsRaw);
+const autoWhyEn = parse(autoWhyEnRaw);
+
 /**
  * Returns score field definitions with translated labels.
  * @param {(key: string) => string} t - translation function
@@ -47,6 +54,30 @@ export function getScoreFields(t) {
       tooltip: t('scores.energy.tooltip'),
     },
   ];
+}
+
+/**
+ * Build a short auto-filled reference text for a score using editable content files.
+ * @param {string} fieldKey
+ * @param {number | null} value
+ * @param {'es' | 'en'} lang
+ */
+export function getAutoWhyText(fieldKey, value, lang = 'es') {
+  if (value === null || Number.isNaN(value)) return '';
+
+  const content = lang === 'en' ? autoWhyEn : autoWhyEs;
+  const fieldContent = content[fieldKey] ?? content.arousal ?? [];
+  const exact = fieldContent.find((entry) => entry?.value === value);
+  if (exact?.text) return exact.text;
+
+  const ranged = fieldContent.find((entry) =>
+    typeof entry?.from === 'number' &&
+    typeof entry?.to === 'number' &&
+    value >= entry.from &&
+    value <= entry.to
+  );
+
+  return ranged?.text ?? '';
 }
 
 /** Backward-compatible static export (untranslated keys as values). */
