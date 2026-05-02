@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { marked } from 'marked';
 
-const files = import.meta.glob('/src/content/teoria/*.md', { query: '?raw', import: 'default', eager: true });
+const files = import.meta.glob('/src/content/concepto/*.md', { query: '?raw', import: 'default', eager: true });
 
 export function load({ params }) {
   const entry = Object.entries(files).find(([path]) =>

@@ -121,4 +121,4 @@ Shulgin aparece menos por contenido sexual directo y más por una enseñanza met
 
 ---
 
-*Ver también: [Por qué activación, placer y trance](/teoria/01-modelo-3-ejes) · [Cómo mido estas métricas](/teoria/02-ejes-de-puntuacion)*
+*Ver también: [Por qué activación, placer y trance](/concepto/01-modelo-3-ejes) · [Cómo mido estas métricas](/concepto/02-ejes-de-puntuacion)*

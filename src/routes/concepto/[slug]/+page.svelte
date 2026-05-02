@@ -8,7 +8,7 @@
 <svelte:head><title>{title} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/teoria" class="back">{$t('teoria.back')}</a>
+  <a href="/concepto" class="back">{$t('teoria.back')}</a>
   <article class="content">
     {@html html}
   </article>

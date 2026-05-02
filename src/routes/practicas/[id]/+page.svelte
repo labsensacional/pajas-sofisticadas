@@ -150,7 +150,7 @@
 <svelte:head><title>{accion?.name ?? $t('accion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/acciones" class="back">{$t('accion.back')}</a>
+  <a href="/" class="back">{$t('accion.back')}</a>
 
   {#if !accion}
     <p class="loading">{$t('accion.loading')}</p>
@@ -277,7 +277,7 @@
       {#if accion.tags?.length}
         <div class="tags">
           {#each (Array.isArray(accion.tags) ? accion.tags : accion.tags.split(' ')) as tag}
-            <a href="/acciones?tag={tag}" class="tag">{tag}</a>
+            <a href="/?tag={tag}" class="tag">{tag}</a>
           {/each}
         </div>
       {/if}
@@ -293,7 +293,7 @@
             {#if isMod(user) && !accion.reviewed && !accion._static}
               <button class="mod-btn review" on:click={markReviewed}>{$t('accion.mark_reviewed')}</button>
             {/if}
-            <a href="/acciones/{id}/editar" class="mod-btn edit">{$t('accion.edit')}</a>
+            <a href="/practicas/{id}/editar" class="mod-btn edit">{$t('accion.edit')}</a>
             {#if !accion._static}
               <button class="mod-btn delete" on:click={deleteAccion}>{$t('accion.delete')}</button>
             {/if}

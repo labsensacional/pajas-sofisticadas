@@ -74,4 +74,4 @@ La escala de intensidad subjetiva inspirada en [Alexander Shulgin](https://en.wi
 
 ---
 
-*Ver también: [Cómo mido estas métricas](/teoria/02-ejes-de-puntuacion) · [Cómo puntuar acciones](/teoria/03-como-puntuar-acciones) · [Puentes somáticos y emocionales](/teoria/04-puentes-somaticos-y-emocionales)*
+*Ver también: [Cómo mido estas métricas](/concepto/02-ejes-de-puntuacion) · [Cómo puntuar acciones](/concepto/03-como-puntuar-acciones) · [Puentes somáticos y emocionales](/concepto/04-puentes-somaticos-y-emocionales)*

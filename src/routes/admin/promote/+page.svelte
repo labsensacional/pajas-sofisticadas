@@ -114,7 +114,7 @@
                 <p class="meta-info">{$t('admin.tags')}: {(a.tags ?? []).join(', ')} · {$t('admin.published')}: {a.createdAt?.toDate?.().toLocaleDateString?.() ?? 'N/A'}</p>
               </div>
               <div class="item-actions">
-                <a href="/acciones/{a.id}" target="_blank" class="btn view">{$t('admin.view')}</a>
+                <a href="/practicas/{a.id}" target="_blank" class="btn view">{$t('admin.view')}</a>
                 <button class="btn review" on:click={() => markReviewed('acciones', a.id)}>{$t('admin.mark_reviewed')}</button>
                 <button class="btn delete" on:click={() => deleteItem('acciones', a.id)}>{$t('admin.delete')}</button>
               </div>

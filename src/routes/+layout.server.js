@@ -3,21 +3,21 @@ const SITE_NAME = 'Laboratorio Sensacional';
 function metaForPath(pathname) {
   if (pathname === '/') {
     return {
-      title: SITE_NAME,
-      description: 'Introducción, prácticas y sesiones para explorar estados de inmersión, placer y excitación en comunidad.'
+      title: `Prácticas · ${SITE_NAME}`,
+      description: 'Catálogo de técnicas y prácticas con ejes de arousal, inmersión, placer y otros moduladores.'
     };
   }
 
   const section = pathname.split('/').filter(Boolean)[0] ?? '';
 
-  if (section === 'teoria') {
+  if (section === 'concepto' || section === 'teoria') {
     return {
       title: `¿Qué es esto? · ${SITE_NAME}`,
       description: 'Introducción al laboratorio y a sus ejes de excitación, placer e inmersión.'
     };
   }
 
-  if (section === 'acciones') {
+  if (section === 'practicas' || section === 'acciones') {
     return {
       title: `Prácticas · ${SITE_NAME}`,
       description: 'Catálogo de técnicas y prácticas con ejes de arousal, inmersión, placer y otros moduladores.'

@@ -1,28 +1,33 @@
 <script>
   // @ts-nocheck
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, doc, getDocs, serverTimestamp } from 'firebase/firestore';
+  import { collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
   import { ACTIONS } from '$lib/actions.js';
   import { compressImage } from '$lib/compressImage.js';
+  import { findStatic } from '$lib/actions.js';
+  import { isMod } from '$lib/moderator.js';
   import { getAutoWhyText, getScoreFields } from '$lib/scoreFields.js';
   import { extractTags, getFilteredTagSuggestions, normalizeTag } from '$lib/tagInput.js';
   import { locale, t } from '$lib/i18n.js';
 
   /** @type {any} */
   let user = null;
-  let submitted = false;
-  let loading = false;
+  /** @type {any} */
+  let accion = null;
+  let loading = true;
+  let saving = false;
   let uploading = false;
   let error = '';
   /** @type {File[]} */
   let imageFiles = [];
-  let publishAnonymous = false;
+  /** @type {string[]} */
+  let existingPhotos = [];
 
-  // Form fields
   let name = '';
   let description = '';
   let hello_world = '';
@@ -38,7 +43,6 @@
   /** @type {string[]} */
   let knownTags = [];
 
-  // tooltip expandido
   /** @type {string|null} */
   let expandedTooltip = null;
   const REQUIRED_SCORE_KEYS = new Set(['arousal', 'trance', 'pleasure']);
@@ -52,29 +56,92 @@
   }
   $: filteredTagSuggestions = getFilteredTagSuggestions(knownTags, tagValues, tagInput);
 
+  $: id = $page.params.id;
+
   onMount(() => {
     loadKnownTags();
-    if (auth) return onAuthStateChanged(auth, v => { user = v; if (!v) goto('/login'); });
+    if (auth) onAuthStateChanged(auth, async v => {
+      user = v;
+      if (!v) { goto('/login'); return; }
+      if (db) await loadAccion();
+    });
   });
 
+  async function loadAccion() {
+    loading = true;
+    try {
+      // Try Firestore first (override), fall back to static catalog
+      const snap = await getDoc(doc(db, 'acciones', id));
+      if (snap.exists()) {
+        accion = { id: snap.id, ...snap.data() };
+      } else {
+        const staticAccion = findStatic(id);
+        if (!staticAccion) { error = $t('accion_form.not_found'); loading = false; return; }
+        accion = { ...staticAccion };
+      }
+
+      if (!isMod(user) && accion.createdBy !== user.uid) {
+        goto(`/practicas/${id}`); return;
+      }
+
+      name = accion.name ?? '';
+      description = accion.description ?? '';
+      hello_world = accion.hello_world ?? '';
+      // Merge legacy common_errors + warning into warnings
+      const legacyErrors = Array.isArray(accion.common_errors) ? accion.common_errors : [];
+      const legacyWarning = accion.warning ? [accion.warning] : [];
+      const combined = accion.warnings ?? [...legacyErrors, ...legacyWarning];
+      warnings_text = combined.join('\n');
+      scores = {
+        arousal: accion.arousal ?? null,
+        trance: accion.trance ?? null,
+        pleasure: accion.pleasure ?? null,
+        dopamine: accion.dopamine ?? null,
+        endorphins: accion.endorphins ?? null,
+        oxytocin: accion.oxytocin ?? null,
+        energy: accion.energy ?? null,
+      };
+      whyValues = {
+        arousal: accion.arousal_why ?? '',
+        trance: accion.trance_why ?? '',
+        pleasure: accion.pleasure_why ?? '',
+        dopamine: accion.dopamine_why ?? '',
+        endorphins: accion.endorphins_why ?? '',
+        oxytocin: accion.oxytocin_why ?? '',
+        energy: accion.energy_why ?? '',
+      };
+      whyTouched = {
+        arousal: Boolean(whyValues.arousal),
+        trance: Boolean(whyValues.trance),
+        pleasure: Boolean(whyValues.pleasure),
+        dopamine: Boolean(whyValues.dopamine),
+        endorphins: Boolean(whyValues.endorphins),
+        oxytocin: Boolean(whyValues.oxytocin),
+        energy: Boolean(whyValues.energy),
+      };
+      tagValues = extractTags([accion]);
+      existingPhotos = accion.photos ?? [];
+    } catch (e) { error = e?.message ?? 'Error al cargar.'; }
+    loading = false;
+  }
+
   async function handleSubmit() {
-    if (!user || !hasFirebaseConfig || !db) return;
+    if (!user || !db) return;
     if (!name.trim() || !description.trim()) { error = $t('accion_form.required'); return; }
     if ([scores.arousal, scores.trance, scores.pleasure].some(value => value === null)) {
       error = $t('accion_form.required_scores');
       return;
     }
-    loading = true; error = '';
+    saving = true; error = '';
     try {
-      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       const tags = tagValues;
       const warnings = warnings_text.split('\n').map(l => l.trim()).filter(Boolean);
-      const accionRef = doc(collection(db, 'acciones'));
-      const photos = [];
+      // setDoc creates or overwrites — handles both new Firestore overrides and existing docs
+      let photos = [...existingPhotos];
       if (imageFiles.length && storage) {
         uploading = true;
         for (const file of imageFiles) {
-          const path = `acciones/${accionRef.id}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
+          const path = `acciones/${id}/${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
           const storRef = ref(storage, path);
           const compressed = await compressImage(file);
           await uploadBytes(storRef, compressed, { contentType: 'image/jpeg' });
@@ -83,7 +150,7 @@
         uploading = false;
       }
       const { arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy } = scores;
-      await (await import('firebase/firestore')).setDoc(accionRef, {
+      await setDoc(doc(db, 'acciones', id), {
         name: name.trim(), description: description.trim(),
         hello_world: hello_world.trim(), warnings, photos,
         arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy,
@@ -95,15 +162,15 @@
         oxytocin_why: whyValues.oxytocin.trim(),
         energy_why: whyValues.energy.trim(),
         tags,
-        createdBy: user.uid,
-        authorName: publishAnonymous ? 'Anónimo' : currentUsername,
-        isAnonymous: publishAnonymous,
-        reviewed: false,
-        createdAt: serverTimestamp()
+        createdBy: accion.createdBy || user.uid,
+        authorName: accion.authorName ?? user.displayName ?? user.email?.split('@')[0] ?? $t('common.user'),
+        isAnonymous: accion.isAnonymous ?? false,
+        createdAt: accion.createdAt ?? serverTimestamp(),
+        reviewed: accion.reviewed ?? false,
+        updatedAt: serverTimestamp()
       });
-      submitted = true;
-    } catch (e) { error = e?.message ?? 'Error al guardar.'; }
-    finally { loading = false; uploading = false; }
+      goto(`/practicas/${id}`);
+    } catch (e) { error = e?.message ?? 'Error al guardar.'; saving = false; uploading = false; }
   }
 
   function syncAutoWhyText() {
@@ -208,32 +275,22 @@
   function removeTag(tag) {
     tagValues = tagValues.filter((entry) => entry !== tag);
   }
-
 </script>
 
-<svelte:head><title>{$t('accion_form.title.new')} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{$t('accion_form.title.edit')} · Laboratorio Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/acciones" class="back">{$t('accion.back')}</a>
-  <h1>{$t('accion_form.title.new')}</h1>
-  <p class="hint">{$t('accion_form.hint')}</p>
+  <a href="/practicas/{id}" class="back">{$t('accion.back')}</a>
+  <h1>{$t('accion_form.title.edit')}</h1>
 
-  {#if !hasFirebaseConfig}
-    <div class="warn">{$t('accion_form.firebase_warn')}</div>
-  {:else if !user}
-    <div class="warn">{$t('accion_form.login_warn_prefix')} <a href="/login">{$t('accion_form.login_warn_link')}</a> {$t('accion_form.login_warn_suffix')}</div>
-  {:else if submitted}
-    <div class="success">
-      <p>{$t('accion_form.success')}</p>
-      <div class="links">
-        <a href="/acciones" class="btn primary">{$t('accion_form.view_actions')}</a>
-        <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; hello_world = ''; warnings_text = ''; scores = { arousal: null, trance: null, pleasure: null, dopamine: null, endorphins: null, oxytocin: null, energy: null }; whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', endorphins: '', oxytocin: '', energy: '' }; whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, endorphins: false, oxytocin: false, energy: false }; tagInput = ''; tagValues = []; imageFiles = []; }}>{$t('accion_form.add_another')}</button>
-      </div>
-    </div>
-  {:else}
+  {#if loading}
+    <p class="hint">{$t('accion.loading')}</p>
+  {:else if error && !accion}
+    <p class="error">{error}</p>
+  {:else if accion}
     <form on:submit|preventDefault={handleSubmit}>
       <label>{$t('accion_form.name')}
-        <input type="text" bind:value={name} placeholder={$t('accion_form.name.placeholder')} required />
+        <input type="text" bind:value={name} required placeholder={$t('accion_form.name.placeholder')} />
       </label>
 
       <label>{$t('accion_form.description')} <small>{$t('accion_form.description.hint')}</small>
@@ -249,7 +306,7 @@
       </label>
 
       <fieldset>
-        <legend>{$t('accion_form.scores')} <a href="/teoria/02-ejes-de-puntuacion" target="_blank" class="more-info">{$t('accion_form.scores.guide')}</a></legend>
+        <legend>{$t('accion_form.scores')} <a href="/concepto/02-ejes-de-puntuacion" target="_blank" class="more-info">{$t('accion_form.scores.guide')}</a></legend>
         <div class="scores">
           {#each SCORE_FIELDS as field}
             {@const isSet = scores[field.key] !== null}
@@ -320,14 +377,23 @@
         </div>
       </label>
 
-      <label class="checkbox-row">
-        <input type="checkbox" bind:checked={publishAnonymous} />
-        <span>{$t('accion_form.anonymous')}</span>
-      </label>
+      {#if existingPhotos.length}
+        <div class="field-group">
+          <span class="field-label">{$t('sesion_form.existing_photos')}</span>
+          <div class="existing-photos">
+            {#each existingPhotos as p}
+              <div class="existing-photo">
+                <img src={p} alt="" />
+                <button type="button" class="remove-photo" on:click={() => existingPhotos = existingPhotos.filter(x => x !== p)}>×</button>
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
 
       <label>{$t('accion_form.photos')} <small>{$t('accion_form.photos.hint')}</small>
-        <input class="file-input" type="file" multiple accept="image/*" id="accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
-        <label for="accion-fotos" class="upload-box">
+        <input class="file-input" type="file" multiple accept="image/*" id="editar-accion-fotos" on:change={e => { imageFiles = Array.from(e.target.files ?? []).slice(0, 5); }} />
+        <label for="editar-accion-fotos" class="upload-box">
           <span class="upload-kicker">{$t('accion_form.photos.label')}</span>
           <strong>{imageFiles.length ? $t('accion_form.photos.selected', { count: imageFiles.length }) : $t('accion_form.photos.choose')}</strong>
           <span>{imageFiles.length ? $t('accion_form.photos.replace') : $t('accion_form.photos.info')}</span>
@@ -343,8 +409,8 @@
 
       {#if error}<p class="error">{error}</p>{/if}
 
-      <button type="submit" class="submit" disabled={loading}>
-        {uploading ? $t('accion_form.submit.uploading') : loading ? $t('accion_form.submit.loading') : $t('accion_form.submit.new')}
+      <button type="submit" class="submit" disabled={saving}>
+        {uploading ? $t('accion_form.submit.uploading') : saving ? $t('accion_form.submit.loading') : $t('accion_form.submit.edit')}
       </button>
     </form>
   {/if}
@@ -353,20 +419,13 @@
 <style>
   .page { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
   .back { display: inline-block; margin-bottom: 16px; text-decoration: none; color: #6b7280; font-weight: 600; font-size: 0.9rem; }
-  h1 { margin: 0 0 6px; }
-  .hint { color: #6b7280; margin: 0 0 28px; font-size: 0.9rem; }
+  h1 { margin: 0 0 24px; }
+  .hint { color: #9ca3af; }
 
   form { display: flex; flex-direction: column; gap: 16px; }
-
   label { display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 0.9rem; }
   label small { font-weight: 400; color: #9ca3af; }
-  .checkbox-row { flex-direction: row; align-items: center; gap: 10px; }
-  .checkbox-row input { width: 16px; height: 16px; }
-
-  input[type="text"], textarea {
-    border: 1px solid rgba(12,12,21,0.15);
-    border-radius: 10px; padding: 10px 12px; font: inherit;
-  }
+  input[type="text"], textarea { border: 1px solid rgba(12,12,21,0.15); border-radius: 10px; padding: 10px 12px; font: inherit; }
   textarea { resize: vertical; }
 
   fieldset { border: 1px solid rgba(12,12,21,0.1); border-radius: 12px; padding: 16px 20px; }
@@ -477,14 +536,20 @@
     white-space: pre-line;
   }
   .why-input {
-    border: 1px solid var(--line-strong) !important;
+    border: 1px solid rgba(12,12,21,0.12) !important;
     border-radius: 8px !important; padding: 7px 10px !important;
     font: inherit; font-size: 0.8rem !important;
-    color: var(--text);
-    background: var(--surface-solid);
+    color: #4b5563;
+    background: #fff;
   }
-  .why-input::placeholder { color: var(--muted-soft); }
+  .why-input::placeholder { color: #c0c4cc; }
 
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
+  .field-label { font-weight: 600; font-size: 0.9rem; }
+  .existing-photos { display: flex; flex-wrap: wrap; gap: 10px; }
+  .existing-photo { position: relative; }
+  .existing-photo img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; display: block; }
+  .remove-photo { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.55); color: #fff; border: none; border-radius: 999px; width: 22px; height: 22px; cursor: pointer; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; padding: 0; }
   .previews { display: flex; gap: 10px; flex-wrap: wrap; }
   .preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }
   .file-input { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
@@ -529,26 +594,4 @@
   .submit:disabled { opacity: 0.5; }
 
   .error { color: #b91c1c; font-size: 0.9rem; }
-  .warn { background: #fff3cd; padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; }
-  .success {
-    background: var(--surface-solid);
-    border: 1px solid var(--line);
-    box-shadow: var(--shadow);
-    color: var(--text);
-    padding: 24px;
-    border-radius: 14px;
-  }
-  .success p { margin: 0 0 16px; }
-  .links { display: flex; gap: 12px; flex-wrap: wrap; }
-  .btn { padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: 700; cursor: pointer; }
-  .btn.primary {
-    background: var(--accent);
-    color: var(--accent-contrast);
-    border: 1px solid var(--line-strong);
-  }
-  .btn.ghost {
-    background: transparent;
-    border: 1.5px solid var(--line-strong);
-    color: var(--text);
-  }
 </style>

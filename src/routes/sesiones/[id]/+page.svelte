@@ -147,7 +147,7 @@
           <span class="tag-group-label">{$t('sesion_form.acciones')}</span>
           <div class="action-chips">
             {#each sesion.accionTags as at}
-              <a href="/acciones/{at}" class="action-chip">{accionName(at)}</a>
+              <a href="/practicas/{at}" class="action-chip">{accionName(at)}</a>
             {/each}
           </div>
         </div>

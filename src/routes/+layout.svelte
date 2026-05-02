@@ -81,9 +81,9 @@
 <header class="topbar">
   <a class="brand" href="/">Laboratorio Sensacional</a>
   <nav>
-    <a href="/acciones">{$t('nav.acciones')}</a>
+    <a href="/">{$t('nav.acciones')}</a>
     <a href="/sesiones">{$t('nav.sesiones')}</a>
-    <a href="/teoria">{$t('nav.teoria')}</a>
+    <a href="/concepto">{$t('nav.teoria')}</a>
     {#if user}
       <a href="/perfil">{$t('nav.perfil')}</a>
       {#if isMod(user)}

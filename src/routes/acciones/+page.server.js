@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
 
 export function load({ url }) {
-  throw redirect(307, `/concepto${url.search}`);
+  throw redirect(307, `/${url.search ? url.search : ''}`);
 }

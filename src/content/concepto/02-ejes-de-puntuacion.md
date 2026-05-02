@@ -145,4 +145,4 @@ Lo importante es tener una lectura lo bastante buena como para diseñar mejor la
 
 ---
 
-*Ver también: [Por qué activación, placer y trance](/teoria/01-modelo-3-ejes) · [Cómo puntuar acciones](/teoria/03-como-puntuar-acciones)*
+*Ver también: [Por qué activación, placer y trance](/concepto/01-modelo-3-ejes) · [Cómo puntuar acciones](/concepto/03-como-puntuar-acciones)*

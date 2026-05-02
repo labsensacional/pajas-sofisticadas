@@ -134,4 +134,4 @@ Si no sabés, dejar algo cerca de 0 y anotar la duda suele ser mejor que sobreac
 
 ---
 
-*Ver también: [Cómo mido estas métricas](/teoria/02-ejes-de-puntuacion) · [Puentes somáticos y emocionales](/teoria/04-puentes-somaticos-y-emocionales)*
+*Ver también: [Cómo mido estas métricas](/concepto/02-ejes-de-puntuacion) · [Puentes somáticos y emocionales](/concepto/04-puentes-somaticos-y-emocionales)*

@@ -278,7 +278,7 @@
                   {:else}
                     <div class="saved-list">
                       {#each savedActions as action}
-                        <a href="/acciones/{action.id}" class="saved-item">
+                        <a href="/practicas/{action.id}" class="saved-item">
                           <strong>{action.name}</strong>
                           {#if action.description}<span>{action.description.slice(0, 90)}{action.description.length > 90 ? '…' : ''}</span>{/if}
                         </a>
