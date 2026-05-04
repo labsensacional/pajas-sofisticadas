@@ -2,17 +2,15 @@
 
 La idea es armar una base de datos colaborativa de prácticas para alcanzar estados interesantes y divertidos. Como una web de recetas de cocina pero para psiconautas y nerds kinkies.
 
-Compartí y charlá sobre prácticas para alcanzar estados de trance, placer y excitación.
-
 # ¿Cómo navego la página?
 
 La idea de esta web es ayudar a encontrar prácticas para sumar a tu repertorio. Pensamos 3 ejes principales para organizar un poco y facilitar la búsqueda. Estados de extasis suelen darse de una combinación de las 3.
 
 ## Activación
 
-Habla de cuanto te activa a nivel corporal una práctica, sería excitación (sexual o no sexual) o _arousal_ en ingles, a veces le dicen _uppers_ en comunidades kinkies (Y _downers_ a las que bajan la excitación).
+Habla de cuánto te activa a nivel corporal una práctica, sería excitación (sexual o no sexual) o _arousal_ en ingles, a veces le dicen _uppers_ en comunidades kinkies (Y _downers_ a las que bajan la excitación).
 
-A veces unx puede querer estar mas excitadx y a puede veces quiere bajar un poco. La excitación potencia todo, lo bueno y lo malo, tambien deja mas a mano ciertos puentes, lo doloroso es mas fácil convertirlo en placentero cuando estas muy arriba.
+A veces unx puede querer estar mas excitadx, y otras se puede querer bajar un poco. La excitación potencia todo, lo bueno y lo malo, tambien deja mas a mano ciertos puentes, lo doloroso es mas fácil convertirlo en placentero cuando estás muy arriba.
 
 El miedo puede en un segundo convertirse en excitación sexual, pero tambien puede pasar al revés.
 
@@ -22,7 +20,7 @@ La excitación prolongada es dificil de sostener ya que consume mucha energia.
 
 No hay mucho que decir de esto, hay experiencias placenteras, otras neutras y otras displacenteras. Aunque, como dijimos con la excitación, todo es relativo y el dolor en el contexto e intensidad adecuado puede ser placentero. Tambien una caricia puede ser dolorosa en ciertos contextos.
 
-Por otro lado la palabra placer es bastante ambigua, hay placeres que generan deseo y ganas de más, otros que generan bienestar y saciedad, otros que solo se dan en compañia de otras personas, otros que solo cuando estas solx.
+Por otro lado la palabra placer es bastante ambigua. Hay cosas que dan muchas ganas de hacerlas, un deseo muy intenso que puede o no, condecirse con el placer final que da cuando se concreta. Otras cosas a veces no dan tantas ganas de hacerlas, pero al concretarlas producen placer o bienestar alto. También está el factor social, hay placeres que solo se dan en compañia de otras personas, otros solo cuando estas solx.
 
 ## Inmersión
 
