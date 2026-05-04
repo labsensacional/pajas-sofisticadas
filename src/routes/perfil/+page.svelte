@@ -4,9 +4,9 @@
   import { goto } from '$app/navigation';
   import { onAuthStateChanged } from 'firebase/auth';
   import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
-  import { findStatic } from '$lib/actions.js';
+  import { getPracticeById } from '$lib/practiceCatalog.js';
   import { auth, db, hasFirebaseConfig } from '$lib/firebase/client.js';
-  import { ensureUserProfile, updateCurrentUserPassword, updateDisplayName } from '$lib/auth.js';
+  import { ensureUserProfile, getUserProfile, updateCurrentUserPassword, updateDisplayName, updateUserPreferences } from '$lib/auth.js';
   import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
   import { t, locale, setLocale, SUPPORTED_LOCALES } from '$lib/i18n.js';
 
@@ -46,6 +46,15 @@
       await ensureUserProfile(value);
       user = auth.currentUser ?? value;
       publicName = user.displayName || '';
+      const profile = await getUserProfile(user);
+      if (profile?.themePreference) {
+        themePreference = profile.themePreference;
+        persistTheme(themePreference);
+        applyTheme(resolveTheme(themePreference));
+      }
+      if (profile?.locale) {
+        setLocale(profile.locale);
+      }
       await loadSavedContent(user.uid);
       loading = false;
     });
@@ -68,13 +77,9 @@
       const savedActionIds = [...new Set(saves.filter((entry) => entry.parentType === 'accion').map((entry) => entry.parentId))];
       const savedSessionIds = [...new Set(saves.filter((entry) => entry.parentType === 'sesion').map((entry) => entry.parentId))];
 
-      savedActions = await Promise.all(savedActionIds.map(async (id) => {
-        const staticAction = findStatic(id);
-        if (staticAction) return staticAction;
-
-        const actionSnap = await getDoc(doc(db, 'acciones', id));
-        return actionSnap.exists() ? { id: actionSnap.id, ...actionSnap.data() } : null;
-      })).then((items) => items.filter(Boolean));
+      savedActions = await Promise.all(
+        savedActionIds.map((id) => getPracticeById(id, { db: hasFirebaseConfig ? db : null }))
+      ).then((items) => items.filter(Boolean));
 
       savedSessions = await Promise.all(savedSessionIds.map(async (id) => {
         const sessionSnap = await getDoc(doc(db, 'sesiones', id));
@@ -140,14 +145,28 @@
     }
   }
 
-  function updateThemePreference(nextTheme) {
+  async function updateThemePreference(nextTheme) {
     themePreference = nextTheme;
     persistTheme(nextTheme);
     applyTheme(resolveTheme(nextTheme));
+    if (!user) return;
+
+    try {
+      await updateUserPreferences({ themePreference: nextTheme }, user);
+    } catch (e) {
+      error = e?.message ?? 'No se pudo guardar el tema.';
+    }
   }
 
-  function updateLanguage(nextLocale) {
+  async function updateLanguage(nextLocale) {
     setLocale(nextLocale);
+    if (!user) return;
+
+    try {
+      await updateUserPreferences({ locale: nextLocale }, user);
+    } catch (e) {
+      error = e?.message ?? 'No se pudo guardar el idioma.';
+    }
   }
 </script>
 

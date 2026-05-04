@@ -36,12 +36,6 @@ export function getScoreFields(t) {
       tooltip: t('scores.dopamine.tooltip'),
     },
     {
-      key: 'endorphins', color: '#06D6A0', min: -10, max: 10,
-      question: t('scores.endorphins.question'),
-      tech: t('axis.endorphins'),
-      tooltip: t('scores.endorphins.tooltip'),
-    },
-    {
       key: 'oxytocin', color: '#74B0FF', min: -10, max: 10,
       question: t('scores.oxytocin.question'),
       tech: t('axis.oxytocin'),

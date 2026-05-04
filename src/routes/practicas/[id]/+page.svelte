@@ -8,7 +8,7 @@
     addDoc, collection, deleteDoc, doc, getDocs,
     orderBy, query, serverTimestamp, updateDoc, where
   } from 'firebase/firestore';
-  import { findStatic } from '$lib/actions.js';
+  import { getPracticeById } from '$lib/practiceCatalog.js';
   import { splitTextWithLinks } from '$lib/linkify.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
@@ -33,7 +33,7 @@
     ? (accion.warnings ?? [...(accion.common_errors ?? []), ...(accion.warning ? [accion.warning] : [])])
     : [];
   $: energyValue = accion?.energy ?? 0;
-  $: hasPleasureBreakdown = AXES.slice(3, 6).some(ax => accion?.[ax.key] != null);
+  $: hasPleasureBreakdown = AXES.slice(3, 5).some(ax => accion?.[ax.key] != null);
   $: hasEnergyData = accion?.energy != null;
 
   $: id = $page.params.id;
@@ -43,29 +43,23 @@
     { key: 'trance',     label: $t('axis.trance'),     color: '#7B68EE' },
     { key: 'pleasure',   label: $t('axis.pleasure'),   color: '#FF6B9D' },
     { key: 'dopamine',   label: $t('axis.dopamine'),   color: '#FFD166' },
-    { key: 'endorphins', label: $t('axis.endorphins'), color: '#06D6A0' },
     { key: 'oxytocin',   label: $t('axis.oxytocin'),   color: '#74B0FF' },
     { key: 'energy',     label: $t('axis.energy'),     color: '#aaa' },
   ];
 
   onMount(() => {
-    // Load from static catalog first
-    accion = findStatic(id);
-
     if (auth) onAuthStateChanged(auth, v => { user = v; if (v) loadUserSave(); });
 
+    loadAction();
+
     if (hasFirebaseConfig && db) {
-      // Always check Firestore — override static if a Firestore version exists
-      loadFromFirestore();
       loadComments();
       loadSaveCount();
     }
   });
 
-  async function loadFromFirestore() {
-    const { getDoc, doc: docRef } = await import('firebase/firestore');
-    const snap = await getDoc(docRef(db, 'acciones', id));
-    if (snap.exists()) accion = { id: snap.id, ...snap.data() };
+  async function loadAction() {
+    accion = await getPracticeById(id, { db: hasFirebaseConfig ? db : null });
   }
 
   async function loadSaveCount() {
@@ -215,7 +209,7 @@
             <p>{$t('accion.pleasure_detail.desc')}</p>
           </div>
           <div class="secondary-bars">
-          {#each AXES.slice(3, 6) as ax}
+          {#each AXES.slice(3, 5) as ax}
             {@const v = accion[ax.key] ?? 0}
             <div class="sec-row">
               <span class="sec-label">{ax.label}</span>

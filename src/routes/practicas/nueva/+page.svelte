@@ -4,9 +4,9 @@
   import { goto } from '$app/navigation';
   import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, doc, getDocs, serverTimestamp } from 'firebase/firestore';
+  import { collection, doc, serverTimestamp } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-  import { ACTIONS } from '$lib/actions.js';
+  import { loadKnownPracticeTags } from '$lib/practiceCatalog.js';
   import { compressImage } from '$lib/compressImage.js';
   import { getAutoWhyText, getScoreFields } from '$lib/scoreFields.js';
   import { extractTags, getFilteredTagSuggestions, normalizeTag } from '$lib/tagInput.js';
@@ -28,10 +28,10 @@
   let hello_world = '';
   let warnings_text = '';
   /** @type {Record<string, number|null>} */
-  let scores = { arousal: null, trance: null, pleasure: null, dopamine: null, endorphins: null, oxytocin: null, energy: null };
+  let scores = { arousal: null, trance: null, pleasure: null, dopamine: null, oxytocin: null, energy: null };
   /** @type {Record<string,string>} */
-  let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', endorphins: '', oxytocin: '', energy: '' };
-  let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, endorphins: false, oxytocin: false, energy: false };
+  let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', oxytocin: '', energy: '' };
+  let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, oxytocin: false, energy: false };
   let tagInput = '';
   /** @type {string[]} */
   let tagValues = [];
@@ -82,16 +82,15 @@
         }
         uploading = false;
       }
-      const { arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy } = scores;
+      const { arousal, trance, pleasure, dopamine, oxytocin, energy } = scores;
       await (await import('firebase/firestore')).setDoc(accionRef, {
         name: name.trim(), description: description.trim(),
         hello_world: hello_world.trim(), warnings, photos,
-        arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy,
+        arousal, trance, pleasure, dopamine, oxytocin, energy,
         arousal_why: whyValues.arousal.trim(),
         trance_why: whyValues.trance.trim(),
         pleasure_why: whyValues.pleasure.trim(),
         dopamine_why: whyValues.dopamine.trim(),
-        endorphins_why: whyValues.endorphins.trim(),
         oxytocin_why: whyValues.oxytocin.trim(),
         energy_why: whyValues.energy.trim(),
         tags,
@@ -157,18 +156,12 @@
   }
 
   async function loadKnownTags() {
-    const tagSet = new Set(extractTags(ACTIONS));
-
-    if (db && hasFirebaseConfig) {
-      try {
-        const snap = await getDocs(collection(db, 'acciones'));
-        extractTags(snap.docs.map((entry) => entry.data())).forEach((tag) => tagSet.add(tag));
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      knownTags = await loadKnownPracticeTags({ db: hasFirebaseConfig ? db : null });
+    } catch (e) {
+      console.error(e);
+      knownTags = [];
     }
-
-    knownTags = [...tagSet].sort((a, b) => a.localeCompare(b));
   }
 
   function handleTagInput(event) {
@@ -227,7 +220,7 @@
       <p>{$t('accion_form.success')}</p>
       <div class="links">
         <a href="/" class="btn primary">{$t('accion_form.view_actions')}</a>
-        <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; hello_world = ''; warnings_text = ''; scores = { arousal: null, trance: null, pleasure: null, dopamine: null, endorphins: null, oxytocin: null, energy: null }; whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', endorphins: '', oxytocin: '', energy: '' }; whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, endorphins: false, oxytocin: false, energy: false }; tagInput = ''; tagValues = []; imageFiles = []; }}>{$t('accion_form.add_another')}</button>
+        <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; hello_world = ''; warnings_text = ''; scores = { arousal: null, trance: null, pleasure: null, dopamine: null, oxytocin: null, energy: null }; whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', oxytocin: '', energy: '' }; whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, oxytocin: false, energy: false }; tagInput = ''; tagValues = []; imageFiles = []; }}>{$t('accion_form.add_another')}</button>
       </div>
     </div>
   {:else}
@@ -249,7 +242,7 @@
       </label>
 
       <fieldset>
-        <legend>{$t('accion_form.scores')} <a href="/concepto/02-ejes-de-puntuacion" target="_blank" class="more-info">{$t('accion_form.scores.guide')}</a></legend>
+        <legend>{$t('accion_form.scores')}</legend>
         <div class="scores">
           {#each SCORE_FIELDS as field}
             {@const isSet = scores[field.key] !== null}
@@ -283,10 +276,16 @@
                 <p class="tooltip-text">{field.tooltip}</p>
               {/if}
               {#if isSet && field.key in whyValues}
-                <input type="text" class="why-input"
+                <textarea
+                  class="why-input"
+                  rows="3"
                   value={whyValues[field.key]}
-                  on:input={(event) => handleWhyInput(field.key, event.currentTarget.value)}
-                  placeholder={$t('accion_form.scores.why.placeholder')} />
+                  on:input={(event) => {
+                    handleWhyInput(field.key, event.currentTarget.value);
+                    event.currentTarget.style.height = 'auto';
+                    event.currentTarget.style.height = `${event.currentTarget.scrollHeight}px`;
+                  }}
+                  placeholder={$t('accion_form.scores.why.placeholder')}></textarea>
               {/if}
             </div>
           {/each}
@@ -371,8 +370,6 @@
 
   fieldset { border: 1px solid rgba(12,12,21,0.1); border-radius: 12px; padding: 16px 20px; }
   legend { font-weight: 700; font-size: 0.9rem; padding: 0 6px; display: flex; align-items: center; gap: 10px; }
-  .more-info { font-size: 0.78rem; font-weight: 500; color: #6b7280; text-decoration: none; border: 1px solid rgba(12,12,21,0.15); border-radius: 999px; padding: 2px 8px; }
-  .more-info:hover { color: #0c0c15; border-color: rgba(12,12,21,0.35); }
   .tags-field { display: flex; flex-direction: column; gap: 8px; }
   .tags-box {
     display: flex;
@@ -425,10 +422,10 @@
     background: rgba(12,12,21,0.02);
   }
   .score-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-  .score-meta { display: flex; flex-direction: column; gap: 2px; }
-  .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); }
+  .score-meta { display: flex; flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; }
+  .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); white-space: normal; overflow-wrap: anywhere; }
   .required-mark { color: #dc2626; }
-  .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; }
+  .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
   .score-card.unset { background: transparent; border-color: rgba(12,12,21,0.05); }
   .score-card.unset .score-name { color: #9ca3af; }
   .score-card.unset .score-question { color: #c0c4cc; }
@@ -482,6 +479,11 @@
     font: inherit; font-size: 0.8rem !important;
     color: var(--text);
     background: var(--surface-solid);
+    min-height: 72px;
+    resize: vertical;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
   .why-input::placeholder { color: var(--muted-soft); }
 
@@ -550,5 +552,9 @@
     background: transparent;
     border: 1.5px solid var(--line-strong);
     color: var(--text);
+  }
+  @media (max-width: 640px) {
+    .score-header { flex-wrap: wrap; }
+    .score-right { width: 100%; justify-content: flex-end; }
   }
 </style>

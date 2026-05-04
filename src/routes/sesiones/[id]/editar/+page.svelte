@@ -5,10 +5,10 @@
   import { goto } from '$app/navigation';
   import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, doc, getDoc, getDocs, orderBy, query, serverTimestamp, updateDoc } from 'firebase/firestore';
+  import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
   import { compressImage } from '$lib/compressImage.js';
-  import { ACTIONS } from '$lib/actions.js';
+  import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
 
@@ -33,11 +33,9 @@
   let imageFiles = [];
   /** @type {string[]} */
   let existingPhotos = [];
-  let communityActions = /** @type {any[]} */ ([]);
+  let practiceCatalog = /** @type {any[]} */ ([]);
 
   $: id = $page.params.id;
-  $: firestoreIds = new Set(communityActions.map((action) => action.id));
-  $: actionCatalog = [...ACTIONS.filter((action) => !firestoreIds.has(action.id)), ...communityActions];
 
   onMount(() => {
     if (auth) onAuthStateChanged(auth, async v => {
@@ -49,10 +47,8 @@
   });
 
   async function loadCommunityActions() {
-    if (!hasFirebaseConfig || !db) return;
     try {
-      const snap = await getDocs(query(collection(db, 'acciones'), orderBy('createdAt', 'desc')));
-      communityActions = snap.docs.map((docSnapshot) => ({ id: docSnapshot.id, ...docSnapshot.data() }));
+      practiceCatalog = await listPractices({ db: hasFirebaseConfig ? db : null });
     } catch (e) {
       console.error(e);
     }
@@ -77,12 +73,12 @@
   }
 
   $: accionSuggestions = accionSearch.trim().length > 0
-    ? actionCatalog.filter(a => a.name.toLowerCase().includes(accionSearch.toLowerCase()) && !accionTags.includes(a.id)).slice(0, 6)
+    ? practiceCatalog.filter(a => a.name.toLowerCase().includes(accionSearch.toLowerCase()) && !accionTags.includes(a.id)).slice(0, 6)
     : [];
 
   function addAccionTag(aid) { if (!accionTags.includes(aid)) accionTags = [...accionTags, aid]; accionSearch = ''; }
   function removeAccionTag(aid) { accionTags = accionTags.filter(a => a !== aid); }
-  function accionName(aid) { return actionCatalog.find(a => a.id === aid)?.name ?? aid; }
+  function accionName(aid) { return getPracticeName(aid, practiceCatalog); }
 
   function handleTagKeydown(e) {
     if (e.key === ',' || e.key === 'Enter') {

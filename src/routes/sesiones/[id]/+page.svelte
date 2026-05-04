@@ -8,7 +8,7 @@
     addDoc, collection, deleteDoc, doc, getDoc,
     getDocs, orderBy, query, serverTimestamp, updateDoc, where
   } from 'firebase/firestore';
-  import { findStatic } from '$lib/actions.js';
+  import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
 
@@ -27,6 +27,7 @@
   let error = '';
   let notice = '';
   let commentAnonymous = false;
+  let practiceCatalog = [];
 
   $: id = $page.params.id;
 
@@ -37,6 +38,7 @@
       loadComments();
       loadSaveCount();
     }
+    loadActions();
   });
 
   async function loadSesion() {
@@ -115,7 +117,15 @@
     } catch (e) { error = e?.message ?? 'Error.'; }
   }
 
-  function accionName(aid) { return findStatic(aid)?.name ?? aid; }
+  async function loadActions() {
+    try {
+      practiceCatalog = await listPractices({ db: hasFirebaseConfig ? db : null });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function accionName(aid) { return getPracticeName(aid, practiceCatalog); }
 </script>
 
 <svelte:head><title>{sesion?.title ?? $t('sesion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>

@@ -5,11 +5,10 @@
   import { goto } from '$app/navigation';
   import { db, auth, storage, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, doc, getDoc, getDocs, setDoc, serverTimestamp } from 'firebase/firestore';
+  import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
   import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-  import { ACTIONS } from '$lib/actions.js';
   import { compressImage } from '$lib/compressImage.js';
-  import { findStatic } from '$lib/actions.js';
+  import { getPracticeById, loadKnownPracticeTags } from '$lib/practiceCatalog.js';
   import { isMod } from '$lib/moderator.js';
   import { getAutoWhyText, getScoreFields } from '$lib/scoreFields.js';
   import { extractTags, getFilteredTagSuggestions, normalizeTag } from '$lib/tagInput.js';
@@ -33,10 +32,10 @@
   let hello_world = '';
   let warnings_text = '';
   /** @type {Record<string, number|null>} */
-  let scores = { arousal: null, trance: null, pleasure: null, dopamine: null, endorphins: null, oxytocin: null, energy: null };
+  let scores = { arousal: null, trance: null, pleasure: null, dopamine: null, oxytocin: null, energy: null };
   /** @type {Record<string,string>} */
-  let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', endorphins: '', oxytocin: '', energy: '' };
-  let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, endorphins: false, oxytocin: false, energy: false };
+  let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', oxytocin: '', energy: '' };
+  let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, oxytocin: false, energy: false };
   let tagInput = '';
   /** @type {string[]} */
   let tagValues = [];
@@ -70,15 +69,8 @@
   async function loadAccion() {
     loading = true;
     try {
-      // Try Firestore first (override), fall back to static catalog
-      const snap = await getDoc(doc(db, 'acciones', id));
-      if (snap.exists()) {
-        accion = { id: snap.id, ...snap.data() };
-      } else {
-        const staticAccion = findStatic(id);
-        if (!staticAccion) { error = $t('accion_form.not_found'); loading = false; return; }
-        accion = { ...staticAccion };
-      }
+      accion = await getPracticeById(id, { db });
+      if (!accion) { error = $t('accion_form.not_found'); loading = false; return; }
 
       if (!isMod(user) && accion.createdBy !== user.uid) {
         goto(`/practicas/${id}`); return;
@@ -97,7 +89,6 @@
         trance: accion.trance ?? null,
         pleasure: accion.pleasure ?? null,
         dopamine: accion.dopamine ?? null,
-        endorphins: accion.endorphins ?? null,
         oxytocin: accion.oxytocin ?? null,
         energy: accion.energy ?? null,
       };
@@ -106,7 +97,6 @@
         trance: accion.trance_why ?? '',
         pleasure: accion.pleasure_why ?? '',
         dopamine: accion.dopamine_why ?? '',
-        endorphins: accion.endorphins_why ?? '',
         oxytocin: accion.oxytocin_why ?? '',
         energy: accion.energy_why ?? '',
       };
@@ -115,7 +105,6 @@
         trance: Boolean(whyValues.trance),
         pleasure: Boolean(whyValues.pleasure),
         dopamine: Boolean(whyValues.dopamine),
-        endorphins: Boolean(whyValues.endorphins),
         oxytocin: Boolean(whyValues.oxytocin),
         energy: Boolean(whyValues.energy),
       };
@@ -149,16 +138,16 @@
         }
         uploading = false;
       }
-      const { arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy } = scores;
+      const { arousal, trance, pleasure, dopamine, oxytocin, energy } = scores;
       await setDoc(doc(db, 'acciones', id), {
         name: name.trim(), description: description.trim(),
         hello_world: hello_world.trim(), warnings, photos,
-        arousal, trance, pleasure, dopamine, endorphins, oxytocin, energy,
+        arousal, trance, pleasure, dopamine, endorphins: accion.endorphins ?? null, oxytocin, energy,
         arousal_why: whyValues.arousal.trim(),
         trance_why: whyValues.trance.trim(),
         pleasure_why: whyValues.pleasure.trim(),
         dopamine_why: whyValues.dopamine.trim(),
-        endorphins_why: whyValues.endorphins.trim(),
+        endorphins_why: accion.endorphins_why ?? '',
         oxytocin_why: whyValues.oxytocin.trim(),
         energy_why: whyValues.energy.trim(),
         tags,
@@ -224,18 +213,12 @@
   }
 
   async function loadKnownTags() {
-    const tagSet = new Set(extractTags(ACTIONS));
-
-    if (db && hasFirebaseConfig) {
-      try {
-        const snap = await getDocs(collection(db, 'acciones'));
-        extractTags(snap.docs.map((entry) => entry.data())).forEach((tag) => tagSet.add(tag));
-      } catch (e) {
-        console.error(e);
-      }
+    try {
+      knownTags = await loadKnownPracticeTags({ db: hasFirebaseConfig ? db : null });
+    } catch (e) {
+      console.error(e);
+      knownTags = extractTags([accion]).sort((a, b) => a.localeCompare(b));
     }
-
-    knownTags = [...tagSet].sort((a, b) => a.localeCompare(b));
   }
 
   function handleTagInput(event) {
@@ -340,10 +323,16 @@
                 <p class="tooltip-text">{field.tooltip}</p>
               {/if}
               {#if isSet && field.key in whyValues}
-                <input type="text" class="why-input"
+                <textarea
+                  class="why-input"
+                  rows="3"
                   value={whyValues[field.key]}
-                  on:input={(event) => handleWhyInput(field.key, event.currentTarget.value)}
-                  placeholder={$t('accion_form.scores.why.placeholder')} />
+                  on:input={(event) => {
+                    handleWhyInput(field.key, event.currentTarget.value);
+                    event.currentTarget.style.height = 'auto';
+                    event.currentTarget.style.height = `${event.currentTarget.scrollHeight}px`;
+                  }}
+                  placeholder={$t('accion_form.scores.why.placeholder')}></textarea>
               {/if}
             </div>
           {/each}
@@ -484,10 +473,10 @@
     background: rgba(12,12,21,0.02);
   }
   .score-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-  .score-meta { display: flex; flex-direction: column; gap: 2px; }
-  .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); }
+  .score-meta { display: flex; flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; }
+  .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); white-space: normal; overflow-wrap: anywhere; }
   .required-mark { color: #dc2626; }
-  .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; }
+  .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
   .score-card.unset { background: transparent; border-color: rgba(12,12,21,0.05); }
   .score-card.unset .score-name { color: #9ca3af; }
   .score-card.unset .score-question { color: #c0c4cc; }
@@ -541,6 +530,11 @@
     font: inherit; font-size: 0.8rem !important;
     color: #4b5563;
     background: #fff;
+    min-height: 72px;
+    resize: vertical;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
   .why-input::placeholder { color: #c0c4cc; }
 
@@ -594,4 +588,8 @@
   .submit:disabled { opacity: 0.5; }
 
   .error { color: #b91c1c; font-size: 0.9rem; }
+  @media (max-width: 640px) {
+    .score-header { flex-wrap: wrap; }
+    .score-right { width: 100%; justify-content: flex-end; }
+  }
 </style>

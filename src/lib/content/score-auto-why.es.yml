@@ -29,58 +29,44 @@ trance:
 pleasure:
   - from: -10
     to: -1
-    text: "Predominan marcadores de aversión o aspereza: muecas, retirada, contención corporal, respiración cortada o incomodidad sostenida, aunque el contexto pueda permitir relectura erótica posterior."
+    text: "Predominan la aspereza, el costo o la incomodidad corporal: muecas, retirada, contención, sensación de fricción interna o poco bienestar, aunque después pueda releerse de otro modo."
   - from: 0
     to: 3
-    text: "La sensación puede ser neutra o tenue, sin demasiada expresión de gusto ni búsqueda inmediata de repetir, aunque la práctica sirva como puente para otra cosa."
+    text: "La sensación puede ser tenue o neutra, con poco agrado directo o poco residuo placentero posterior, aunque la práctica sirva como puente para otra cosa."
   - from: 4
     to: 6
-    text: "Se perciben sensaciones agradables claras. Relajación facial, pequeños sonidos de gusto, acercamiento al estímulo y deseo de sostenerlo, aunque sin desborde ni intensidad extrema."
+    text: "Se perciben sensaciones agradables claras o un afterglow moderado: relajación facial, alivio, sensación de cuerpo más contento y ganas de sostener lo que está pasando."
   - from: 7
     to: 10
-    text: "El placer es evidente y sostenido. Gemidos o sonrisas involuntarias, entrega al estímulo, contracciones placenteras, deseo claro de que continúe y fuerte orientación corporal hacia lo que se siente bien."
+    text: "El placer o bienestar es evidente y sostenido. Gemidos o sonrisas involuntarias, alivio claro, sensación de saciedad, cuerpo muy orientado a lo que se siente bien y buen residuo después."
 
 dopamine:
   - from: -10
     to: -1
-    text: "Más que empujar a repetir, corta momentum. Baja la persecución del estímulo, reduce la urgencia de insistir y deja una sensación de cierre, saciedad o reset motivacional."
+    text: "Más que empujar a repetir, corta momentum. Baja la persecución del estímulo, enfría la insistencia y deja más sensación de cierre, saciedad o reset que de seguir buscando."
   - from: 0
     to: 3
-    text: "Puede gustar, pero no genera mucha tracción conductual: no aparece tanta fantasía anticipatoria, ni urgencia de volver enseguida, ni rumiación posterior sobre repetir."
+    text: "Puede gustar, pero no genera mucha tracción conductual: poca fantasía anticipatoria, poca urgencia de volver enseguida y escaso impulso de insistir."
   - from: 4
     to: 6
-    text: "Deja interés por repetir y cierta anticipación: la atención vuelve a la práctica, aparece curiosidad por seguir o retomar, pero todavía sin sesgo persecutorio fuerte."
+    text: "Deja interés por repetir y cierta anticipación: la atención vuelve a la práctica, aparece curiosidad por seguir o retomar, pero sin captura total del foco."
   - from: 7
     to: 10
-    text: "Predomina la motivación apetitiva: ganas intensas de volver, planificar la próxima tanda, estirar la experiencia o buscar más estímulo, con foco atencional capturado por la expectativa de recompensa."
-
-endorphins:
-  - from: -10
-    to: -1
-    text: "En vez de afterglow deja costo: fatiga, vacío, bajón o sensación de crash, con poca analgesia y escasa mejora del humor post-práctica."
-  - from: 0
-    to: 3
-    text: "Casi no deja huella post-práctica: poco alivio, poca analgesia, escaso cambio en el humor y retorno bastante rápido al estado basal."
-  - from: 4
-    to: 6
-    text: "Deja alivio apreciable después: cuerpo más suelto, descenso del dolor o la fricción interna, sensación de descarga y un bienestar moderado posterior."
-  - from: 7
-    to: 10
-    text: "El afterglow es fuerte: analgesia clara, euforia tranquila, sonrisa involuntaria, cuerpo liviano y una sensación de recompensa somática que dura un rato después de terminar."
+    text: "Predomina la motivación apetitiva: ganas intensas de volver, planificar la próxima tanda, estirar la experiencia o buscar más, con foco capturado por la expectativa de recompensa."
 
 oxytocin:
   - from: -10
     to: -1
-    text: "Tiende a enfriar lo vincular. Más distancia, menos ternura, menor deseo de contacto o dificultad para entrar en confianza, incluso si hay estimulación intensa."
+    text: "Lo social pesa, pero en tono negativo: humillación, engaño, rechazo, distancia o tensión relacional como parte importante de la experiencia."
   - from: 0
     to: 3
-    text: "La práctica se siente más técnica, instrumental o individual. Poco impulso a abrazar, cuidar, mirar o sostener al otro, y escasos marcadores de ternura corporal."
+    text: "Lo social casi no pesa. La práctica se siente más técnica, instrumental o individual, con poca carga vincular explícita."
   - from: 4
     to: 6
-    text: "Aparece calidez relacional moderada. Más facilidad para acercarse, tocar suave, confiar, quedarse cerca y sentir cierta ternura o apertura emocional."
+    text: "Aparece carga social moderada. Hay entrega, aceptación, reconocimiento o cierta conexión con otrx, pero sin dominar toda la experiencia."
   - from: 7
     to: 10
-    text: "Predominan señales de vínculo y apego. Deseo de abrazar o ser abrazadx, confianza alta, mirada blanda, ternura espontánea, sensación de intimidad y fuerte orientación al contacto afiliativo."
+    text: "Lo social domina la experiencia y en tono positivo: confianza, admiración, conexión, aceptación, entrega o fuerte orientación al vínculo con otrx/s."
 
 energy:
   - from: 0

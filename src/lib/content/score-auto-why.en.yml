@@ -29,58 +29,44 @@ trance:
 pleasure:
   - from: -10
     to: -1
-    text: "Markers of aversion or roughness dominate: grimacing, withdrawal, bodily bracing, interrupted breathing, or sustained discomfort, even if the context later allows an erotic reinterpretation."
+    text: "Roughness, cost, or bodily discomfort dominate: grimaces, withdrawal, restraint, inner friction, or low well-being, even if it may later be re-read differently."
   - from: 0
     to: 3
-    text: "There is little direct hedonic load: the sensation may be neutral or faint, with limited visible enjoyment or immediate desire to repeat, even if the practice is useful as a bridge."
+    text: "The sensation may be faint or neutral, with little direct enjoyment or little pleasurable residue afterward, even if the practice works as a bridge to something else."
   - from: 4
     to: 6
-    text: "Clearly pleasant sensations are present: softer facial tone, small sounds of enjoyment, moving toward the stimulus, and a wish to keep it going, though without full overwhelm."
+    text: "Clear pleasant sensations or a moderate afterglow appear: facial relaxation, relief, a more content body, and a wish to keep what is happening going."
   - from: 7
     to: 10
-    text: "Pleasure is obvious and sustained: involuntary moans or smiling, bodily yielding to the stimulus, pleasurable contractions, clear desire for continuation, and strong orientation toward what feels good."
+    text: "Pleasure or well-being is obvious and sustained: involuntary moans or smiles, clear relief, satiety, a body strongly oriented toward what feels good, and a good residue afterward."
 
 dopamine:
   - from: -10
     to: -1
-    text: "Rather than driving repetition, it cuts momentum: there is less urge to chase the stimulus, less insistence, and more of a sense of closure, satiety, or motivational reset."
+    text: "Rather than pushing repetition, it cuts momentum. It cools pursuit, lowers insistence, and leaves more closure, satiety, or reset than appetite for more."
   - from: 0
     to: 3
-    text: "It may be satisfying, but it produces little behavioral pull: less anticipatory fantasy, little urgency to return immediately, and less post-practice rumination about doing it again."
+    text: "It may be enjoyable, but it does not generate much behavioral pull: little anticipatory fantasy, little urgency to return soon, and not much drive to insist."
   - from: 4
     to: 6
-    text: "It leaves noticeable interest in repeating and some anticipatory pull: attention returns to the practice and there is curiosity about resuming, but without a strong compulsive quality."
+    text: "It leaves interest in repeating and some anticipation: attention returns to the practice, curiosity appears to continue or resume, but without fully capturing focus."
   - from: 7
     to: 10
-    text: "Appetitive motivation dominates: strong desire to return, extend the session, plan the next round, or chase more stimulation, with attention captured by reward expectation."
-
-endorphins:
-  - from: -10
-    to: -1
-    text: "Instead of afterglow, it leaves a cost: fatigue, emptiness, a drop in mood, or a crash-like aftermath, with little analgesia or mood lift."
-  - from: 0
-    to: 3
-    text: "It leaves very little post-practice trace: limited relief, limited analgesia, minimal mood change, and a fairly quick return to baseline."
-  - from: 4
-    to: 6
-    text: "There is a noticeable post-practice softening: relief, reduced pain or friction, a sense of discharge, and moderate bodily well-being afterward."
-  - from: 7
-    to: 10
-    text: "The afterglow is strong: clear analgesia, calm euphoria, involuntary smiling, a lighter body, and a somatic reward state that lasts for a while after finishing."
+    text: "Appetitive motivation dominates: strong desire to return, plan the next round, stretch the experience, or seek more, with focus captured by reward expectation."
 
 oxytocin:
   - from: -10
     to: -1
-    text: "It cools relational tone: more distance, less tenderness, less desire for contact, or greater difficulty entering trust, even if stimulation is intense."
+    text: "The social dimension matters, but in a negative tone: humiliation, deceit, rejection, distance, or relational tension as an important part of the experience."
   - from: 0
     to: 3
-    text: "The practice feels more technical, instrumental, or individual: little impulse to hug, care, gaze, or hold the other, and few bodily markers of tenderness."
+    text: "The social dimension barely matters. The practice feels more technical, instrumental, or individual, with little explicit relational charge."
   - from: 4
     to: 6
-    text: "Moderate affiliative warmth appears: more ease in approaching, soft touching, trusting, staying close, and feeling some tenderness or emotional openness."
+    text: "Moderate social load appears. There is surrender, acceptance, recognition, or some connection with another person, but it does not dominate the whole experience."
   - from: 7
     to: 10
-    text: "Signals of bonding and attachment dominate: desire to hug or be held, high trust, softer gaze, spontaneous tenderness, intimacy, and strong orientation toward affiliative contact."
+    text: "The social dimension dominates the experience in a positive tone: trust, admiration, connection, acceptance, surrender, or strong orientation toward bond with others."
 
 energy:
   - from: 0

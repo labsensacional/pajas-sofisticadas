@@ -1,4 +1,4 @@
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db, hasFirebaseConfig } from './firebase/client.js';
 import {
   createUserWithEmailAndPassword,
@@ -63,8 +63,27 @@ export async function updateDisplayName(displayName) {
     await setDoc(doc(db, 'users', auth.currentUser.uid), {
       displayName,
       updatedAt: serverTimestamp()
-    });
+    }, { merge: true });
   }
+}
+
+export async function getUserProfile(user = auth?.currentUser) {
+  ensureAuthReady();
+  if (!user || !db) return null;
+
+  const snap = await getDoc(doc(db, 'users', user.uid));
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function updateUserPreferences(preferences, user = auth?.currentUser) {
+  ensureAuthReady();
+  if (!user) throw new Error('No hay una sesión activa.');
+  if (!db) return;
+
+  await setDoc(doc(db, 'users', user.uid), {
+    ...preferences,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
 }
 
 export async function sendCurrentUserPasswordReset() {
@@ -93,7 +112,7 @@ export async function ensureUserProfile(user = auth?.currentUser) {
     await setDoc(doc(db, 'users', user.uid), {
       displayName,
       updatedAt: serverTimestamp()
-    });
+    }, { merge: true });
   }
 
   return displayName;

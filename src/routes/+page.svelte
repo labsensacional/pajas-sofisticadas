@@ -6,8 +6,7 @@
   import { db, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { auth } from '$lib/firebase/client.js';
   import { onAuthStateChanged } from 'firebase/auth';
-  import { collection, getDocs } from 'firebase/firestore';
-  import { ACTIONS } from '$lib/actions.js';
+  import { listPractices } from '$lib/practiceCatalog.js';
   import { splitTextWithLinks } from '$lib/linkify.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
@@ -15,16 +14,12 @@
   /** @type {any} */
   let user = null;
   /** @type {any[]} */
-  let newAcciones = [];
+  let allAcciones = [];
   let search = '';
   let sortBy = 'pleasure';
   let showUnreviewed = false;
-  let loading = false;  // static content available immediately
+  let loading = false;
   let loadingFirestore = false;
-
-  // Merge: static catalog + Firestore. Firestore overrides static when same ID.
-  $: firestoreIds = new Set(newAcciones.map(a => a.id));
-  $: allAcciones = [...ACTIONS.filter(a => !firestoreIds.has(a.id)), ...newAcciones];
 
   $: tagCounts = allAcciones.reduce((acc, a) => {
     const tags = typeof a.tags === 'string' ? a.tags.split(' ') : (a.tags ?? []);
@@ -81,23 +76,19 @@
 
   onMount(() => {
     if (auth) onAuthStateChanged(auth, v => { user = v; });
-    loadNew();
+    loadActions();
   });
 
-  async function loadNew() {
-    if (!hasFirebaseConfig || !db) return;
+  async function loadActions() {
+    loading = true;
     loadingFirestore = true;
     try {
-      const snap = await getDocs(collection(db, 'acciones'));
-      newAcciones = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => {
-          const aTime = a.createdAt?.toMillis?.() ?? a.updatedAt?.toMillis?.() ?? 0;
-          const bTime = b.createdAt?.toMillis?.() ?? b.updatedAt?.toMillis?.() ?? 0;
-          return bTime - aTime;
-        });
+      allAcciones = await listPractices({ db: hasFirebaseConfig ? db : null });
     } catch (e) { console.error(e); }
-    loadingFirestore = false;
+    finally {
+      loading = false;
+      loadingFirestore = false;
+    }
   }
 
   $: AXES = [
@@ -105,7 +96,6 @@
     { key: 'trance',  label: $t('axis.trance'), color: '#7B68EE' },
     { key: 'pleasure',label: $t('axis.pleasure'), color: '#FF6B9D' },
     { key: 'dopamine',label: $t('axis.dopamine.short'), color: '#FFD166' },
-    { key: 'endorphins',label: $t('axis.endorphins.short'), color: '#06D6A0' },
     { key: 'oxytocin',label: $t('axis.oxytocin.short'), color: '#74B0FF' },
     { key: 'energy',  label: $t('axis.energy.short'), color: '#aaa' },
   ];
@@ -117,7 +107,7 @@
   <header class="header">
     <div>
       <h1>{$t('acciones.title')}</h1>
-      <p>{$t('acciones.count', { count: allAcciones.length })}</p>
+      <p>{$t('home.tagline')}</p>
     </div>
     {#if user}
       <a href="/practicas/nueva" class="btn-new">{$t('acciones.new')}</a>
@@ -131,7 +121,6 @@
       <option value="arousal">{$t('acciones.sort.arousal')}</option>
       <option value="trance">{$t('acciones.sort.trance')}</option>
       <option value="dopamine">{$t('acciones.sort.dopamine')}</option>
-      <option value="endorphins">{$t('acciones.sort.endorphins')}</option>
       <option value="oxytocin">{$t('acciones.sort.oxytocin')}</option>
     </select>
   </div>
@@ -313,8 +302,10 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+    cursor: pointer;
     transition: transform 130ms, box-shadow 130ms;
   }
+  .card :global(*) { cursor: inherit; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.09); }
 
   .card-top { display: flex; align-items: center; gap: 8px; }
@@ -332,6 +323,7 @@
   .card-desc { margin: 0; font-size: 0.85rem; color: #6b7280; line-height: 1.45; flex: 1; }
   .inline-link {
     color: var(--accent);
+    cursor: pointer;
     text-decoration: underline;
     text-decoration-thickness: 1.5px;
     text-underline-offset: 0.16em;

@@ -4,10 +4,10 @@
   import { signOut, onAuthStateChanged } from 'firebase/auth';
   import { auth, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { confirmAgeGate, isAgeGateConfirmed } from '$lib/ageGate.js';
-  import { ensureUserProfile } from '$lib/auth.js';
+  import { ensureUserProfile, getUserProfile } from '$lib/auth.js';
   import { isMod } from '$lib/moderator.js';
-  import { applyTheme, resolveTheme } from '$lib/theme.js';
-  import { t, initLocale } from '$lib/i18n.js';
+  import { applyTheme, persistTheme, resolveTheme } from '$lib/theme.js';
+  import { t, initLocale, setLocale } from '$lib/i18n.js';
 
   export let data;
 
@@ -22,6 +22,14 @@
       return onAuthStateChanged(auth, async (v) => {
         if (v && hasFirebaseConfig) {
           await ensureUserProfile(v);
+          const profile = await getUserProfile(v);
+          if (profile?.locale) {
+            setLocale(profile.locale);
+          }
+          if (profile?.themePreference) {
+            persistTheme(profile.themePreference);
+            applyTheme(resolveTheme(profile.themePreference));
+          }
           user = auth.currentUser ?? v;
           return;
         }

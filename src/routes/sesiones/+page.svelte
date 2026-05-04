@@ -7,10 +7,11 @@
   import { onAuthStateChanged } from 'firebase/auth';
   import { collection, getDocs, orderBy, query } from 'firebase/firestore';
   import { isMod } from '$lib/moderator.js';
-  import { findStatic } from '$lib/actions.js';
+  import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { t } from '$lib/i18n.js';
 
-  function accionName(id) { return findStatic(id)?.name ?? id; }
+  let practiceCatalog = [];
+  function accionName(id) { return getPracticeName(id, practiceCatalog); }
 
   /** @type {any} */
   let user = null;
@@ -37,6 +38,7 @@
   onMount(() => {
     if (auth) onAuthStateChanged(auth, v => { user = v; });
     load();
+    loadActions();
   });
 
   $: selectedTag = $page.url.searchParams.get('tag') ?? '';
@@ -49,6 +51,14 @@
       sesiones = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (e) { console.error(e); }
     loading = false;
+  }
+
+  async function loadActions() {
+    try {
+      practiceCatalog = await listPractices({ db: hasFirebaseConfig ? db : null });
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   $: allTags = [...new Set(sesiones.flatMap(s => s.tags ?? []))].sort();
