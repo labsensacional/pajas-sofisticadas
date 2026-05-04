@@ -1,6 +1,7 @@
 <script>
   // @ts-nocheck
   import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   import { signOut, onAuthStateChanged } from 'firebase/auth';
   import { auth, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { confirmAgeGate, isAgeGateConfirmed } from '$lib/ageGate.js';
@@ -88,7 +89,15 @@
 
 <header class="topbar">
   <a class="brand" href="/">Laboratorio Sensacional</a>
-  <nav>
+  <div class="mobile-utility-actions">
+    {#if user}
+      {#if isMod(user)}
+        <a href="/admin/promote" class="mod-link mobile-utility-link">{$t('nav.admin')}</a>
+      {/if}
+      <button class="logout mobile-utility-button" on:click={handleLogout}>{$t('nav.logout')}</button>
+    {/if}
+  </div>
+  <nav class="desktop-nav">
     <a href="/">{$t('nav.acciones')}</a>
     <a href="/sesiones">{$t('nav.sesiones')}</a>
     <a href="/concepto">{$t('nav.teoria')}</a>
@@ -103,6 +112,17 @@
     {/if}
   </nav>
 </header>
+
+<nav class="mobile-nav">
+  <a href="/" class:active={$page.url.pathname === '/'}><span class="mobile-tab-kicker">🧪</span><span>{$t('nav.acciones')}</span></a>
+  <a href="/sesiones" class:active={$page.url.pathname.startsWith('/sesiones')}><span class="mobile-tab-kicker">🌀</span><span>{$t('nav.sesiones')}</span></a>
+  <a href="/concepto" class:active={$page.url.pathname.startsWith('/concepto')}><span class="mobile-tab-kicker">📚</span><span>{$t('nav.teoria')}</span></a>
+  {#if user}
+    <a href="/perfil" class:active={$page.url.pathname.startsWith('/perfil')}><span class="mobile-tab-kicker">👤</span><span>{$t('nav.perfil')}</span></a>
+  {:else}
+    <a href="/login" class:active={$page.url.pathname.startsWith('/login')}><span class="mobile-tab-kicker">🔐</span><span>{$t('nav.login.mobile')}</span></a>
+  {/if}
+</nav>
 
 <slot />
 
@@ -353,16 +373,22 @@
     letter-spacing: -0.01em;
   }
 
-  nav { display: flex; gap: 20px; align-items: center; }
+  .desktop-nav,
+  .mobile-nav { display: flex; gap: 20px; align-items: center; }
 
-  nav a {
+  .desktop-nav a,
+  .mobile-nav a {
     text-decoration: none;
     color: var(--text);
     font-weight: 600;
     font-size: 0.95rem;
   }
 
-  nav a:hover { color: var(--accent); }
+  .desktop-nav a:hover,
+  .mobile-nav a:hover { color: var(--accent); }
+
+  .mobile-nav { display: none; }
+  .mobile-utility-actions { display: none; }
 
   .mod-link { color: #7c3aed !important; }
 
@@ -385,8 +411,82 @@
   }
 
   @media (max-width: 640px) {
-    .topbar { flex-direction: column; align-items: flex-start; gap: 12px; padding: 14px 18px; }
-    nav { flex-wrap: wrap; gap: 12px; }
+    :global(body) { padding-bottom: 88px; }
+    .topbar {
+      padding: 14px 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-utility-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .mobile-utility-link,
+    .mobile-utility-button {
+      font-size: 0.78rem;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line-strong);
+      background: var(--surface-solid);
+      text-decoration: none;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .desktop-nav { display: none; }
+    .mobile-nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+      background: var(--surface);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid var(--line);
+    }
+    .mobile-nav::-webkit-scrollbar { display: none; }
+    .mobile-nav a {
+      flex: 1 1 0;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 6px;
+      border-radius: 16px;
+      font-size: 0.72rem;
+      line-height: 1.1;
+      color: var(--muted);
+      background: transparent;
+      transition: background 120ms ease, color 120ms ease, transform 120ms ease;
+    }
+    .mobile-nav a.active {
+      background: var(--pill-active-bg);
+      color: var(--pill-active-text);
+      transform: translateY(-1px);
+    }
+    .mobile-tab-kicker {
+      width: 26px;
+      height: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      background: rgba(23, 20, 31, 0.08);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+    .mobile-nav a.active .mobile-tab-kicker {
+      background: rgba(255,255,255,0.18);
+    }
     .brand { font-size: 0.95rem; }
   }
 </style>

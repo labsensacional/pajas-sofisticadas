@@ -15,6 +15,7 @@ export default {
   'nav.admin': 'Admin',
   'nav.logout': 'Salir',
   'nav.login': 'Login',
+  'nav.login.mobile': 'Entrar',
 
   // Home
   'home.tagline': 'Red social de psiconáutica recreativa y sexual. Compartí y charlá sobre prácticas para alcanzar estados de inmersión, placer y/o excitación',

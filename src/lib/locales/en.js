@@ -15,6 +15,7 @@ export default {
   'nav.admin': 'Admin',
   'nav.logout': 'Log out',
   'nav.login': 'Login',
+  'nav.login.mobile': 'Sign in',
 
   // Home
   'home.tagline': 'A social network for recreational and sexual psychonautics. Share and discuss practices for reaching states of immersion, pleasure, and arousal.',
