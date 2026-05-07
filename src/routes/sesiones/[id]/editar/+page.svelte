@@ -34,6 +34,7 @@
   /** @type {string[]} */
   let existingPhotos = [];
   let practiceCatalog = /** @type {any[]} */ ([]);
+  let publishAnonymous = false;
 
   $: id = $page.params.id;
 
@@ -68,6 +69,7 @@
       tags = sesion.tags ?? [];
       accionTags = sesion.accionTags ?? [];
       existingPhotos = sesion.photos ?? [];
+      publishAnonymous = Boolean(sesion.isAnonymous);
     } catch (e) { error = e?.message ?? 'Error al cargar.'; }
     loading = false;
   }
@@ -105,6 +107,7 @@
     if (!title.trim()) { error = $t('sesion_form.required'); return; }
     saving = true; error = '';
     try {
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       let photos = [...existingPhotos];
       if (imageFiles.length && storage) {
         uploading = true;
@@ -120,6 +123,8 @@
       await updateDoc(doc(db, 'sesiones', id), {
         title: title.trim(), body: body.trim(),
         photos, accionTags, tags,
+        authorName: publishAnonymous ? '' : currentUsername,
+        isAnonymous: publishAnonymous,
         updatedAt: serverTimestamp()
       });
       goto(`/sesiones/${id}`);
@@ -188,6 +193,11 @@
             on:blur={handleTagBlur}
           />
         </div>
+      </label>
+
+      <label class="checkbox-row">
+        <input type="checkbox" bind:checked={publishAnonymous} />
+        <span>{$t('sesion_form.anonymous')}</span>
       </label>
 
       {#if existingPhotos.length}

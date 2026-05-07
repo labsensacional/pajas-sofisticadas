@@ -26,6 +26,7 @@
   let imageFiles = [];
   /** @type {string[]} */
   let existingPhotos = [];
+  let publishAnonymous = false;
 
   let name = '';
   let description = '';
@@ -110,6 +111,7 @@
       };
       tagValues = extractTags([accion]);
       existingPhotos = accion.photos ?? [];
+      publishAnonymous = Boolean(accion.isAnonymous);
     } catch (e) { error = e?.message ?? 'Error al cargar.'; }
     loading = false;
   }
@@ -123,6 +125,7 @@
     }
     saving = true; error = '';
     try {
+      const currentUsername = auth?.currentUser?.displayName || user.displayName || user.email?.split('@')[0] || $t('common.user');
       const tags = tagValues;
       const warnings = warnings_text.split('\n').map(l => l.trim()).filter(Boolean);
       // setDoc creates or overwrites — handles both new Firestore overrides and existing docs
@@ -152,8 +155,8 @@
         energy_why: whyValues.energy.trim(),
         tags,
         createdBy: accion.createdBy || user.uid,
-        authorName: accion.authorName ?? user.displayName ?? user.email?.split('@')[0] ?? $t('common.user'),
-        isAnonymous: accion.isAnonymous ?? false,
+        authorName: publishAnonymous ? '' : currentUsername,
+        isAnonymous: publishAnonymous,
         createdAt: accion.createdAt ?? serverTimestamp(),
         reviewed: accion.reviewed ?? false,
         updatedAt: serverTimestamp()
@@ -366,6 +369,11 @@
         </div>
       </label>
 
+      <label class="checkbox-row">
+        <input type="checkbox" bind:checked={publishAnonymous} />
+        <span>{$t('accion_form.anonymous')}</span>
+      </label>
+
       {#if existingPhotos.length}
         <div class="field-group">
           <span class="field-label">{$t('sesion_form.existing_photos')}</span>
@@ -414,6 +422,15 @@
   form { display: flex; flex-direction: column; gap: 16px; }
   label { display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 0.9rem; }
   label small { font-weight: 400; color: #9ca3af; }
+  .checkbox-row { flex-direction: row; align-items: center; gap: 10px; font-weight: 500; }
+  .checkbox-row input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+    transform: translateY(-1px);
+    flex-shrink: 0;
+  }
   input[type="text"], textarea { border: 1px solid rgba(12,12,21,0.15); border-radius: 10px; padding: 10px 12px; font: inherit; }
   textarea { resize: vertical; }
 
@@ -515,7 +532,7 @@
   }
   .tooltip-text {
     font-size: 0.78rem;
-    color: var(--text);
+    color: var(--muted);
     line-height: 1.6;
     background: var(--surface-soft);
     border: 1px solid var(--line);
@@ -528,15 +545,15 @@
     border: 1px solid rgba(12,12,21,0.12) !important;
     border-radius: 8px !important; padding: 7px 10px !important;
     font: inherit; font-size: 0.8rem !important;
-    color: #4b5563;
-    background: #fff;
+    color: var(--muted);
+    background: var(--surface-solid);
     min-height: 72px;
     resize: vertical;
     line-height: 1.45;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  .why-input::placeholder { color: #c0c4cc; }
+  .why-input::placeholder { color: var(--muted-soft); }
 
   .field-group { display: flex; flex-direction: column; gap: 6px; }
   .field-label { font-weight: 600; font-size: 0.9rem; }

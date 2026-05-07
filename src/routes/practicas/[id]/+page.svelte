@@ -28,6 +28,7 @@
   let notice = '';
   let currentPhoto = 0;
   let commentAnonymous = false;
+  $: visibleAuthorName = !accion?.isAnonymous && accion?.authorName ? accion.authorName : '';
 
   $: allWarnings = accion
     ? (accion.warnings ?? [...(accion.common_errors ?? []), ...(accion.warning ? [accion.warning] : [])])
@@ -154,6 +155,11 @@
         <div class="title-row">
           <h1>{accion.name}</h1>
         </div>
+        {#if visibleAuthorName}
+          <div class="meta">
+            <span>{visibleAuthorName}</span>
+          </div>
+        {/if}
       </header>
 
       {#if accion.photos?.length}

@@ -359,8 +359,15 @@
 
   label { display: flex; flex-direction: column; gap: 5px; font-weight: 600; font-size: 0.9rem; }
   label small { font-weight: 400; color: #9ca3af; }
-  .checkbox-row { flex-direction: row; align-items: center; gap: 10px; }
-  .checkbox-row input { width: 16px; height: 16px; }
+  .checkbox-row { flex-direction: row; align-items: center; gap: 10px; font-weight: 500; }
+  .checkbox-row input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--accent);
+    transform: translateY(-1px);
+    flex-shrink: 0;
+  }
 
   input[type="text"], textarea {
     border: 1px solid rgba(12,12,21,0.15);
@@ -464,7 +471,7 @@
   }
   .tooltip-text {
     font-size: 0.78rem;
-    color: var(--text);
+    color: var(--muted);
     line-height: 1.6;
     background: var(--surface-soft);
     border: 1px solid var(--line);
@@ -477,7 +484,7 @@
     border: 1px solid var(--line-strong) !important;
     border-radius: 8px !important; padding: 7px 10px !important;
     font: inherit; font-size: 0.8rem !important;
-    color: var(--text);
+    color: var(--muted);
     background: var(--surface-solid);
     min-height: 72px;
     resize: vertical;

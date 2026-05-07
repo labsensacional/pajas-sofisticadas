@@ -28,6 +28,7 @@
   let notice = '';
   let commentAnonymous = false;
   let practiceCatalog = [];
+  $: visibleAuthorName = !sesion?.isAnonymous && sesion?.authorName ? sesion.authorName : '';
 
   $: id = $page.params.id;
 
@@ -142,8 +143,10 @@
       <header class="art-header">
         <h1>{sesion.title}</h1>
         <div class="meta">
-          <span>{sesion.authorName || $t('sesiones.anonymous')}</span>
-          <span>·</span>
+          {#if visibleAuthorName}
+            <span>{visibleAuthorName}</span>
+            <span>·</span>
+          {/if}
           <span>{sesion.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
         </div>
       </header>
