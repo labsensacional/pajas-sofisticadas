@@ -282,8 +282,22 @@
     flex-wrap: wrap;
     gap: 6px;
     min-width: 220px;
-    max-width: 340px;
+    max-width: min(340px, calc(100vw - 32px));
     box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 500px) {
+    .more-dropdown {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 24px;
+      top: auto;
+      max-width: none;
+      max-height: 60vh;
+      overflow-y: auto;
+      border-radius: 16px;
+    }
   }
   .chip.mod.active { background: #7c3aed; color: #fff; }
 

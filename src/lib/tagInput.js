@@ -1,8 +1,10 @@
+export const MAX_TAG_LENGTH = 20;
+
 /**
  * @param {string} value
  */
 export function normalizeTag(value) {
-  return value.trim().toLowerCase().replace(/\s+/g, '-');
+  return value.trim().toLowerCase().replace(/\s+/g, '-').slice(0, MAX_TAG_LENGTH);
 }
 
 /**

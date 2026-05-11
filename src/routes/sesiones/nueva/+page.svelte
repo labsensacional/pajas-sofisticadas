@@ -54,10 +54,12 @@
   function addAccionTag(id) { if (!accionTags.includes(id)) accionTags = [...accionTags, id]; accionSearch = ''; }
   function removeAccionTag(id) { accionTags = accionTags.filter(a => a !== id); }
 
+  const MAX_TAG_LENGTH = 20;
+
   function handleTagKeydown(e) {
     if (e.key === ',' || e.key === 'Enter') {
       e.preventDefault();
-      const v = tag_field_value.trim().toLowerCase();
+      const v = tag_field_value.trim().toLowerCase().slice(0, MAX_TAG_LENGTH);
       if (v && !tags.includes(v)) tags = [...tags, v];
       tag_field_value = '';
     } else if (e.key === 'Backspace' && !tag_field_value && tags.length) {
@@ -66,7 +68,7 @@
   }
 
   function handleTagBlur() {
-    const v = tag_field_value.trim().toLowerCase();
+    const v = tag_field_value.trim().toLowerCase().slice(0, MAX_TAG_LENGTH);
     if (v && !tags.includes(v)) tags = [...tags, v];
     tag_field_value = '';
   }
@@ -171,6 +173,7 @@
           {/each}
           <input
             type="text"
+            maxlength="20"
             placeholder={$t('sesion_form.tags.placeholder')}
             bind:value={tag_field_value}
             on:keydown={handleTagKeydown}

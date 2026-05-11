@@ -354,6 +354,7 @@
               type="text"
               class="tag-input"
               value={tagInput}
+              maxlength="20"
               on:input={handleTagInput}
               on:keydown={handleTagKeydown}
               placeholder={tagValues.length ? '' : $t('accion_form.tags.placeholder')}

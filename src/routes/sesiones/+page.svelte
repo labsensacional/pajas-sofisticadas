@@ -19,10 +19,15 @@
   let sesiones = [];
   let search = '';
   let selectedTag = '';
-  let selectedAccion = '';
   let sortBy = 'newest';
   let showUnreviewed = false;
   let loading = true;
+  let showMoreTags = false;
+  const TOP_TAGS = 8;
+
+  function openMoreTags() { showMoreTags = true; }
+  function closeMoreTags() { showMoreTags = false; }
+  function onMoreTagsKeydown(e) { if (e.key === 'Escape') closeMoreTags(); }
 
   function updateTag(tag) {
     const params = new URLSearchParams($page.url.searchParams);
@@ -40,6 +45,8 @@
     load();
     loadActions();
   });
+
+
 
   $: selectedTag = $page.url.searchParams.get('tag') ?? '';
 
@@ -92,10 +99,9 @@
   $: filtered = sesiones.filter(s => {
     if (showUnreviewed) return !s.reviewed;
     const matchTag = !selectedTag || (s.tags ?? []).includes(selectedTag);
-    const matchAccion = !selectedAccion || (s.accionTags ?? []).includes(selectedAccion);
     const q = search.trim().toLowerCase();
     const matchSearch = !q || (s.title + ' ' + (s.body ?? '')).toLowerCase().includes(q);
-    return matchTag && matchAccion && matchSearch;
+    return matchTag && matchSearch;
   }).sort((a, b) => {
     if (sortBy === 'saves') return (b.saves ?? 0) - (a.saves ?? 0);
     return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
@@ -128,32 +134,34 @@
       <span class="filter-label">{$t('sesiones.filter.tags')}</span>
       <div class="chips">
         <button class="chip {selectedTag === '' ? 'active' : ''}" on:click={() => updateTag('')}>{$t('sesiones.filter.all_tags')}</button>
-        {#each allTags as tag}
+        {#each allTags.slice(0, TOP_TAGS) as tag}
           <button class="chip {selectedTag === tag ? 'active' : ''}" on:click={() => updateTag(selectedTag === tag ? '' : tag)}>
             {tag}
           </button>
         {/each}
-      </div>
-    </div>
-  {/if}
-
-  {#if allAccionTags.length}
-    <div class="filter-group">
-      <span class="filter-label">{$t('sesiones.filter.acciones')}</span>
-      <div class="chips">
-        <button class="chip {selectedAccion === '' ? 'active' : ''}" on:click={() => selectedAccion = ''}>{$t('sesiones.filter.all_acciones')}</button>
-        {#each allAccionTags as a}
-          <button class="chip accion {selectedAccion === a ? 'active' : ''}" on:click={() => selectedAccion = selectedAccion === a ? '' : a}>
-            {practiceNames[a] ?? getPracticeName(a, practiceCatalog)}
-          </button>
-        {/each}
+        {#if allTags.length > TOP_TAGS}
+          <div class="more-wrap">
+            <button class="chip {showMoreTags ? 'active' : ''}" on:click={openMoreTags}>…</button>
+            {#if showMoreTags}
+              <!-- svelte-ignore a11y-no-static-element-interactions -->
+              <div class="more-backdrop" on:click={closeMoreTags} on:keydown={onMoreTagsKeydown}></div>
+              <div class="more-dropdown">
+                {#each allTags.slice(TOP_TAGS) as tag}
+                  <button class="chip {selectedTag === tag ? 'active' : ''}" on:click={() => { updateTag(selectedTag === tag ? '' : tag); closeMoreTags(); }}>
+                    {tag}
+                  </button>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        {/if}
       </div>
     </div>
   {/if}
 
   {#if isMod(user)}
     <div class="mod-bar">
-      <button class="chip mod {showUnreviewed ? 'active' : ''}" on:click={() => { showUnreviewed = !showUnreviewed; selectedTag = ''; selectedAccion = ''; }}>
+      <button class="chip mod {showUnreviewed ? 'active' : ''}" on:click={() => { showUnreviewed = !showUnreviewed; selectedTag = ''; }}>
         {$t('sesiones.filter.unreviewed')} {#if showUnreviewed}({filtered.length}){/if}
       </button>
     </div>
@@ -226,6 +234,39 @@
   .chip.accion.active { background: #7c3aed; border-color: #7c3aed; }
   .chip.mod { color: #7c3aed; border-color: #7c3aed; }
   .chip.mod.active { background: #7c3aed; color: #fff; }
+
+  .more-wrap { position: relative; }
+  .more-backdrop { position: fixed; inset: 0; z-index: 10; }
+  .more-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 11;
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-width: 220px;
+    max-width: min(340px, calc(100vw - 32px));
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  }
+
+  @media (max-width: 500px) {
+    .more-dropdown {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      bottom: 24px;
+      top: auto;
+      max-width: none;
+      max-height: 60vh;
+      overflow-y: auto;
+      border-radius: 16px;
+    }
+  }
 
   .mod-bar { margin: 10px 0 20px; }
 
