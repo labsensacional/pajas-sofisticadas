@@ -107,7 +107,7 @@
     finally { loading = false; uploading = false; }
   }
 
-  function accionName(id) { return getPracticeName(id, practiceCatalog); }
+  $: accionName = (id) => getPracticeName(id, practiceCatalog);
 </script>
 
 <svelte:head><title>Nueva sesión · Recetario Sensacional</title></svelte:head>
@@ -301,10 +301,25 @@
 
   .error { color: #b91c1c; font-size: 0.9rem; }
   .warn { background: #fff3cd; padding: 12px 16px; border-radius: 10px; font-size: 0.9rem; }
-  .success { background: #ecfdf5; padding: 24px; border-radius: 14px; }
+  .success {
+    background: var(--surface-solid);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    color: var(--text);
+    padding: 24px;
+    border-radius: 14px;
+  }
   .success p { margin: 0 0 16px; }
   .links { display: flex; gap: 12px; }
   .btn { padding: 10px 20px; border-radius: 999px; text-decoration: none; font-weight: 700; cursor: pointer; font-size: 0.9rem; }
-  .btn.primary { background: #0c0c15; color: #fff; border: none; }
-  .btn.ghost { background: transparent; border: 1.5px solid rgba(12,12,21,0.2); color: #0c0c15; }
+  .btn.primary {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border: 1px solid var(--line-strong);
+  }
+  .btn.ghost {
+    background: transparent;
+    border: 1.5px solid var(--line-strong);
+    color: var(--text);
+  }
 </style>

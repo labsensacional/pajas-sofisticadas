@@ -7,11 +7,11 @@
   import { onAuthStateChanged } from 'firebase/auth';
   import { collection, getDocs, orderBy, query } from 'firebase/firestore';
   import { isMod } from '$lib/moderator.js';
-  import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
+  import { getPracticeById, getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { t } from '$lib/i18n.js';
 
   let practiceCatalog = [];
-  function accionName(id) { return getPracticeName(id, practiceCatalog); }
+  let practiceNames = {};
 
   /** @type {any} */
   let user = null;
@@ -56,13 +56,38 @@
   async function loadActions() {
     try {
       practiceCatalog = await listPractices({ db: hasFirebaseConfig ? db : null });
+      practiceNames = Object.fromEntries(practiceCatalog.map((practice) => [practice.id, practice.name]));
+      await loadMissingPracticeNames();
     } catch (e) {
       console.error(e);
     }
   }
 
+  async function loadMissingPracticeNames() {
+    if (!allAccionTags.length) return;
+
+    const missingIds = allAccionTags.filter((aid) => !practiceNames[aid]);
+    if (!missingIds.length) return;
+
+    const entries = await Promise.all(
+      missingIds.map(async (aid) => {
+        try {
+          const practice = await getPracticeById(aid, { db: hasFirebaseConfig ? db : null });
+          return [aid, practice?.name ?? aid];
+        } catch {
+          return [aid, aid];
+        }
+      })
+    );
+
+    practiceNames = { ...practiceNames, ...Object.fromEntries(entries) };
+  }
+
   $: allTags = [...new Set(sesiones.flatMap(s => s.tags ?? []))].sort();
   $: allAccionTags = [...new Set(sesiones.flatMap(s => s.accionTags ?? []))].sort();
+  $: if (allAccionTags.length) {
+    loadMissingPracticeNames();
+  }
 
   $: filtered = sesiones.filter(s => {
     if (showUnreviewed) return !s.reviewed;
@@ -119,7 +144,7 @@
         <button class="chip {selectedAccion === '' ? 'active' : ''}" on:click={() => selectedAccion = ''}>{$t('sesiones.filter.all_acciones')}</button>
         {#each allAccionTags as a}
           <button class="chip accion {selectedAccion === a ? 'active' : ''}" on:click={() => selectedAccion = selectedAccion === a ? '' : a}>
-            {accionName(a)}
+            {practiceNames[a] ?? getPracticeName(a, practiceCatalog)}
           </button>
         {/each}
       </div>
@@ -158,7 +183,7 @@
             {#if s.accionTags?.length}
               <div class="card-section action-chips">
                 {#each s.accionTags.slice(0, 4) as at}
-                  <span class="action-chip">{accionName(at)}</span>
+                  <span class="action-chip">{practiceNames[at] ?? getPracticeName(at, practiceCatalog)}</span>
                 {/each}
               </div>
             {/if}

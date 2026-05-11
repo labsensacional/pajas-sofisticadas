@@ -8,7 +8,7 @@
     addDoc, collection, deleteDoc, doc, getDoc,
     getDocs, orderBy, query, serverTimestamp, updateDoc, where
   } from 'firebase/firestore';
-  import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
+  import { getPracticeById, getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { isMod } from '$lib/moderator.js';
   import { t } from '$lib/i18n.js';
 
@@ -28,6 +28,7 @@
   let notice = '';
   let commentAnonymous = false;
   let practiceCatalog = [];
+  let practiceNames = {};
   $: visibleAuthorName = !sesion?.isAnonymous && sesion?.authorName ? sesion.authorName : '';
 
   $: id = $page.params.id;
@@ -121,12 +122,37 @@
   async function loadActions() {
     try {
       practiceCatalog = await listPractices({ db: hasFirebaseConfig ? db : null });
+      practiceNames = Object.fromEntries(practiceCatalog.map((practice) => [practice.id, practice.name]));
+      await loadMissingPracticeNames();
     } catch (e) {
       console.error(e);
     }
   }
 
-  function accionName(aid) { return getPracticeName(aid, practiceCatalog); }
+  async function loadMissingPracticeNames() {
+    if (!sesion?.accionTags?.length) return;
+
+    const missingIds = sesion.accionTags.filter((aid) => !practiceNames[aid]);
+    if (!missingIds.length) return;
+
+    const entries = await Promise.all(
+      missingIds.map(async (aid) => {
+        try {
+          const practice = await getPracticeById(aid, { db: hasFirebaseConfig ? db : null });
+          return [aid, practice?.name ?? aid];
+        } catch {
+          return [aid, aid];
+        }
+      })
+    );
+
+    practiceNames = { ...practiceNames, ...Object.fromEntries(entries) };
+  }
+
+  $: if (sesion?.accionTags?.length) {
+    loadMissingPracticeNames();
+  }
+
 </script>
 
 <svelte:head><title>{sesion?.title ?? $t('sesion.title_fallback')} · Recetario Sensacional</title></svelte:head>
@@ -160,7 +186,7 @@
           <span class="tag-group-label">{$t('sesion_form.acciones')}</span>
           <div class="action-chips">
             {#each sesion.accionTags as at}
-              <a href="/practicas/{at}" class="action-chip">{accionName(at)}</a>
+              <a href="/practicas/{at}" class="action-chip">{practiceNames[at] ?? getPracticeName(at, practiceCatalog)}</a>
             {/each}
           </div>
         </div>
