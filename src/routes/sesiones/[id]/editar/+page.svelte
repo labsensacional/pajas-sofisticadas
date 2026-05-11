@@ -132,7 +132,7 @@
   }
 </script>
 
-<svelte:head><title>Editar sesión · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Editar sesión · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/sesiones/{id}" class="back">{$t('sesion.back')}</a>

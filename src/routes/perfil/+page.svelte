@@ -170,7 +170,7 @@
   }
 </script>
 
-<svelte:head><title>Perfil · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Perfil · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/" class="back">{$t('perfil.back')}</a>

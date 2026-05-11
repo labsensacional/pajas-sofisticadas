@@ -77,7 +77,7 @@
   });
 </script>
 
-<svelte:head><title>Sesiones · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Sesiones · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <header class="header">
@@ -143,25 +143,27 @@
       {#each filtered as s}
         <a href="/sesiones/{s.id}" class="card {s.photos?.length ? 'has-photo' : ''}">
           <div class="card-body">
-            <h2>{s.title}</h2>
-            {#if s.body}
-              <p class="snippet">{s.body.slice(0, 140)}{s.body.length > 140 ? '…' : ''}</p>
-            {/if}
-            <div class="meta-row">
+            <div class="card-summary">
+              <h2>{s.title}</h2>
+              {#if s.body}
+                <p class="snippet">{s.body.slice(0, 140)}{s.body.length > 140 ? '…' : ''}</p>
+              {/if}
+            </div>
+            <div class="card-section meta-row">
               <span class="meta-author">{s.authorName || $t('sesiones.anonymous')}</span>
               <span class="meta-date">{s.createdAt?.toDate?.().toLocaleDateString?.() ?? ''}</span>
               {#if (s.saves ?? 0) > 0}<span class="meta-saves">★ {s.saves}</span>{/if}
               {#if s.photos?.length}<span class="meta-photos">📷 {s.photos.length}</span>{/if}
             </div>
             {#if s.accionTags?.length}
-              <div class="action-chips">
+              <div class="card-section action-chips">
                 {#each s.accionTags.slice(0, 4) as at}
                   <span class="action-chip">{accionName(at)}</span>
                 {/each}
               </div>
             {/if}
             {#if s.tags?.length}
-              <div class="tag-chips">
+              <div class="card-section tag-chips">
                 {#each s.tags.slice(0, 4) as t}
                   <span class="tag-chip">#{t}</span>
                 {/each}
@@ -214,16 +216,18 @@
   .card:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.08); }
 
   .card-body { padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-  .card-body h2 { margin: 0; font-size: 1rem; font-weight: 700; line-height: 1.3; }
-  .snippet { margin: 0; font-size: 0.85rem; color: var(--muted); line-height: 1.45; }
+  .card-summary { display: flex; flex-direction: column; gap: 6px; min-height: 96px; }
+  .card-body h2 { margin: 0; font-size: 1.12rem; font-weight: 800; line-height: 1.2; }
+  .snippet { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .card-section { border-top: 1px solid var(--line); padding-top: 9px; }
 
-  .meta-row { display: flex; gap: 8px; align-items: center; font-size: 0.78rem; color: var(--muted-soft); margin-top: auto; }
+  .meta-row { display: flex; gap: 8px; align-items: center; font-size: 0.72rem; color: var(--muted-soft); margin-top: auto; flex-wrap: wrap; }
   .meta-saves { color: #f59e0b; font-weight: 700; }
-  .meta-photos { color: var(--muted-soft); font-size: 0.75rem; }
+  .meta-photos { color: var(--muted-soft); font-size: 0.72rem; }
 
   .action-chips, .tag-chips { display: flex; flex-wrap: wrap; gap: 4px; }
-  .action-chip { font-size: 0.72rem; background: rgba(124, 58, 237, 0.14); color: #7c3aed; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
-  .tag-chip { font-size: 0.72rem; background: var(--pill-bg); color: var(--pill-text); padding: 2px 8px; border-radius: 999px; }
+  .action-chip { font-size: 0.68rem; background: rgba(124, 58, 237, 0.14); color: #7c3aed; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+  .tag-chip { font-size: 0.68rem; background: var(--pill-bg); color: var(--pill-text); padding: 2px 8px; border-radius: 999px; }
 
   .badge-unreviewed { align-self: flex-start; font-size: 0.7rem; background: #fef3c7; color: #92400e; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
 

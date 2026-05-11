@@ -5,7 +5,7 @@
   const { html, title } = data;
 </script>
 
-<svelte:head><title>{title} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{title} · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/concepto" class="back">{$t('teoria.back')}</a>

@@ -204,10 +204,10 @@
 
 </script>
 
-<svelte:head><title>{$t('accion_form.title.new')} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{$t('accion_form.title.new')} · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/" class="back">{$t('accion.back')}</a>
+  <a href="/practicas" class="back">{$t('accion.back')}</a>
   <h1>{$t('accion_form.title.new')}</h1>
   <p class="hint">{$t('accion_form.hint')}</p>
 
@@ -219,7 +219,7 @@
     <div class="success">
       <p>{$t('accion_form.success')}</p>
       <div class="links">
-        <a href="/" class="btn primary">{$t('accion_form.view_actions')}</a>
+        <a href="/practicas" class="btn primary">{$t('accion_form.view_actions')}</a>
         <button class="btn ghost" on:click={() => { submitted = false; name = ''; description = ''; hello_world = ''; warnings_text = ''; scores = { arousal: null, trance: null, pleasure: null, dopamine: null, oxytocin: null, energy: null }; whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', oxytocin: '', energy: '' }; whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, oxytocin: false, energy: false }; tagInput = ''; tagValues = []; imageFiles = []; }}>{$t('accion_form.add_another')}</button>
       </div>
     </div>
@@ -430,16 +430,16 @@
   }
   .score-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
   .score-meta { display: flex; flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; }
-  .score-name { font-size: 0.82rem; font-weight: 700; color: var(--accent); white-space: normal; overflow-wrap: anywhere; }
+  .score-name { font-size: 0.92rem; font-weight: 800; color: var(--accent); white-space: normal; overflow-wrap: anywhere; }
   .required-mark { color: #dc2626; }
-  .score-question { font-size: 0.8rem; color: #6b7280; font-weight: 400; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+  .score-question { font-size: 0.74rem; color: #6b7280; font-weight: 400; white-space: normal; overflow-wrap: anywhere; line-height: 1.4; }
   .score-card.unset { background: transparent; border-color: rgba(12,12,21,0.05); }
   .score-card.unset .score-name { color: #9ca3af; }
   .score-card.unset .score-question { color: #c0c4cc; }
 
   .score-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
-  .score-val { font-family: monospace; font-size: 1.1rem; font-weight: 700; min-width: 28px; text-align: right; }
-  .score-none { font-family: monospace; font-size: 1rem; color: #d1d5db; min-width: 28px; text-align: right; }
+  .score-val { font-family: monospace; font-size: 0.92rem; font-weight: 700; min-width: 28px; text-align: right; }
+  .score-none { font-family: monospace; font-size: 0.88rem; color: #d1d5db; min-width: 28px; text-align: right; }
   .clear-btn {
     width: 20px; height: 20px; border-radius: 50%;
     border: 1px solid rgba(12,12,21,0.15);
@@ -470,7 +470,7 @@
     accent-color: var(--c, #0c0c15);
   }
   .tooltip-text {
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     color: var(--muted);
     line-height: 1.6;
     background: var(--surface-soft);
@@ -483,7 +483,7 @@
   .why-input {
     border: 1px solid var(--line-strong) !important;
     border-radius: 8px !important; padding: 7px 10px !important;
-    font: inherit; font-size: 0.8rem !important;
+    font: inherit; font-size: 0.76rem !important;
     color: var(--muted);
     background: var(--surface-solid);
     min-height: 72px;

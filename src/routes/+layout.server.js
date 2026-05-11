@@ -1,10 +1,10 @@
-const SITE_NAME = 'Laboratorio Sensacional';
+const SITE_NAME = 'Recetario Sensacional';
 
 function metaForPath(pathname) {
   if (pathname === '/') {
     return {
-      title: `Prácticas · ${SITE_NAME}`,
-      description: 'Catálogo de técnicas y prácticas con ejes de arousal, inmersión, placer y otros moduladores.'
+      title: SITE_NAME,
+      description: 'Base de datos colaborativa para actividades recreativas y sexuales. Compartí y charlá sobre prácticas para alcanzar estados de inmersión, placer y/o excitación.'
     };
   }
 
@@ -34,14 +34,14 @@ function metaForPath(pathname) {
   if (section === 'login') {
     return {
       title: `Login · ${SITE_NAME}`,
-      description: 'Entrá a Laboratorio Sensacional para compartir prácticas, sesiones e introducción.'
+      description: 'Entrá a Recetario Sensacional para compartir prácticas, sesiones e introducción.'
     };
   }
 
   if (section === 'perfil') {
     return {
       title: `Perfil · ${SITE_NAME}`,
-      description: 'Explorá perfiles, aportes y actividad dentro de Laboratorio Sensacional.'
+      description: 'Explorá perfiles, aportes y actividad dentro de Recetario Sensacional.'
     };
   }
 

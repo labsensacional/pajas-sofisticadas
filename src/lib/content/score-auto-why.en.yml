@@ -1,80 +1,80 @@
 arousal:
   - from: -10
     to: -1
-    text: "This looks like sympathetic down-regulation: longer exhales, less muscle tension, less motor urgency, a dropping pulse, and a looser posture. Useful when a practice cools, regulates, or interrupts escalation."
+    text: "This looks like down-regulation: longer exhales, less muscle tension, less motor urgency, a dropping pulse, and a looser posture."
   - from: 0
     to: 3
-    text: "The body stays relatively calm: even breathing, economical movement, low impulsivity, stable gaze, and few genital or active-seeking signs."
+    text: "The body stays relatively calm: even breathing, economical movement, low impulsivity, stable gaze, and little active seeking."
   - from: 4
     to: 6
-    text: "Bodily activation is noticeable without losing regulation: somewhat faster breathing, more muscle tone, stronger orientation to the stimulus, micromovements, and available energy that still feels manageable."
+    text: "Bodily activation is noticeable without losing regulation: faster breathing, more muscle tone, stronger orientation to the stimulus, and manageable energy."
   - from: 7
     to: 10
-    text: "Sympathetic activation dominates: marked breathing, elevated pulse, motor restlessness, urgency to act, narrowed focus, and involuntary signs of excitation such as tension, moaning, or intense stimulus-seeking."
+    text: "Activation dominates: marked breathing, elevated pulse, motor restlessness, urgency to act, narrowed focus, and involuntary excitation."
 
 trance:
   - from: -10
     to: -1
-    text: "It pushes toward alertness and external monitoring: wider eyes, rapid orienting to the environment, easy startle, vigilant thinking, and recovery of fine conscious control."
+    text: "It pushes toward alertness and external monitoring: wider eyes, rapid orienting, easy startle, and vigilant thinking."
   - from: 0
     to: 3
-    text: "The person remains fairly context-oriented: quick responses, active environmental monitoring, intact inner speech, and little distortion of time or body perception."
+    text: "The person remains context-oriented: quick responses, environmental monitoring, intact inner speech, and little time or body distortion."
   - from: 4
     to: 6
-    text: "Partial absorption appears: less inner chatter, sustained attention on one source, somewhat slower responses, and some time distortion, but still with clear capacity to modulate and decide."
+    text: "Partial absorption appears: less inner chatter, sustained attention, slower responses, and some time distortion, but clear capacity to decide."
   - from: 7
     to: 10
-    text: "Absorption dominates the experience: glazed or half-closed eyes, slower responding, reduced awareness of the environment, altered subjective time, and visible signs of surrender, dissolution, or functional dissociation of conscious control."
+    text: "Absorption dominates: glazed or half-closed eyes, slower responding, less environmental awareness, and signs of surrender or functional dissociation."
 
 pleasure:
   - from: -10
     to: -1
-    text: "Roughness, cost, or bodily discomfort dominate: grimaces, withdrawal, restraint, inner friction, or low well-being, even if it may later be re-read differently."
+    text: "Roughness, cost, or bodily discomfort dominate: grimaces, withdrawal, restraint, inner friction, or low well-being."
   - from: 0
     to: 3
-    text: "The sensation may be faint or neutral, with little direct enjoyment or little pleasurable residue afterward, even if the practice works as a bridge to something else."
+    text: "The sensation may be faint or neutral, with little direct enjoyment or little pleasurable residue, even if it serves as a bridge."
   - from: 4
     to: 6
-    text: "Clear pleasant sensations or a moderate afterglow appear: facial relaxation, relief, a more content body, and a wish to keep what is happening going."
+    text: "Clear pleasant sensations or a moderate afterglow appear: relaxation, relief, a more content body, and a wish to keep it going."
   - from: 7
     to: 10
-    text: "Pleasure or well-being is obvious and sustained: involuntary moans or smiles, clear relief, satiety, a body strongly oriented toward what feels good, and a good residue afterward."
+    text: "Pleasure or well-being is obvious and sustained: relief, satiety, a body oriented toward what feels good, and good residue afterward."
 
 dopamine:
   - from: -10
     to: -1
-    text: "Rather than pushing repetition, it cuts momentum. It cools pursuit, lowers insistence, and leaves more closure, satiety, or reset than appetite for more."
+    text: "Rather than pushing repetition, it cuts momentum: less pursuit and more closure, satiety, or reset."
   - from: 0
     to: 3
-    text: "It may be enjoyable, but it does not generate much behavioral pull: little anticipatory fantasy, little urgency to return soon, and not much drive to insist."
+    text: "It may be enjoyable, but it does not generate much pull: little anticipatory fantasy, little urgency to return, and little drive to insist."
   - from: 4
     to: 6
-    text: "It leaves interest in repeating and some anticipation: attention returns to the practice, curiosity appears to continue or resume, but without fully capturing focus."
+    text: "It leaves interest in repeating and some anticipation: attention returns to the practice and curiosity appears to continue."
   - from: 7
     to: 10
-    text: "Appetitive motivation dominates: strong desire to return, plan the next round, stretch the experience, or seek more, with focus captured by reward expectation."
+    text: "Appetitive motivation dominates: strong desire to return, stretch the experience, or seek more, with focus on reward."
 
 oxytocin:
   - from: -10
     to: -1
-    text: "The social dimension matters, but in a negative tone: humiliation, deceit, rejection, distance, or relational tension as an important part of the experience."
+    text: "The social dimension matters in a negative tone: humiliation, deceit, rejection, distance, or relational tension."
   - from: 0
     to: 3
-    text: "The social dimension barely matters. The practice feels more technical, instrumental, or individual, with little explicit relational charge."
+    text: "The social dimension barely matters. The practice feels more technical, instrumental, or individual."
   - from: 4
     to: 6
-    text: "Moderate social load appears. There is surrender, acceptance, recognition, or some connection with another person, but it does not dominate the whole experience."
+    text: "Moderate social load appears: surrender, acceptance, recognition, or some connection, without dominating the whole experience."
   - from: 7
     to: 10
-    text: "The social dimension dominates the experience in a positive tone: trust, admiration, connection, acceptance, surrender, or strong orientation toward bond with others."
+    text: "The social dimension dominates in a positive tone: trust, admiration, connection, acceptance, surrender, or strong orientation toward bond."
 
 energy:
   - from: 0
     to: 3
-    text: "It has very low physical or mental cost: it can be sustained with little available energy, in stillness, or with minimal effort."
+    text: "It has very low physical or mental cost: it can be sustained with little energy, in stillness, or with minimal effort."
   - from: 4
     to: 6
-    text: "It asks for sustained bodily or mental presence: moderate attentional, respiratory, or motor work, but without fully draining the system."
+    text: "It asks for sustained bodily or mental presence: moderate attentional, respiratory, or motor work, without fully draining the system."
   - from: 7
     to: 10
-    text: "It demands substantial resources: real physical effort, coordination, endurance, or heavy mental engagement, with accumulating fatigue if prolonged."
+    text: "It demands substantial resources: physical effort, coordination, endurance, or heavy mental engagement, with fatigue if prolonged."

@@ -70,7 +70,7 @@
   }
 </script>
 
-<svelte:head><title>Admin · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Admin · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <h1>{$t('admin.title')}</h1>
@@ -183,14 +183,41 @@
     align-items: flex-start;
     box-shadow: var(--shadow);
   }
-  .item-main { flex: 1; }
-  .item-main h2 { margin: 0 0 6px; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
-  .desc { margin: 0 0 6px; font-size: 0.88rem; color: var(--muted); line-height: 1.4; }
-  .warn-text { margin: 0 0 6px; font-size: 0.85rem; color: #92400e; }
+  .item-main { flex: 1; min-width: 0; }
+  .item-main h2 {
+    margin: 0 0 6px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .desc {
+    margin: 0 0 6px;
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .warn-text {
+    margin: 0 0 6px;
+    font-size: 0.85rem;
+    color: #92400e;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
   .scores { font-family: monospace; font-size: 0.82rem; color: var(--text); margin-bottom: 4px; }
-  .meta-info { margin: 0; font-size: 0.78rem; color: var(--muted-soft); }
+  .meta-info {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--muted-soft);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
 
-  .item-actions { display: flex; flex-direction: column; gap: 6px; min-width: 140px; }
+  .item-actions { display: flex; flex-direction: column; gap: 6px; min-width: 140px; flex-shrink: 0; }
   .btn {
     display: block;
     padding: 7px 14px;
@@ -201,10 +228,12 @@
     cursor: pointer;
     border: 1px solid var(--line-strong);
     text-decoration: none;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
-  .btn.view { background: var(--surface-soft); color: var(--text); }
-  .btn.review { background: rgba(6, 214, 160, 0.14); color: #0f8f6b; }
-  .btn.delete { background: rgba(185, 28, 28, 0.12); color: #c24141; }
+  .btn.view { background: transparent; color: var(--text); }
+  .btn.review { background: rgba(6, 214, 160, 0.1); color: #4dc9a4; }
+  .btn.delete { background: rgba(185, 28, 28, 0.1); color: #e17878; }
 
   .empty { color: #9ca3af; padding: 32px 0; }
 
@@ -222,4 +251,19 @@
     color: var(--text);
   }
   .export-box .btn { align-self: flex-start; }
+
+  @media (max-width: 720px) {
+    .item {
+      flex-direction: column;
+    }
+    .item-actions {
+      width: 100%;
+      min-width: 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .item-actions .btn {
+      flex: 1 1 140px;
+    }
+  }
 </style>

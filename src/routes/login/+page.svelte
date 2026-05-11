@@ -36,7 +36,7 @@
   }
 </script>
 
-<svelte:head><title>Login · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Login · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <div class="card">

@@ -28,24 +28,24 @@
   let notice = '';
   let currentPhoto = 0;
   let commentAnonymous = false;
+  let expandedAxisInfo = null;
+  let expandedAxisWhy = null;
   $: visibleAuthorName = !accion?.isAnonymous && accion?.authorName ? accion.authorName : '';
 
   $: allWarnings = accion
     ? (accion.warnings ?? [...(accion.common_errors ?? []), ...(accion.warning ? [accion.warning] : [])])
     : [];
-  $: energyValue = accion?.energy ?? 0;
-  $: hasPleasureBreakdown = AXES.slice(3, 5).some(ax => accion?.[ax.key] != null);
-  $: hasEnergyData = accion?.energy != null;
+  $: visibleAxes = AXES.filter(ax => accion?.[ax.key] != null);
 
   $: id = $page.params.id;
 
   $: AXES = [
-    { key: 'arousal',    label: $t('axis.arousal'),    color: '#FF8C42' },
-    { key: 'trance',     label: $t('axis.trance'),     color: '#7B68EE' },
-    { key: 'pleasure',   label: $t('axis.pleasure'),   color: '#FF6B9D' },
-    { key: 'dopamine',   label: $t('axis.dopamine'),   color: '#FFD166' },
-    { key: 'oxytocin',   label: $t('axis.oxytocin'),   color: '#74B0FF' },
-    { key: 'energy',     label: $t('axis.energy'),     color: '#aaa' },
+    { key: 'arousal',    label: $t('axis.arousal'),    color: '#FF8C42', brief: $t('scores.arousal.brief') },
+    { key: 'trance',     label: $t('axis.trance'),     color: '#7B68EE', brief: $t('scores.trance.brief') },
+    { key: 'pleasure',   label: $t('axis.pleasure'),   color: '#FF6B9D', brief: $t('scores.pleasure.brief') },
+    { key: 'dopamine',   label: $t('axis.dopamine'),   color: '#FFD166', brief: $t('scores.dopamine.brief') },
+    { key: 'oxytocin',   label: $t('axis.oxytocin'),   color: '#74B0FF', brief: $t('scores.oxytocin.brief') },
+    { key: 'energy',     label: $t('axis.energy'),     color: '#aaa', brief: $t('scores.energy.brief') },
   ];
 
   onMount(() => {
@@ -142,10 +142,10 @@
   }
 </script>
 
-<svelte:head><title>{accion?.name ?? $t('accion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{accion?.name ?? $t('accion.title_fallback')} · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
-  <a href="/" class="back">{$t('accion.back')}</a>
+  <a href="/practicas" class="back">{$t('accion.back')}</a>
 
   {#if !accion}
     <p class="loading">{$t('accion.loading')}</p>
@@ -179,72 +179,20 @@
         </div>
       {/if}
 
-      <p class="desc">
-        {#each splitTextWithLinks(accion.description) as part}
-          {#if part.type === 'link'}
-            <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link">
+      <section class="section desc-section">
+        <h3>{$t('accion.description.title')}</h3>
+        <p class="desc">
+          {#each splitTextWithLinks(accion.description) as part}
+            {#if part.type === 'link'}
+              <a href={part.value} target="_blank" rel="noopener noreferrer" class="inline-link">
+                {part.value}
+              </a>
+            {:else}
               {part.value}
-            </a>
-          {:else}
-            {part.value}
-          {/if}
-        {/each}
-      </p>
-
-      <div class="axes">
-        {#each AXES.slice(0, 3) as ax}
-          {@const v = accion[ax.key] ?? 0}
-          <div class="axis-block">
-            <div class="axis-head" style="color:{ax.color}">{ax.label}</div>
-            <div class="axis-bar-track">
-              <div class="bar-center"></div>
-              <div class="axis-bar-fill" style="left:{v >= 0 ? 50 : 50 + v * 5}%; width:{Math.abs(v) * 5}%; background:{ax.color}"></div>
-            </div>
-            <div class="axis-val">{v}</div>
-            {#if accion[ax.key + '_why']}<p class="axis-why">{accion[ax.key + '_why']}</p>{/if}
-          </div>
-        {/each}
-      </div>
-
-      <p class="score-note">{$t('accion.score_note')}</p>
-
-      {#if hasPleasureBreakdown}
-        <section class="subscores">
-          <div class="subscores-header">
-            <h3>{$t('accion.pleasure_detail.title')}</h3>
-            <p>{$t('accion.pleasure_detail.desc')}</p>
-          </div>
-          <div class="secondary-bars">
-          {#each AXES.slice(3, 5) as ax}
-            {@const v = accion[ax.key] ?? 0}
-            <div class="sec-row">
-              <span class="sec-label">{ax.label}</span>
-              <div class="bar-track">
-                <div class="bar-center"></div>
-                <div class="bar-fill" style="left:{v >= 0 ? 50 : 50 + v * 5}%; width:{Math.abs(v) * 5}%; background:{ax.color}"></div>
-              </div>
-              <span class="sec-val">{v}</span>
-            </div>
+            {/if}
           {/each}
-          </div>
-        </section>
-      {/if}
-
-      {#if hasEnergyData}
-        <section class="energy-block">
-          <div class="energy-header">
-            <h3>{$t('accion.energy.title')}</h3>
-            <p>{$t('accion.energy.desc')}</p>
-          </div>
-          <div class="sec-row energy-row">
-            <span class="sec-label">{$t('axis.energy')}</span>
-            <div class="bar-track energy-track">
-              <div class="bar-fill" style={`left:0; width:${energyValue * 10}%; background:#aaa`}></div>
-            </div>
-            <span class="sec-val">{energyValue}</span>
-          </div>
-        </section>
-      {/if}
+        </p>
+      </section>
 
       {#if accion.hello_world}
         <section class="section">
@@ -261,6 +209,60 @@
               {/if}
             {/each}
           </p>
+        </section>
+      {/if}
+
+      {#if visibleAxes.length}
+        <section class="scores-section">
+          <div class="scores-header">
+            <h3>{$t('accion.scores.title')}</h3>
+            <p>{$t('accion.score_note')}</p>
+          </div>
+          <div class="axes">
+            {#each visibleAxes as ax}
+              {@const v = accion[ax.key] ?? 0}
+              <div class="axis-block">
+                <div class="axis-top">
+                  <button
+                    type="button"
+                    class="axis-title-btn"
+                    aria-expanded={expandedAxisWhy === ax.key}
+                    on:click={() => expandedAxisWhy = expandedAxisWhy === ax.key ? null : ax.key}>
+                    <div class="axis-head" style="color:{ax.color}">{ax.label}</div>
+                  </button>
+                  <button
+                    type="button"
+                    class="info-btn"
+                    title={$t('accion_form.scores.info')}
+                    aria-expanded={expandedAxisInfo === ax.key}
+                    on:click={() => expandedAxisInfo = expandedAxisInfo === ax.key ? null : ax.key}>?</button>
+                </div>
+                <button
+                  type="button"
+                  class="axis-summary-btn"
+                  aria-expanded={expandedAxisWhy === ax.key}
+                  on:click={() => expandedAxisWhy = expandedAxisWhy === ax.key ? null : ax.key}>
+                  <div class="axis-bar-track">
+                    {#if ax.key !== 'energy'}
+                      <div class="bar-center"></div>
+                    {/if}
+                    <div
+                      class="axis-bar-fill"
+                      style={ax.key === 'energy'
+                        ? `left:0; width:${v * 10}%; background:${ax.color}`
+                        : `left:${v >= 0 ? 50 : 50 + v * 5}%; width:${Math.abs(v) * 5}%; background:${ax.color}`}></div>
+                  </div>
+                  <span class="axis-val">{v}</span>
+                </button>
+                {#if expandedAxisInfo === ax.key}
+                  <p class="axis-info">{ax.brief}</p>
+                {/if}
+                {#if expandedAxisWhy === ax.key && accion[ax.key + '_why']}
+                  <p class="axis-why">{accion[ax.key + '_why']}</p>
+                {/if}
+              </div>
+            {/each}
+          </div>
         </section>
       {/if}
 
@@ -397,55 +399,84 @@
     color: #ffddb7;
   }
 
-  .axes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .axis-block { display: flex; flex-direction: column; gap: 6px; }
-  .axis-head { font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.08em; }
-  .axis-bar-track { height: 6px; background: var(--surface-soft); border-radius: 4px; position: relative; overflow: hidden; }
-  .axis-bar-fill { position: absolute; height: 100%; border-radius: 4px; transition: left 0.3s, width 0.3s; }
-  .axis-val { font-size: 1.2rem; font-weight: 800; font-family: monospace; color: var(--text); }
-  .axis-why { margin: 0; font-size: 0.8rem; color: var(--muted); line-height: 1.4; }
-  .score-note {
-    margin: -4px 0 2px;
-    font-size: 0.84rem;
-    line-height: 1.5;
-    color: var(--muted);
+  .card > :is(.scores-section, .section, .tags, .actions-row) {
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
   }
 
-  .subscores,
-  .energy-block {
+  .desc-section { gap: 10px; }
+  .desc { margin: 0; font-size: 0.92rem; line-height: 1.7; color: var(--text); }
+  .scores-section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding: 14px 16px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--surface-soft);
+    gap: 14px;
   }
-  .subscores-header,
-  .energy-header {
+  .scores-header {
     display: flex;
     flex-direction: column;
     gap: 4px;
   }
-  .subscores-header h3,
-  .energy-header h3 {
+  .scores-header h3 {
     margin: 0;
-    font-size: 0.88rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted-soft);
   }
-  .subscores-header p,
-  .energy-header p {
+  .scores-header p {
     margin: 0;
-    font-size: 0.84rem;
+    font-size: 0.78rem;
     line-height: 1.5;
     color: var(--muted);
   }
-  .secondary-bars { display: flex; flex-direction: column; gap: 6px; }
-  .sec-row { display: flex; align-items: center; gap: 8px; }
-  .sec-label { font-size: 0.8rem; color: var(--muted); width: 80px; }
-  .bar-track { flex: 1; height: 4px; background: var(--surface-soft); border-radius: 4px; position: relative; overflow: hidden; }
+  .axes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .axis-block { display: flex; flex-direction: column; gap: 6px; }
+  .axis-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .axis-title-btn {
+    flex: 1;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+  .axis-head { font-weight: 800; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; }
+  .axis-summary-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+  .axis-bar-track { height: 6px; background: var(--surface-soft); border-radius: 4px; position: relative; overflow: hidden; }
+  .axis-summary-btn .axis-bar-track { flex: 1; }
+  .axis-bar-fill { position: absolute; height: 100%; border-radius: 4px; transition: left 0.3s, width 0.3s; }
+  .axis-val { font-size: 1rem; font-weight: 800; font-family: monospace; color: var(--text); }
+  .axis-info { margin: 0; font-size: 0.72rem; color: var(--muted-soft); line-height: 1.45; }
+  .axis-why { margin: 0; font-size: 0.76rem; color: var(--muted); line-height: 1.45; }
+  .info-btn {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--muted-soft);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    cursor: pointer;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+  .info-btn:hover {
+    color: var(--text);
+    background: var(--surface-soft);
+  }
   .bar-center {
     position: absolute;
     left: 50%;
@@ -459,18 +490,21 @@
     box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
     z-index: 1;
   }
-  .bar-fill { position: absolute; height: 100%; border-radius: 4px; }
-  .sec-val { font-size: 0.75rem; font-family: monospace; color: var(--muted-soft); width: 20px; }
-  .energy-row { margin-top: 2px; }
-  .energy-track { background: var(--surface-solid); }
 
-  .section h3 { margin: 0 0 8px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-soft); }
-  .section-subtitle { margin: -4px 0 10px; font-size: 0.84rem; line-height: 1.5; color: var(--muted); }
-  .section p { margin: 0; font-size: 0.92rem; line-height: 1.6; color: var(--text); }
+  .section h3 { margin: 0 0 8px; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted-soft); }
+  .section-subtitle {
+    margin: -4px 0 10px;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    color: var(--muted-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .section p { margin: 0; font-size: 0.88rem; line-height: 1.65; color: var(--text); }
   .preserve-breaks { white-space: pre-line; }
 
   .tags { display: flex; flex-wrap: wrap; gap: 6px; }
-  .tag { font-size: 0.78rem; background: var(--pill-bg); color: var(--pill-text); padding: 4px 10px; border-radius: 999px; text-decoration: none; border: 1px solid var(--line); }
+  .tag { font-size: 0.72rem; background: var(--pill-bg); color: var(--pill-text); padding: 4px 10px; border-radius: 999px; text-decoration: none; border: 1px solid var(--line); }
   .tag:hover { background: var(--pill-bg-hover); }
 
   .actions-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -515,7 +549,7 @@
   .empty-comments { color: var(--muted-soft); font-size: 0.9rem; }
 
   @media (max-width: 600px) {
-    .axes { grid-template-columns: 1fr 1fr; }
+    .axes { grid-template-columns: 1fr; }
     .card { padding: 22px 18px; }
     .comments-section { padding: 20px 18px; }
   }

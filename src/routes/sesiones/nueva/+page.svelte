@@ -110,7 +110,7 @@
   function accionName(id) { return getPracticeName(id, practiceCatalog); }
 </script>
 
-<svelte:head><title>Nueva sesión · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>Nueva sesión · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/sesiones" class="back">{$t('sesion.back')}</a>

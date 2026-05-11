@@ -2,6 +2,7 @@
   // @ts-nocheck
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { signOut, onAuthStateChanged } from 'firebase/auth';
   import { auth, hasFirebaseConfig } from '$lib/firebase/client.js';
   import { confirmAgeGate, isAgeGateConfirmed } from '$lib/ageGate.js';
@@ -59,7 +60,7 @@
   <meta property="og:image:type" content="image/png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Preview de Laboratorio Sensacional con fondo oscuro y acceso a introducción, prácticas y sesiones." />
+  <meta property="og:image:alt" content="Preview de Recetario Sensacional con fondo oscuro y acceso a introducción, prácticas y sesiones." />
 
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={data.meta.title} />
@@ -70,7 +71,7 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Laboratorio Sensacional" />
+  <meta name="apple-mobile-web-app-title" content="Recetario Sensacional" />
 </svelte:head>
 
 {#if showGate}
@@ -88,7 +89,7 @@
 {/if}
 
 <header class="topbar">
-  <a class="brand" href="/">Laboratorio Sensacional</a>
+  <a class="brand" href="/">Recetario Sensacional</a>
   <div class="mobile-utility-actions">
     {#if user}
       {#if isMod(user)}
@@ -98,7 +99,7 @@
     {/if}
   </div>
   <nav class="desktop-nav">
-    <a href="/">{$t('nav.acciones')}</a>
+    <a href="/practicas" on:click|preventDefault={() => goto('/practicas')}>{$t('nav.acciones')}</a>
     <a href="/sesiones">{$t('nav.sesiones')}</a>
     <a href="/concepto">{$t('nav.teoria')}</a>
     {#if user}
@@ -114,7 +115,7 @@
 </header>
 
 <nav class="mobile-nav">
-  <a href="/" class:active={$page.url.pathname === '/'}><span class="mobile-tab-kicker">🧪</span><span>{$t('nav.acciones')}</span></a>
+  <a href="/practicas" on:click|preventDefault={() => goto('/practicas')} class:active={$page.url.pathname.startsWith('/practicas')}><span class="mobile-tab-kicker">🧪</span><span>{$t('nav.acciones')}</span></a>
   <a href="/sesiones" class:active={$page.url.pathname.startsWith('/sesiones')}><span class="mobile-tab-kicker">🌀</span><span>{$t('nav.sesiones')}</span></a>
   <a href="/concepto" class:active={$page.url.pathname.startsWith('/concepto')}><span class="mobile-tab-kicker">📚</span><span>{$t('nav.teoria')}</span></a>
   {#if user}

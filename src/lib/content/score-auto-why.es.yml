@@ -1,80 +1,80 @@
 arousal:
   - from: -10
     to: -1
-    text: "Exhalación larga, menor tensión muscular, menos urgencia motora, pulso bajando y postura más suelta."
+    text: "Exhalación larga, menos tensión, menos urgencia motora, pulso bajando y postura más suelta."
   - from: 0
     to: 3
-    text: "Respiración pareja, movimientos económicos, poca impulsividad, mirada estable y escasos signos genitales o de búsqueda activa de más estímulo."
+    text: "Respiración pareja, movimientos económicos, poca impulsividad, mirada estable y poca búsqueda de más estímulo."
   - from: 4
     to: 6
-    text: "Empieza a notarse encendido corporal sin perder regulación: respiración algo más rápida, mayor tono muscular, más orientación al estímulo, micromovimientos y sensación de energía disponible pero manejable."
+    text: "Hay encendido corporal sin perder regulación: respiración más rápida, más tono muscular, más orientación al estímulo y energía todavía manejable."
   - from: 7
     to: 10
-    text: "Respiración marcada, pulso alto, inquietud motora, urgencia de actuar, foco estrechado y expresiones involuntarias de excitación como tensión, gemidos o búsqueda intensa de estímulo."
+    text: "Respiración marcada, pulso alto, inquietud motora, urgencia de actuar, foco estrechado y excitación involuntaria."
 
 trance:
   - from: -10
     to: -1
-    text: "Alerta y chequeo externo. Ojos más abiertos, orientación rápida al entorno, sobresalto fácil, pensamiento vigilante y recuperación del control consciente fino."
+    text: "Alerta y chequeo externo: ojos más abiertos, orientación rápida al entorno, sobresalto fácil y pensamiento vigilante."
   - from: 0
     to: 3
-    text: "Ubicadx en contexto. Respuesta rápida, monitoreo del entorno, lenguaje interno activo y no hay gran distorsión del tiempo ni del cuerpo."
+    text: "Ubicadx en contexto: respuesta rápida, monitoreo del entorno, lenguaje interno activo y poca distorsión del tiempo o del cuerpo."
   - from: 4
     to: 6
-    text: "Aparece absorción parcial. Menos diálogo interno, atención sostenida en una fuente, respuestas algo más lentas y cierta pérdida de referencia temporal, pero todavía con capacidad clara de modular y decidir."
+    text: "Aparece absorción parcial: menos diálogo interno, atención sostenida, respuestas más lentas y algo de distorsión temporal, pero con decisión intacta."
   - from: 7
     to: 10
-    text: "La absorción domina la experiencia. Mirada perdida o semicerrada, respuesta lenta, menor registro del entorno, tiempo subjetivo alterado y señales de entrega, disolución o disociación funcional del control consciente."
+    text: "La absorción domina: mirada perdida o semicerrada, respuesta lenta, menos registro del entorno y señales de entrega o disociación funcional."
 
 pleasure:
   - from: -10
     to: -1
-    text: "Predominan la aspereza, el costo o la incomodidad corporal: muecas, retirada, contención, sensación de fricción interna o poco bienestar, aunque después pueda releerse de otro modo."
+    text: "Predominan la aspereza, el costo o la incomodidad corporal: muecas, retirada, contención y poco bienestar."
   - from: 0
     to: 3
-    text: "La sensación puede ser tenue o neutra, con poco agrado directo o poco residuo placentero posterior, aunque la práctica sirva como puente para otra cosa."
+    text: "La sensación es tenue o neutra, con poco agrado directo o poco residuo placentero, aunque sirva como puente."
   - from: 4
     to: 6
-    text: "Se perciben sensaciones agradables claras o un afterglow moderado: relajación facial, alivio, sensación de cuerpo más contento y ganas de sostener lo que está pasando."
+    text: "Hay sensaciones agradables claras o afterglow moderado: relajación, alivio, cuerpo más contento y ganas de sostenerlo."
   - from: 7
     to: 10
-    text: "El placer o bienestar es evidente y sostenido. Gemidos o sonrisas involuntarias, alivio claro, sensación de saciedad, cuerpo muy orientado a lo que se siente bien y buen residuo después."
+    text: "El placer o bienestar es claro y sostenido: alivio, saciedad, cuerpo orientado a lo que se siente bien y buen residuo después."
 
 dopamine:
   - from: -10
     to: -1
-    text: "Más que empujar a repetir, corta momentum. Baja la persecución del estímulo, enfría la insistencia y deja más sensación de cierre, saciedad o reset que de seguir buscando."
+    text: "Más que empujar a repetir, corta momentum: baja la persecución del estímulo y deja cierre, saciedad o reset."
   - from: 0
     to: 3
-    text: "Puede gustar, pero no genera mucha tracción conductual: poca fantasía anticipatoria, poca urgencia de volver enseguida y escaso impulso de insistir."
+    text: "Puede gustar, pero genera poca tracción: poca fantasía anticipatoria, poca urgencia de volver y poco impulso de insistir."
   - from: 4
     to: 6
-    text: "Deja interés por repetir y cierta anticipación: la atención vuelve a la práctica, aparece curiosidad por seguir o retomar, pero sin captura total del foco."
+    text: "Deja interés por repetir y cierta anticipación: la atención vuelve a la práctica y aparece curiosidad por seguir."
   - from: 7
     to: 10
-    text: "Predomina la motivación apetitiva: ganas intensas de volver, planificar la próxima tanda, estirar la experiencia o buscar más, con foco capturado por la expectativa de recompensa."
+    text: "Predomina la motivación apetitiva: ganas intensas de volver, estirar la experiencia o buscar más, con foco en la recompensa."
 
 oxytocin:
   - from: -10
     to: -1
-    text: "Lo social pesa, pero en tono negativo: humillación, engaño, rechazo, distancia o tensión relacional como parte importante de la experiencia."
+    text: "Lo social pesa en tono negativo: humillación, engaño, rechazo, distancia o tensión relacional."
   - from: 0
     to: 3
-    text: "Lo social casi no pesa. La práctica se siente más técnica, instrumental o individual, con poca carga vincular explícita."
+    text: "Lo social casi no pesa. La práctica se siente más técnica, instrumental o individual."
   - from: 4
     to: 6
-    text: "Aparece carga social moderada. Hay entrega, aceptación, reconocimiento o cierta conexión con otrx, pero sin dominar toda la experiencia."
+    text: "Aparece carga social moderada: entrega, aceptación, reconocimiento o cierta conexión, sin dominar todo."
   - from: 7
     to: 10
-    text: "Lo social domina la experiencia y en tono positivo: confianza, admiración, conexión, aceptación, entrega o fuerte orientación al vínculo con otrx/s."
+    text: "Lo social domina en tono positivo: confianza, admiración, conexión, aceptación, entrega o fuerte orientación al vínculo."
 
 energy:
   - from: 0
     to: 3
-    text: "Requiere muy poco costo físico o mental. Se puede sostener con poca reserva energética, en quietud o con esfuerzo mínimo."
+    text: "Requiere muy poco costo físico o mental. Se sostiene con poca energía, en quietud o con esfuerzo mínimo."
   - from: 4
     to: 6
-    text: "Pide presencia corporal o mental sostenida. Hay trabajo atencional, respiratorio o motor moderado, pero sin llegar a drenar por completo."
+    text: "Pide presencia corporal o mental sostenida: trabajo atencional, respiratorio o motor moderado, sin drenar por completo."
   - from: 7
     to: 10
-    text: "Exige bastante recurso. Esfuerzo físico real, coordinación, resistencia o mucha dedicación mental, con señales de cansancio acumulativo si se prolonga."
+    text: "Exige bastante recurso: esfuerzo físico real, coordinación, resistencia o mucha dedicación mental, con cansancio si se prolonga."

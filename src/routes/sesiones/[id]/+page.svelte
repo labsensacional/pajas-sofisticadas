@@ -129,7 +129,7 @@
   function accionName(aid) { return getPracticeName(aid, practiceCatalog); }
 </script>
 
-<svelte:head><title>{sesion?.title ?? $t('sesion.title_fallback')} · Laboratorio Sensacional</title></svelte:head>
+<svelte:head><title>{sesion?.title ?? $t('sesion.title_fallback')} · Recetario Sensacional</title></svelte:head>
 
 <main class="page">
   <a href="/sesiones" class="back">{$t('sesion.back')}</a>
