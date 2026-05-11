@@ -259,8 +259,9 @@
       position: fixed;
       left: 16px;
       right: 16px;
-      bottom: 24px;
-      top: auto;
+      top: 50%;
+      bottom: auto;
+      transform: translateY(-50%);
       max-width: none;
       max-height: 60vh;
       overflow-y: auto;
