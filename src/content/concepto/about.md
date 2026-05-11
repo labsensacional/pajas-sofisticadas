@@ -18,7 +18,7 @@ Estos 3 estados que se describen a continuacion suelen darse en simultaneo en es
 
 Habla de cuánto te activa a nivel corporal una práctica, sería excitación (sexual o no sexual) o _arousal_ en ingles, a veces le dicen _uppers_ en comunidades kinkies (Y _downers_ a las que bajan la excitación).
 
-A veces unx puede querer estar mas excitadx, y otras se puede querer bajar un poco. La excitación potencia todo, lo bueno y lo malo, tambien deja mas a mano ciertos puentes, lo doloroso es mas fácil convertirlo en placentero cuando estás muy arriba.
+A veces unx puede querer estar mas excitadx, y otras puede querer bajar un poco. La excitación potencia todo, lo bueno y lo malo, tambien deja mas a mano ciertos puentes, lo doloroso es mas fácil convertirlo en placentero cuando estás muy arriba.
 
 > ⚠️ El miedo puede en un segundo convertirse en excitación sexual, pero tambien puede pasar al revés.
 
@@ -48,4 +48,4 @@ Para habilitar la activación de los circuitos neuronales del placer (o de lo qu
 
 > 🚫 La ansiedad es la enemiga de la inmersión. También tiende a generar bajo placer y alta excitación, lo cual es cansador y displacentero.
 
-> ⚓ Mantener inmersión en un estado de excitación alta es dificil por lo que deciamos de la inestabilidad de esos estados, por eso combinar con placer alto puede servir como ancla para mantener la atención en la experiencia.
+> ⚓ Mantener inmersión en un estado de alta activación es dificil por lo que deciamos de la inestabilidad de esos estados, por eso combinar con placer puede servir como ancla para mantener la atención en la experiencia.
