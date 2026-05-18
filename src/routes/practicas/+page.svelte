@@ -170,12 +170,9 @@
           on:click={() => openAccion(a.id)}
           on:keydown={(event) => onCardKeydown(event, a.id)}
         >
-          {#if !a._static}
+          {#if !a._static && isMod(user) && !a.reviewed}
             <div class="card-top">
-              <span class="badge-new">{$t('acciones.badge.new')}</span>
-              {#if isMod(user) && !a.reviewed}
-                <span class="badge-unreviewed">{$t('acciones.badge.unreviewed')}</span>
-              {/if}
+              <span class="badge-unreviewed">{$t('acciones.badge.unreviewed')}</span>
             </div>
           {/if}
           <div class="card-summary">

@@ -9,6 +9,7 @@
   import { compressImage } from '$lib/compressImage.js';
   import { getPracticeName, listPractices } from '$lib/practiceCatalog.js';
   import { t } from '$lib/i18n.js';
+  import EmojiPicker from '$lib/EmojiPicker.svelte';
 
   /** @type {any} */
   let user = null;
@@ -26,6 +27,8 @@
   let imageFiles = [];
   let accionSearch = '';
   let accionTags = /** @type {string[]} */ ([]);
+  /** @type {HTMLTextAreaElement|null} */
+  let bodyEl = null;
   let practiceCatalog = /** @type {any[]} */ ([]);
   let publishAnonymous = false;
 
@@ -135,7 +138,8 @@
       </label>
 
       <label>{$t('sesion_form.body')}
-        <textarea rows="8" bind:value={body} placeholder={$t('sesion_form.body.placeholder')}></textarea>
+        <textarea rows="8" bind:value={body} bind:this={bodyEl} placeholder={$t('sesion_form.body.placeholder')}></textarea>
+        <EmojiPicker target={bodyEl} />
       </label>
 
       <div class="field-group">
@@ -156,6 +160,7 @@
           placeholder={$t('sesion_form.acciones.placeholder')}
           bind:value={accionSearch}
           autocomplete="off"
+          on:keydown={e => { if (e.key === 'Enter') e.preventDefault(); }}
         />
         {#if accionSuggestions.length}
           <div class="suggestions">
@@ -163,6 +168,8 @@
               <button type="button" on:mousedown|preventDefault={() => addAccionTag(a.id)}>{a.name}</button>
             {/each}
           </div>
+        {:else if accionSearch.trim().length > 1 && practiceCatalog.length > 0}
+          <p class="no-match-hint">Práctica no encontrada. ¿Todavía no la publicaste? Podés <a href="/practicas/nueva">publicarla primero</a>.</p>
         {/if}
       </div>
 
@@ -258,6 +265,8 @@
     cursor: pointer; font-size: 0.82rem; font-weight: 600; color: var(--pill-text);
   }
   .suggestions button:hover { background: #ddd6fe; color: #5b21b6; }
+  .no-match-hint { font-size: 0.82rem; color: var(--muted); font-weight: 400; margin: 0; }
+  .no-match-hint a { color: var(--accent); }
 
   .previews { display: flex; gap: 10px; flex-wrap: wrap; }
   .preview-img { width: 100px; height: 100px; object-fit: cover; border-radius: 10px; }

@@ -13,6 +13,7 @@
   import { getAutoWhyText, getScoreFields } from '$lib/scoreFields.js';
   import { extractTags, getFilteredTagSuggestions, normalizeTag } from '$lib/tagInput.js';
   import { locale, t } from '$lib/i18n.js';
+  import EmojiPicker from '$lib/EmojiPicker.svelte';
 
   /** @type {any} */
   let user = null;
@@ -38,6 +39,10 @@
   let whyValues = { arousal: '', trance: '', pleasure: '', dopamine: '', oxytocin: '', energy: '' };
   let whyTouched = { arousal: false, trance: false, pleasure: false, dopamine: false, oxytocin: false, energy: false };
   let tagInput = '';
+  /** @type {HTMLTextAreaElement|null} */
+  let descEl = null;
+  /** @type {HTMLTextAreaElement|null} */
+  let howToEl = null;
   /** @type {string[]} */
   let tagValues = [];
   /** @type {string[]} */
@@ -280,11 +285,13 @@
       </label>
 
       <label>{$t('accion_form.description')} <small>{$t('accion_form.description.hint')}</small>
-        <textarea rows="3" bind:value={description} required placeholder={$t('accion_form.description.placeholder')}></textarea>
+        <textarea rows="3" bind:value={description} bind:this={descEl} required placeholder={$t('accion_form.description.placeholder')}></textarea>
+        <EmojiPicker target={descEl} />
       </label>
 
       <label>{$t('accion_form.how_to')} <small>{$t('accion_form.how_to.hint')}</small>
-        <textarea rows="2" bind:value={hello_world} placeholder={$t('accion_form.how_to.placeholder')}></textarea>
+        <textarea rows="2" bind:value={hello_world} bind:this={howToEl} placeholder={$t('accion_form.how_to.placeholder')}></textarea>
+        <EmojiPicker target={howToEl} />
       </label>
 
       <label>{$t('accion_form.warnings')} <small>{$t('accion_form.warnings.hint')}</small>
@@ -434,6 +441,9 @@
   }
   input[type="text"], textarea { border: 1px solid rgba(12,12,21,0.15); border-radius: 10px; padding: 10px 12px; font: inherit; }
   textarea { resize: vertical; }
+  @media (min-width: 640px) {
+    textarea:not(.why-input) { min-height: 100px; }
+  }
 
   fieldset { border: 1px solid rgba(12,12,21,0.1); border-radius: 12px; padding: 16px 20px; }
   legend { font-weight: 700; font-size: 0.9rem; padding: 0 6px; display: flex; align-items: center; gap: 10px; }

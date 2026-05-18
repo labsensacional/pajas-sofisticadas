@@ -13,7 +13,11 @@ service cloud.firestore {
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.name is string
         && request.resource.data.description is string;
-      allow update: if isAdmin();
+      allow update: if isAdmin()
+        || (request.auth != null
+          && resource.data.createdBy == request.auth.uid
+          && request.resource.data.createdBy == request.auth.uid
+          && request.resource.data.reviewed == resource.data.reviewed);
       allow delete: if isAdmin()
         || (request.auth != null && resource.data.createdBy == request.auth.uid);
     }
